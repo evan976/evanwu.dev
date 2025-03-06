@@ -27,11 +27,7 @@
     "typescript": "^5"
   },
   "pnpm": {
-    "onlyBuiltDependencies": [
-      "@biomejs/biome",
-      "sharp",
-      "simple-git-hooks"
-    ]
+    "onlyBuiltDependencies": ["@biomejs/biome", "sharp", "simple-git-hooks"]
   },
   "simple-git-hooks": {
     "pre-commit": "pnpm lint"
