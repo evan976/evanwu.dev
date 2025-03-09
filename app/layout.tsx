@@ -1,8 +1,8 @@
 import '@/app/globals.css'
+import { baseUrl } from '@/app/sitemap'
 import { Footer } from '@/components/footer'
 import { Header } from '@/components/header'
 import { cn } from '@/lib/utils'
-import type { Metadata } from 'next'
 import { NextIntlClientProvider } from 'next-intl'
 import { getLocale, getMessages, getTranslations } from 'next-intl/server'
 import { ThemeProvider } from 'next-themes'
@@ -14,10 +14,54 @@ const inter = Inter({
 })
 
 export async function generateMetadata() {
-  const t = await getTranslations('home')
+  const locale = await getLocale()
+  const t = await getTranslations('metadata')
   return {
-    title: `Evan - ${t('title')}`,
+    metadataBase: new URL(baseUrl),
+    title: {
+      template: '%s - Evan',
+      default: t('title'),
+    },
     description: t('description'),
+    keywords: t('keywords').split(','),
+    openGraph: {
+      title: t('title'),
+      description: t('description'),
+      url: baseUrl,
+      siteName: t('title'),
+      locale,
+      type: 'website',
+      images: [
+        {
+          url: `${baseUrl}/og}`,
+          width: 1200,
+          height: 630,
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: t('title'),
+      description: t('description'),
+      images: [
+        {
+          url: `${baseUrl}/og`,
+          width: 1200,
+          height: 630,
+        },
+      ],
+      robots: {
+        index: true,
+        follow: true,
+        googleBot: {
+          index: true,
+          follow: true,
+          'max-video-preview': -1,
+          'max-image-preview': 'large',
+          'max-snippet': -1,
+        },
+      },
+    },
   }
 }
 

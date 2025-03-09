@@ -1,4 +1,9 @@
 {
+  "metadata": {
+    "title": "Code with Evan",
+    "description": "我有一台电脑，我构建用户界面。",
+    "keywords": "Evan, 博客, 开发者, 全栈开发, 前端开发, 工程师, 设计师, 开源实践者"
+  },
   "home": {
     "title": "全栈开发工程师，设计师，开源爱好者",
     "description": "我叫 Evan，是一名全栈开发工程师，居住在中国成都。我喜欢构建帮助人们过更好生活的产品，我希望让世界变得更美好。",
@@ -26,5 +31,18 @@
     "menu": "菜单",
     "close": "关闭",
     "navigation": "导航"
+  },
+  "articles": {
+    "title": "我写关于我学习和构建的东西。",
+    "description": "所有关于编程、开源、基础设施等的长期思考，按时间顺序收集。"
+  },
+  "feature": {
+    "coming_soon": "即将推出",
+    "coming_soon_description": "此页面正在建设中，请稍后再来。"
+  },
+  "not_found": {
+    "title": "404 - 未找到",
+    "description": "你好像走到了世界的边缘 :(",
+    "back_to_home": "返回首页"
   }
 }

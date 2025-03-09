@@ -18,9 +18,18 @@ import peace from '@/public/peace.jpg'
 import travel from '@/public/travel.jpg'
 import { format, isToday } from 'date-fns'
 import { useTranslations } from 'next-intl'
+import { getTranslations } from 'next-intl/server'
 import Image from 'next/image'
 import Link from 'next/link'
 import * as React from 'react'
+
+export async function generateMetadata() {
+  const t = await getTranslations('home')
+  return {
+    title: t('title'),
+    description: t('description'),
+  }
+}
 
 export default function Page() {
   const t = useTranslations('home')

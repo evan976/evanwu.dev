@@ -276,7 +276,7 @@ function NavItem({
       <Link
         href={href}
         className={cn(
-          'relative block px-3 py-2.5 transition',
+          'relative block px-3 whitespace-nowrap py-2.5 transition',
           isActive
             ? 'text-teal-500 dark:text-teal-400'
             : 'hover:text-teal-500 dark:hover:text-teal-400',

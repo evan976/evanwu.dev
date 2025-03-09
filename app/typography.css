@@ -1,0 +1,331 @@
+.prose {
+  --prose-body: var(--color-zinc-600);
+  --prose-headings: var(--color-zinc-900);
+  --prose-links: var(--color-teal-700);
+  --prose-links-hover: var(--color-teal-600);
+  --prose-underline: --alpha(var(--color-teal-950) / 20%);
+  --prose-underline-hover: var(--color-teal-500);
+  --prose-bold: var(--color-zinc-900);
+  --prose-counters: var(--color-zinc-900);
+  --prose-bullets: var(--color-zinc-900);
+  --prose-hr: var(--color-zinc-100);
+  --prose-quote-borders: var(--color-zinc-200);
+  --prose-captions: var(--color-zinc-400);
+  --prose-code: var(--color-teal-700);
+  --prose-code-bg: --alpha(var(--color-zinc-950) / 20%);
+  --prose-pre-code: var(--color-zinc-800);
+  --prose-pre-bg: var(--color-zinc-100);
+  --prose-pre-border: transparent;
+  --prose-th-borders: var(--color-zinc-200);
+  --prose-td-borders: var(--color-zinc-100);
+
+  &:where(.dark, .dark *) {
+    --prose-body: var(--color-zinc-400);
+    --prose-headings: var(--color-zinc-200);
+    --prose-links: var(--color-teal-400);
+    --prose-links-hover: var(--color-teal-400);
+    --prose-underline: --alpha(var(--color-teal-400) / 30%);
+    --prose-underline-hover: var(--color-teal-400);
+    --prose-bold: var(--color-zinc-200);
+    --prose-counters: var(--color-zinc-200);
+    --prose-bullets: var(--color-zinc-200);
+    --prose-hr: --alpha(var(--color-zinc-700) / 40%);
+    --prose-quote-borders: var(--color-zinc-500);
+    --prose-captions: var(--color-zinc-500);
+    --prose-code: var(--color-teal-300);
+    --prose-code-bg: --alpha(var(--color-zinc-200) / 5%);
+    --prose-pre-code: var(--color-zinc-100);
+    --prose-pre-bg: --alpha(var(--color-black) / 40%);
+    --prose-pre-border: --alpha(var(--color-zinc-200) / 10%);
+    --prose-th-borders: var(--color-zinc-700);
+    --prose-td-borders: var(--color-zinc-800);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    &:where(.system, .system *) {
+      --prose-body: var(--color-zinc-400);
+      --prose-headings: var(--color-zinc-200);
+      --prose-links: var(--color-teal-400);
+      --prose-links-hover: var(--color-teal-400);
+      --prose-underline: --alpha(var(--color-teal-400) / 30%);
+      --prose-underline-hover: var(--color-teal-400);
+      --prose-bold: var(--color-zinc-200);
+      --prose-counters: var(--color-zinc-200);
+      --prose-bullets: var(--color-zinc-200);
+      --prose-hr: --alpha(var(--color-zinc-700) / 40%);
+      --prose-quote-borders: var(--color-zinc-500);
+      --prose-captions: var(--color-zinc-500);
+      --prose-code: var(--color-zinc-300);
+      --prose-code-bg: --alpha(var(--color-zinc-200) / 5%);
+      --prose-pre-code: var(--color-zinc-100);
+      --prose-pre-bg: --alpha(var(--color-black) / 40%);
+      --prose-pre-border: --alpha(var(--color-zinc-200) / 10%);
+      --prose-th-borders: var(--color-zinc-700);
+      --prose-td-borders: var(--color-zinc-800);
+    }
+  }
+
+  color: var(--prose-body);
+  font-size: var(--text-base);
+  line-height: 1.75;
+
+  *:where(:not(.not-prose, .not-prose *))+*:where(:not(.not-prose, .not-prose *)) {
+    margin-top: calc(var(--spacing) * 6);
+  }
+
+  h2:where(:not(.not-prose, .not-prose *)) {
+    font-size: var(--text-lg);
+    line-height: calc(28 / 18);
+    letter-spacing: -0.025em;
+    color: var(--prose-headings);
+    font-weight: var(--font-weight-semibold);
+    margin-top: calc(var(--spacing) * 20);
+  }
+
+  h2:has(+ h3):where(:not(.not-prose, .not-prose *)) {
+    font-size: var(--text-xs);
+    line-height: 2;
+    font-weight: var(--font-weight-medium);
+    font-family: var(--font-mono);
+    font-variant-ligatures: none;
+    letter-spacing: 0.1em;
+    color: var(--prose-captions);
+    text-transform: uppercase;
+  }
+
+  h3:where(:not(.not-prose, .not-prose *)) {
+    font-size: var(--text-base);
+    line-height: calc(28 / 18);
+    color: var(--prose-headings);
+    font-weight: var(--font-weight-semibold);
+    margin-top: calc(var(--spacing) * 16);
+  }
+
+  h2+h3:where(:not(.not-prose, .not-prose *)) {
+    margin-top: calc(var(--spacing) * 6);
+  }
+
+  h4:where(:not(.not-prose, .not-prose *)) {
+    font-size: var(--text-sm);
+    line-height: calc(28 / 14);
+    color: var(--prose-headings);
+    font-weight: var(--font-weight-semibold);
+    margin-top: calc(var(--spacing) * 12);
+  }
+
+  :is(h2, h3, h4):where(:not(.not-prose, .not-prose *)) {
+    scroll-margin-top: calc(var(--spacing) * 32);
+
+    @variant lg {
+      scroll-margin-top: calc(var(--spacing) * 18);
+    }
+  }
+
+  ul:where(:not(.not-prose, .not-prose *)) {
+    padding-left: calc(var(--spacing) * 6);
+    list-style-type: disc;
+  }
+
+  ul li:where(:not(.not-prose, .not-prose *)) {
+    padding-left: calc(var(--spacing) * 3);
+  }
+
+  ul li+li:where(:not(.not-prose, .not-prose *)) {
+    margin-top: calc(var(--spacing) * 4);
+  }
+
+  ul li:where(:not(.not-prose, .not-prose *))::marker {
+    color: var(--prose-bullets);
+  }
+
+  a:not(:where(:is(h2, h3, h4) *)):where(:not(.not-prose, .not-prose *)) {
+    color: var(--prose-links);
+    font-weight: var(--font-weight-semibold);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-color: var(--prose-underline);
+    text-decoration-thickness: 1px;
+
+    & code {
+      font-weight: var(--font-weight-semibold);
+    }
+  }
+
+  a:hover:where(:not(.not-prose, .not-prose *)) {
+    color: var(--prose-links-hover);
+    text-decoration-color: var(--prose-underline-hover);
+  }
+
+  strong:where(:not(.not-prose, .not-prose *)) {
+    color: var(--prose-bold);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  code:where(:not(.not-prose, .not-prose *)) {
+    font-variant-ligatures: none;
+    font-family: var(--font-mono);
+    font-weight: var(--font-weight-medium);
+    color: var(--prose-code);
+  }
+
+  :where(h2, h3, h4) code:where(:not(.not-prose, .not-prose *)) {
+    font-weight: var(--font-weight-semibold);
+  }
+
+  code:where(:not(.not-prose, .not-prose *))::before,
+  code:where(:not(.not-prose, .not-prose *))::after {
+    display: inline;
+    content: "`";
+  }
+
+  pre:where(:not(.not-prose, .not-prose *)) {
+    margin-top: calc(var(--spacing) * 8);
+    overflow-x: auto;
+    color: var(--prose-pre-code);
+    background-color: var(--prose-pre-bg);
+    border-radius: var(--radius-xl);
+    padding: calc(var(--spacing) * 4);
+    border: 1px solid var(--prose-pre-border);
+  }
+
+  pre code *+*:where(:not(.not-prose, .not-prose *)) {
+    margin-top: 0;
+  }
+
+  pre code:where(:not(.not-prose, .not-prose *))::before,
+  pre code:where(:not(.not-prose, .not-prose *))::after {
+    content: none;
+  }
+
+  pre code:where(:not(.not-prose, .not-prose *)) {
+    color: var(--prose-pre-code);
+    font-variant-ligatures: none;
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    line-height: 1.5;
+  }
+
+  table:where(:not(.not-prose, .not-prose *)) {
+    width: 100%;
+    table-layout: auto;
+    margin-top: 2em;
+    margin-bottom: 2em;
+    font-size: var(--text-sm);
+    line-height: 1.4;
+  }
+
+  thead:where(:not(.not-prose, .not-prose *)) {
+    border-bottom-width: 1px;
+    border-bottom-color: var(--prose-th-borders);
+  }
+
+  thead th:where(:not(.not-prose, .not-prose *)) {
+    color: var(--prose-headings);
+    font-weight: 600;
+    vertical-align: bottom;
+    padding-inline-end: 0.6em;
+    padding-bottom: 0.8em;
+    padding-inline-start: 0.6em;
+  }
+
+  thead th:first-child:where(:not(.not-prose, .not-prose *)) {
+    padding-inline-start: 0;
+  }
+
+  thead th:last-child:where(:not(.not-prose, .not-prose *)) {
+    padding-inline-end: 0;
+  }
+
+  tbody tr:where(:not(.not-prose, .not-prose *)) {
+    border-bottom-width: 1px;
+    border-bottom-color: var(--prose-td-borders);
+  }
+
+  tbody tr:last-child:where(:not(.not-prose, .not-prose *)) {
+    border-bottom-width: 0;
+  }
+
+  tbody td:where(:not(.not-prose, .not-prose *)) {
+    vertical-align: baseline;
+  }
+
+  tfoot:where(:not(.not-prose, .not-prose *)) {
+    border-top-width: 1px;
+    border-top-color: var(--prose-th-borders);
+  }
+
+  tfoot td:where(:not(.not-prose, .not-prose *)) {
+    vertical-align: top;
+  }
+
+  tbody td:where(:not(.not-prose, .not-prose *)),
+  tfoot td:where(:not(.not-prose, .not-prose *)) {
+    padding-top: 0.8em;
+    padding-inline-end: 0.6em;
+    padding-bottom: 0.8em;
+    padding-inline-start: 0.6em;
+  }
+
+  tbody td:first-child:where(:not(.not-prose, .not-prose *)),
+  tfoot td:first-child:where(:not(.not-prose, .not-prose *)) {
+    padding-inline-start: 0;
+  }
+
+  tbody td:last-child:where(:not(.not-prose, .not-prose *)),
+  tfoot td:last-child:where(:not(.not-prose, .not-prose *)) {
+    padding-inline-end: 0;
+  }
+
+  th:where(:not(.not-prose, .not-prose *)),
+  td:where(:not(.not-prose, .not-prose *)) {
+    text-align: start;
+  }
+
+  td code:where(:not(.not-prose, .not-prose *)) {
+    font-size: 0.8125rem;
+  }
+
+  hr:where(:not(.not-prose, .not-prose *)) {
+    border-color: var(--prose-hr);
+    margin-block: --spacing(16);
+
+    &+h2 {
+      margin-top: --spacing(16);
+    }
+  }
+
+  blockquote {
+    font-style: italic;
+    border-inline-start-width: 0.25rem;
+    border-inline-start-color: var(--prose-quote-borders);
+    padding-inline-start: calc(var(--spacing) * 4);
+  }
+
+  blockquote p:first-of-type::before {
+    content: open-quote;
+  }
+
+  blockquote p:last-of-type::after {
+    content: close-quote;
+  }
+
+  figure:where(:not(.not-prose, .not-prose *)) {
+    figcaption:where(:not(.not-prose, .not-prose *)) {
+      margin-top: calc(var(--spacing) * 3);
+      text-align: center;
+      font-size: var(--text-sm);
+      line-height: var(--text-sm--line-height);
+      font-style: italic;
+      color: color-mix(in oklab, var(--prose-body) 75%, transparent);
+    }
+  }
+
+  :first-child:where(:not(.not-prose, .not-prose *)) {
+    margin-top: 0;
+  }
+
+  :last-child:where(:not(.not-prose, .not-prose *)) {
+    margin-bottom: 0;
+  }
+
+}

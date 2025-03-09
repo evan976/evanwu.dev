@@ -1,4 +1,9 @@
 {
+  "metadata": {
+    "title": "Code with Evan",
+    "description": "I have a computer, and I build user interfaces.",
+    "keywords": "Evan, Blog, Developer, Full Stack, Frontend, Engineer, Designer, Open Source"
+  },
   "home": {
     "title": "Full stack developer, designer, and open source enthusiast",
     "description": "I’m Evan, a full stack developer based in Chengdu, China. I like to build products that help people live better lives, I wish to make the world a better place.",
@@ -26,5 +31,18 @@
     "menu": "Menu",
     "close": "Close",
     "navigation": "Navigation"
+  },
+  "articles": {
+    "title": "I write about things I’m learning and things I’m building.",
+    "description": "All of my long-form thoughts on programming, open source, infrastructure, and more, collected in chronological order."
+  },
+  "feature": {
+    "coming_soon": "Coming soon",
+    "coming_soon_description": "This page is under construction, please check back later."
+  },
+  "not_found": {
+    "title": "404 - Not Found",
+    "description": "You seem to have wandered off the beaten path :(",
+    "back_to_home": "Back to home"
   }
 }

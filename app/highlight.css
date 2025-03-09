@@ -1,0 +1,145 @@
+.highlight {
+  --hl-keyword: var(--color-red-600);
+  --hl-entity: var(--color-purple-600);
+  --hl-constant: var(--color-blue-600);
+  --hl-string: var(--color-sky-800);
+  --hl-variable: var(--color-orange-500);
+  --hl-comment: var(--color-zinc-600);
+  --hl-entity-tag: var(--color-green-600);
+  --hl-storage-modifier-import: var(--color-zinc-800);
+  --hl-markup-heading: var(--color-blue-600);
+  --hl-markup-list: var(--color-yellow-600);
+  --hl-markup-italic: var(--color-zinc-800);
+  --hl-markup-bold: var(--color-zinc-800);
+  --hl-markup-inserted: var(--color-green-600);
+  --hl-markup-inserted-bg: var(--color-green-100);
+  --hl-markup-deleted: var(--color-red-600);
+  --hl-markup-deleted-bg: var(--color-red-100);
+
+  &:where(.dark, .dark *) {
+    --hl-keyword: var(--color-red-400);
+    --hl-entity: var(--color-purple-400);
+    --hl-constant: var(--color-blue-400);
+    --hl-string: var(--color-sky-300);
+    --hl-variable: var(--color-orange-300);
+    --hl-comment: var(--color-zinc-400);
+    --hl-entity-tag: var(--color-green-400);
+    --hl-storage-modifier-import: var(--color-zinc-300);
+    --hl-markup-heading: var(--color-blue-500);
+    --hl-markup-list: var(--color-yellow-300);
+    --hl-markup-italic: var(--color-zinc-300);
+    --hl-markup-bold: var(--color-zinc-300);
+    --hl-markup-inserted: var(--color-green-300);
+    --hl-markup-inserted-bg: var(--color-green-900);
+    --hl-markup-deleted: var(--color-red-300);
+    --hl-markup-deleted-bg: var(--color-red-900);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    &:where(.system, .system *) {
+      --hl-keyword: var(--color-red-400);
+      --hl-entity: var(--color-purple-400);
+      --hl-constant: var(--color-blue-400);
+      --hl-string: var(--color-sky-300);
+      --hl-variable: var(--color-orange-300);
+      --hl-comment: var(--color-zinc-400);
+      --hl-entity-tag: var(--color-green-400);
+      --hl-storage-modifier-import: var(--color-zinc-300);
+      --hl-markup-heading: var(--color-blue-500);
+      --hl-markup-list: var(--color-yellow-300);
+      --hl-markup-italic: var(--color-zinc-300);
+      --hl-markup-bold: var(--color-zinc-300);
+      --hl-markup-inserted: var(--color-green-300);
+      --hl-markup-inserted-bg: var(--color-green-900);
+      --hl-markup-deleted: var(--color-red-300);
+      --hl-markup-deleted-bg: var(--color-red-900);
+    }
+  }
+
+  .hljs-doctag,
+  .hljs-keyword,
+  .hljs-meta .hljs-keyword,
+  .hljs-template-tag,
+  .hljs-template-variable,
+  .hljs-type,
+  .hljs-variable.language_ {
+    color: var(--hl-keyword);
+  }
+
+  .hljs-title,
+  .hljs-title.class_,
+  .hljs-title.class_.inherited__,
+  .hljs-title.function_ {
+    color: var(--hl-entity);
+  }
+
+  .hljs-attr,
+  .hljs-attribute,
+  .hljs-literal,
+  .hljs-meta,
+  .hljs-number,
+  .hljs-operator,
+  .hljs-variable,
+  .hljs-selector-attr,
+  .hljs-selector-class,
+  .hljs-selector-id {
+    color: var(--hl-constant);
+  }
+
+  .hljs-regexp,
+  .hljs-string,
+  .hljs-meta .hljs-string {
+    color: var(--hl-string);
+  }
+
+  .hljs-built_in,
+  .hljs-symbol {
+    color: var(--hl-variable);
+  }
+
+  .hljs-comment,
+  .hljs-code,
+  .hljs-formula {
+    color: var(--hl-comment);
+  }
+
+  .hljs-name,
+  .hljs-quote,
+  .hljs-selector-tag,
+  .hljs-selector-pseudo {
+    color: var(--hl-entity-tag);
+  }
+
+  .hljs-subst {
+    color: var(--hl-storage-modifier-import);
+  }
+
+  .hljs-section {
+    color: var(--hl-markup-heading);
+    font-weight: 700;
+  }
+
+  .hljs-bullet {
+    color: var(--hl-markup-list);
+  }
+
+  .hljs-emphasis {
+    color: var(--hl-markup-italic);
+    font-style: italic;
+  }
+
+  .hljs-strong {
+    color: var(--hl-markup-bold);
+    font-weight: 700;
+  }
+
+  .hljs-addition {
+    color: var(--hl-markup-inserted);
+    background-color: var(--hl-markup-inserted-bg);
+  }
+
+  .hljs-deletion {
+    color: var(--hl-markup-deleted);
+    background-color: var(--hl-markup-deleted-bg);
+  }
+}

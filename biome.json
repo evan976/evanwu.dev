@@ -43,6 +43,9 @@
         "noArrayIndexKey": "off",
         "noExplicitAny": "off",
         "noAssignInExpressions": "off"
+      },
+      "security": {
+        "noDangerouslySetInnerHtml": "off"
       }
     }
   },
