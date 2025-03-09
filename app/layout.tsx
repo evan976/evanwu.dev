@@ -67,11 +67,11 @@ export async function generateMetadata(): Promise<Metadata> {
     icons: {
       icon: [
         {
-          url: '/images/logo/logo.svg',
-          href: '/images/logo/logo.svg',
+          url: '/logo.svg',
+          href: '/logo.svg',
         },
       ],
-      apple: '/icons/apple-touch-icon.png',
+      apple: '/logo.svg',
     },
   }
 }

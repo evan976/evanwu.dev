@@ -19,6 +19,7 @@ export default function NotFound() {
                 <div className="mt-8 flex justify-center">
                   <Link
                     href="/"
+                    prefetch
                     aria-label={t('back_to_home')}
                     className="text-sm text-zinc-500 dark:text-zinc-400 hover:text-teal-500 dark:hover:text-teal-400 hover:underline hover:underline-offset-2 transition-colors duration-200"
                   >

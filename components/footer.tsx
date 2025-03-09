@@ -12,6 +12,7 @@ function NavLink({
 }) {
   return (
     <Link
+      prefetch
       href={href}
       className="transition hover:text-teal-500 dark:hover:text-teal-400"
     >

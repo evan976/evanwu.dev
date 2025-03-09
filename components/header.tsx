@@ -207,6 +207,7 @@ function Avatar({
 }) {
   return (
     <Link
+      prefetch
       href="/"
       aria-label="Back to home"
       className={cn(className, 'pointer-events-auto')}
