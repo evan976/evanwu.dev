@@ -38,6 +38,11 @@
         "useFocusableInteractive": "off",
         "useKeyWithClickEvents": "off",
         "useKeyWithMouseEvents": "off"
+      },
+      "suspicious": {
+        "noArrayIndexKey": "off",
+        "noExplicitAny": "off",
+        "noAssignInExpressions": "off"
       }
     }
   },

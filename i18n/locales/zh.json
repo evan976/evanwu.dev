@@ -1,0 +1,30 @@
+{
+  "home": {
+    "title": "全栈开发工程师，设计师，开源爱好者",
+    "description": "我叫 Evan，是一名全栈开发工程师，居住在中国成都。我喜欢构建帮助人们过更好生活的产品，我希望让世界变得更美好。",
+    "resume": {
+      "title": "工作",
+      "more": "在 LinkedIn 上查看更多"
+    },
+    "newsletter": {
+      "title": "保持更新",
+      "description": "当我在发布新内容时，请通知我，并随时可以取消订阅。",
+      "placeholder": "电子邮件地址",
+      "join": "加入"
+    },
+    "articles": {
+      "read_article": "阅读文章"
+    }
+  },
+  "nav": {
+    "home": "首页",
+    "about": "关于",
+    "articles": "文章",
+    "projects": "项目",
+    "photography": "摄影",
+    "uses": "工具",
+    "menu": "菜单",
+    "close": "关闭",
+    "navigation": "导航"
+  }
+}

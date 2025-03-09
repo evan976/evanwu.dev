@@ -7,7 +7,6 @@ import {
   MoonIcon,
   SunIcon,
 } from '@/components/icons'
-import { Link } from '@/i18n/navigation'
 import { clamp, cn } from '@/lib/utils'
 import avatarImage from '@/public/avatar.png'
 import {
@@ -18,18 +17,16 @@ import {
   Transition,
   TransitionChild,
 } from '@headlessui/react'
+import { useTranslations } from 'next-intl'
 import { useTheme } from 'next-themes'
 import Image from 'next/image'
+import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import * as React from 'react'
 
-type Position = React.CSSProperties['position']
-
-const homePages = ['/', '/en', '/zh-CN']
-
 export function Header() {
   const pathname = usePathname()
-  const isHomePage = homePages.includes(pathname)
+  const isHomePage = pathname === '/'
   const headerRef = React.useRef<HTMLDivElement>(null)
   const avatarRef = React.useRef<HTMLDivElement>(null)
   const isInitial = React.useRef(true)
@@ -38,16 +35,32 @@ export function Header() {
     const downDelay = avatarRef.current?.offsetTop ?? 0
     const upDelay = 64
 
-    function setProperty(property: string, value: string | number) {
-      document.documentElement.style.setProperty(property, String(value))
+    function setProperty(property: string, value: string) {
+      document.documentElement.style.setProperty(property, value)
     }
 
     function removeProperty(property: string) {
       document.documentElement.style.removeProperty(property)
     }
 
+    function throttle<T extends (...args: any[]) => any>(
+      func: T,
+      limit: number,
+    ): (...args: Parameters<T>) => void {
+      let inThrottle: boolean
+      return function (this: any, ...args: Parameters<T>) {
+        if (!inThrottle) {
+          func.apply(this, args)
+          inThrottle = true
+          setTimeout(() => (inThrottle = false), limit)
+        }
+      }
+    }
+
     function updateHeaderStyles() {
-      const { top, height } = headerRef.current!.getBoundingClientRect()
+      if (!headerRef.current) return
+
+      const { top, height } = headerRef.current.getBoundingClientRect()
       const scrollY = clamp(
         window.scrollY,
         0,
@@ -59,6 +72,7 @@ export function Header() {
       }
 
       setProperty('--content-offset', `${downDelay}px`)
+
       if (isInitial.current || scrollY < downDelay) {
         setProperty('--header-height', `${downDelay + height}px`)
         setProperty('--header-mb', `${-downDelay}px`)
@@ -83,9 +97,7 @@ export function Header() {
     }
 
     function updateAvatarStyles() {
-      if (!isHomePage) {
-        return
-      }
+      if (!isHomePage) return
 
       const fromScale = 1
       const toScale = 36 / 64
@@ -110,14 +122,14 @@ export function Header() {
       const borderTransform = `translate3d(${borderX}rem, 0, 0) scale(${borderScale})`
 
       setProperty('--avatar-border-transform', borderTransform)
-      setProperty('--avatar-border-opacity', scale === toScale ? 1 : 0)
+      setProperty('--avatar-border-opacity', scale === toScale ? '1' : '0')
     }
 
-    function updateStyles() {
+    const updateStyles = throttle(() => {
       updateHeaderStyles()
       updateAvatarStyles()
       isInitial.current = false
-    }
+    }, 16)
 
     updateStyles()
     window.addEventListener('scroll', updateStyles, { passive: true })
@@ -131,39 +143,20 @@ export function Header() {
 
   return (
     <React.Fragment>
-      <header
-        className="pointer-events-none relative z-50 flex flex-col"
-        style={{
-          height: 'var(--header-height)',
-          marginBottom: 'var(--header-mb)',
-        }}
-      >
+      <header className="pointer-events-none relative z-50 flex flex-col [height:var(--header-height)] [margin-bottom:var(--header-mb)]">
         {isHomePage && (
           <React.Fragment>
             <div
               ref={avatarRef}
-              className="order-last mt-[calc(theme(spacing.16)-theme(spacing.3))]"
+              className="order-last mt-[calc(--spacing(16)-(--spacing(3)))]"
             />
-            <Container
-              className="top-0 order-last -mb-3 pt-3"
-              style={{ position: 'var(--header-position)' as Position }}
-            >
-              <div
-                className="top-[var(--avatar-top,theme(spacing.3))] w-full"
-                style={{ position: 'var(--header-inner-position)' as Position }}
-              >
+            <Container className="top-0 order-last -mb-3 pt-3 [position:var(--header-position)]">
+              <div className="top-(--avatar-top,--spacing(3)) w-full [position:var(--header-inner-position)]">
                 <div className="relative">
-                  <AvatarContainer
-                    className="absolute left-0 top-3 origin-left transition-opacity"
-                    style={{
-                      opacity: 'var(--avatar-border-opacity, 0)',
-                      transform: 'var(--avatar-border-transform)',
-                    }}
-                  />
+                  <AvatarContainer className="absolute left-0 top-3 origin-left transition-opacity [opacity:var(--avatar-border-opacity,0)] [transform:var(--avatar-border-transform)]" />
                   <Avatar
                     large
-                    className="block h-16 w-16 origin-left"
-                    style={{ transform: 'var(--avatar-image-transform)' }}
+                    className="block h-16 w-16 origin-left [transform:var(--avatar-image-transform)]"
                   />
                 </div>
               </div>
@@ -172,16 +165,9 @@ export function Header() {
         )}
         <div
           ref={headerRef}
-          className="top-0 z-10 h-16 pt-6"
-          style={{
-            position:
-              'var(--header-position)' as React.CSSProperties['position'],
-          }}
+          className="top-0 z-10 h-16 pt-6 [position:var(--header-position)]"
         >
-          <Container
-            className="top-[var(--header-top,theme(spacing.6))] w-full"
-            style={{ position: 'var(--header-inner-position)' as Position }}
-          >
+          <Container className="top-(--header-top,--spacing(6)) w-full [position:var(--header-inner-position)]">
             <div className="relative flex gap-4">
               <div className="flex flex-1">
                 {!isHomePage && (
@@ -192,7 +178,7 @@ export function Header() {
               </div>
               <div className="flex flex-1 justify-end md:justify-center">
                 <MobileNavigation className="pointer-events-auto md:hidden" />
-                <DesktopNavigation className="pointer-events-auto max-md:hidden" />
+                <DesktopNavigation className="pointer-events-auto hidden md:block" />
               </div>
               <div className="flex justify-end md:flex-1">
                 <div className="pointer-events-auto">
@@ -203,7 +189,9 @@ export function Header() {
           </Container>
         </div>
       </header>
-      {isHomePage && <div style={{ height: 'var(--content-offset)' }} />}
+      {isHomePage && (
+        <div className="flex-none [height:var(--content-offset)]" />
+      )}
     </React.Fragment>
   )
 }
@@ -225,14 +213,14 @@ function Avatar({
       style={style}
     >
       <Image
+        priority
         src={avatarImage}
-        alt=""
+        alt="Avatar"
         sizes={large ? '4rem' : '2.25rem'}
         className={cn(
           'rounded-full bg-zinc-100 object-cover dark:bg-zinc-800',
           large ? 'h-16 w-16' : 'h-9 w-9',
         )}
-        priority
       />
     </Link>
   )
@@ -264,11 +252,11 @@ function ModeToggle() {
     <button
       type="button"
       aria-label="Toggle dark mode"
-      className="group rounded-full cursor-pointer bg-white/90 p-1.5 shadow-lg shadow-zinc-800/5 ring-1 ring-zinc-900/5 backdrop-blur transition dark:bg-zinc-800/90 dark:ring-white/10 dark:hover:ring-white/20"
+      className="group rounded-full cursor-pointer bg-white/90 p-2 shadow-lg shadow-zinc-800/5 ring-1 ring-zinc-900/5 backdrop-blur transition dark:bg-zinc-800/90 dark:ring-white/10 dark:hover:ring-white/20"
       onClick={toggleMode}
     >
-      <SunIcon className="h-6 w-6 fill-zinc-100 stroke-zinc-500 transition group-hover:fill-zinc-200 group-hover:stroke-zinc-700 dark:hidden [@media(prefers-color-scheme:dark)]:fill-teal-50 [@media(prefers-color-scheme:dark)]:stroke-teal-500 [@media(prefers-color-scheme:dark)]:group-hover:fill-teal-50 [@media(prefers-color-scheme:dark)]:group-hover:stroke-teal-500" />
-      <MoonIcon className="hidden h-6 w-6 fill-zinc-700 stroke-zinc-500 transition dark:block [@media(prefers-color-scheme:dark)]:group-hover:stroke-zinc-400 [@media_not_(prefers-color-scheme:dark)]:fill-teal-400/10 [@media_not_(prefers-color-scheme:dark)]:stroke-teal-600" />
+      <SunIcon className="size-6 fill-zinc-100 stroke-zinc-500 transition group-hover:fill-zinc-200 group-hover:stroke-zinc-700 dark:hidden [@media(prefers-color-scheme:dark)]:fill-teal-50 [@media(prefers-color-scheme:dark)]:stroke-teal-500 [@media(prefers-color-scheme:dark)]:group-hover:fill-teal-50 [@media(prefers-color-scheme:dark)]:group-hover:stroke-teal-500" />
+      <MoonIcon className="hidden size-6 fill-zinc-700 stroke-zinc-500 transition dark:block [@media(prefers-color-scheme:dark)]:group-hover:stroke-zinc-400 [@media_not_(prefers-color-scheme:dark)]:fill-teal-400/10 [@media_not_(prefers-color-scheme:dark)]:stroke-teal-600" />
     </button>
   )
 }
@@ -288,7 +276,7 @@ function NavItem({
       <Link
         href={href}
         className={cn(
-          'relative block px-3 py-2 transition',
+          'relative block px-3 py-2.5 transition',
           isActive
             ? 'text-teal-500 dark:text-teal-400'
             : 'hover:text-teal-500 dark:hover:text-teal-400',
@@ -304,14 +292,15 @@ function NavItem({
 }
 
 function DesktopNavigation(props: React.HTMLAttributes<HTMLDetailsElement>) {
+  const t = useTranslations('nav')
   return (
     <nav {...props}>
       <ul className="flex rounded-full bg-white/90 px-3 text-sm font-medium text-zinc-800 shadow-lg shadow-zinc-800/5 ring-1 ring-zinc-900/5 backdrop-blur dark:bg-zinc-800/90 dark:text-zinc-200 dark:ring-white/10">
-        <NavItem href="/about">About</NavItem>
-        <NavItem href="/articles">Articles</NavItem>
-        <NavItem href="/projects">Projects</NavItem>
-        <NavItem href="/photos">Photos</NavItem>
-        <NavItem href="/uses">Uses</NavItem>
+        <NavItem href="/about">{t('about')}</NavItem>
+        <NavItem href="/articles">{t('articles')}</NavItem>
+        <NavItem href="/projects">{t('projects')}</NavItem>
+        <NavItem href="/photography">{t('photography')}</NavItem>
+        <NavItem href="/uses">{t('uses')}</NavItem>
       </ul>
     </nav>
   )
@@ -334,10 +323,11 @@ function MobileNavItem({
 }
 
 function MobileNavigation(props: React.ComponentProps<typeof Popover>) {
+  const t = useTranslations('nav')
   return (
     <Popover {...props}>
-      <PopoverButton className="group flex items-center rounded-full bg-white/90 px-4 py-2 text-sm font-medium text-zinc-800 shadow-lg shadow-zinc-800/5 ring-1 ring-zinc-900/5 backdrop-blur dark:bg-zinc-800/90 dark:text-zinc-200 dark:ring-white/10 dark:hover:ring-white/20 outline-0">
-        Menu
+      <PopoverButton className="group flex items-center rounded-full bg-white/90 px-4 py-2.5 text-sm font-medium text-zinc-800 shadow-lg shadow-zinc-800/5 ring-1 ring-zinc-900/5 backdrop-blur dark:bg-zinc-800/90 dark:text-zinc-200 dark:ring-white/10 dark:hover:ring-white/20 outline-0">
+        {t('menu')}
         <ChevronDownIcon className="ml-3 h-auto w-2 stroke-zinc-500 group-hover:stroke-zinc-700 dark:group-hover:stroke-zinc-400" />
       </PopoverButton>
       <Transition>
@@ -373,16 +363,18 @@ function MobileNavigation(props: React.ComponentProps<typeof Popover>) {
                 <CloseIcon className="h-6 w-6 text-zinc-500 dark:text-zinc-400" />
               </PopoverButton>
               <h2 className="text-sm font-medium text-zinc-600 dark:text-zinc-400">
-                Navigation
+                {t('navigation')}
               </h2>
             </div>
             <nav className="mt-6">
               <ul className="-my-2 divide-y divide-zinc-100 text-base text-zinc-800 dark:divide-zinc-100/5 dark:text-zinc-300">
-                <MobileNavItem href="/about">About</MobileNavItem>
-                <MobileNavItem href="/articles">Articles</MobileNavItem>
-                <MobileNavItem href="/projects">Projects</MobileNavItem>
-                <MobileNavItem href="/photos">Photos</MobileNavItem>
-                <MobileNavItem href="/uses">Uses</MobileNavItem>
+                <MobileNavItem href="/about">{t('about')}</MobileNavItem>
+                <MobileNavItem href="/articles">{t('articles')}</MobileNavItem>
+                <MobileNavItem href="/projects">{t('projects')}</MobileNavItem>
+                <MobileNavItem href="/photography">
+                  {t('photography')}
+                </MobileNavItem>
+                <MobileNavItem href="/uses">{t('uses')}</MobileNavItem>
               </ul>
             </nav>
           </PopoverPanel>

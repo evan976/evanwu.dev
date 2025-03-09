@@ -1,39 +1,32 @@
 import '@/app/globals.css'
+import { Footer } from '@/components/footer'
 import { Header } from '@/components/header'
-import type { Locale } from '@/i18n/config'
-import { routing } from '@/i18n/routing'
-
 import { cn } from '@/lib/utils'
 import type { Metadata } from 'next'
 import { NextIntlClientProvider } from 'next-intl'
-import { getMessages } from 'next-intl/server'
+import { getLocale, getMessages, getTranslations } from 'next-intl/server'
 import { ThemeProvider } from 'next-themes'
 import { Inter } from 'next/font/google'
-import { notFound } from 'next/navigation'
 
 const inter = Inter({
   variable: '--font-inter',
   subsets: ['latin'],
 })
 
-export const metadata: Metadata = {
-  title: 'Evan - Frontend developer, designer, and open source enthusiast',
-  description:
-    'I’m Evan, a frontend developer based in Chengdu, China. I’m the founder and CEO of Planetaria, where we develop technologies that empower regular people to explore space on their own terms.',
+export async function generateMetadata() {
+  const t = await getTranslations('home')
+  return {
+    title: `Evan - ${t('title')}`,
+    description: t('description'),
+  }
 }
 
 export default async function RootLayout({
   children,
-  params,
 }: Readonly<{
   children: React.ReactNode
-  params: Promise<{ locale: Locale }>
 }>) {
-  const { locale } = await params
-
-  if (!routing.locales.includes(locale)) {
-    notFound()
-  }
+  const locale = await getLocale()
 
   const messages = await getMessages()
 
@@ -57,7 +50,8 @@ export default async function RootLayout({
               </div>
               <div className="relative flex w-full flex-col">
                 <Header />
-                <main>{children}</main>
+                <main className="flex-auto">{children}</main>
+                <Footer />
               </div>
             </div>
           </ThemeProvider>

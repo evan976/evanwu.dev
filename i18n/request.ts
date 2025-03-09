@@ -1,17 +1,11 @@
+import { getUserLocale } from '@/actions/locale'
 import { getRequestConfig } from 'next-intl/server'
-import type { Locale } from './config'
-import { routing } from './routing'
 
-export default getRequestConfig(async ({ requestLocale }) => {
-  let locale = await requestLocale
-
-  if (!locale || !routing.locales.includes(locale as Locale)) {
-    locale = routing.defaultLocale
-  }
+export default getRequestConfig(async () => {
+  const locale = await getUserLocale()
 
   return {
     locale,
     messages: (await import(`./locales/${locale}.json`)).default,
-    timeZone: 'UTC',
   }
 })

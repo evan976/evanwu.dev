@@ -1,6 +1,30 @@
 {
   "home": {
-    "title": "Frontend developer, designer, and open source enthusiast",
-    "description": "I’m Evan, a frontend developer based in Chengdu, China. I’m the founder and CEO of Planetaria, where we develop technologies that empower regular people to explore space on their own terms."
+    "title": "Full stack developer, designer, and open source enthusiast",
+    "description": "I’m Evan, a full stack developer based in Chengdu, China. I like to build products that help people live better lives, I wish to make the world a better place.",
+    "resume": {
+      "title": "Work",
+      "more": "More in LinkedIn"
+    },
+    "newsletter": {
+      "title": "Stay up to date",
+      "description": "Get notified when I publish something new, and unsubscribe at any time.",
+      "placeholder": "Email address",
+      "join": "Join"
+    },
+    "articles": {
+      "read_article": "Read article"
+    }
+  },
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "articles": "Articles",
+    "projects": "Projects",
+    "photography": "Photography",
+    "uses": "Uses",
+    "menu": "Menu",
+    "close": "Close",
+    "navigation": "Navigation"
   }
 }

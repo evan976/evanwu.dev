@@ -5,9 +5,6 @@ const withNextIntl = createNextIntlPlugin()
 
 const nextConfig: NextConfig = {
   reactStrictMode: false,
-  experimental: {
-    viewTransition: true,
-  },
 }
 
 export default withNextIntl(nextConfig)
