@@ -3,6 +3,7 @@ import { baseUrl } from '@/app/sitemap'
 import { Footer } from '@/components/footer'
 import { Header } from '@/components/header'
 import { cn } from '@/lib/utils'
+import type { Metadata } from 'next'
 import { NextIntlClientProvider } from 'next-intl'
 import { getLocale, getMessages, getTranslations } from 'next-intl/server'
 import { ThemeProvider } from 'next-themes'
@@ -13,7 +14,7 @@ const inter = Inter({
   subsets: ['latin'],
 })
 
-export async function generateMetadata() {
+export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale()
   const t = await getTranslations('metadata')
   return {
@@ -43,6 +44,7 @@ export async function generateMetadata() {
       card: 'summary_large_image',
       title: t('title'),
       description: t('description'),
+      creator: '@evan1297',
       images: [
         {
           url: `${baseUrl}/og`,
@@ -50,17 +52,26 @@ export async function generateMetadata() {
           height: 630,
         },
       ],
-      robots: {
+    },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
         index: true,
         follow: true,
-        googleBot: {
-          index: true,
-          follow: true,
-          'max-video-preview': -1,
-          'max-image-preview': 'large',
-          'max-snippet': -1,
-        },
+        'max-video-preview': -1,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
       },
+    },
+    icons: {
+      icon: [
+        {
+          url: '/images/logo/logo.svg',
+          href: '/images/logo/logo.svg',
+        },
+      ],
+      apple: '/icons/apple-touch-icon.png',
     },
   }
 }
