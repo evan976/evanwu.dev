@@ -7,7 +7,7 @@ import {
   MoonIcon,
   SunIcon,
 } from '@/components/icons'
-import { clamp, cn } from '@/lib/utils'
+import { cn } from '@/lib/utils'
 import avatarImage from '@/public/avatar.png'
 import {
   Popover,
@@ -17,6 +17,7 @@ import {
   Transition,
   TransitionChild,
 } from '@headlessui/react'
+import { motion, useScroll, useTransform } from 'motion/react'
 import { useTranslations } from 'next-intl'
 import { useTheme } from 'next-themes'
 import Image from 'next/image'
@@ -28,152 +29,44 @@ export function Header() {
   const pathname = usePathname()
   const isHomePage = pathname === '/'
   const headerRef = React.useRef<HTMLDivElement>(null)
-  const avatarRef = React.useRef<HTMLDivElement>(null)
-  const isInitial = React.useRef(true)
+  const { scrollY } = useScroll()
 
-  React.useEffect(() => {
-    const downDelay = avatarRef.current?.offsetTop ?? 0
-    const upDelay = 64
+  const avatarScale = useTransform(scrollY, [0, 200], [1, 0.6], {
+    clamp: false,
+  })
 
-    function setProperty(property: string, value: string) {
-      document.documentElement.style.setProperty(property, value)
-    }
-
-    function removeProperty(property: string) {
-      document.documentElement.style.removeProperty(property)
-    }
-
-    function throttle<T extends (...args: any[]) => any>(
-      func: T,
-      limit: number,
-    ): (...args: Parameters<T>) => void {
-      let inThrottle: boolean
-      return function (this: any, ...args: Parameters<T>) {
-        if (!inThrottle) {
-          func.apply(this, args)
-          inThrottle = true
-          setTimeout(() => (inThrottle = false), limit)
-        }
-      }
-    }
-
-    function updateHeaderStyles() {
-      if (!headerRef.current) return
-
-      const { top, height } = headerRef.current.getBoundingClientRect()
-      const scrollY = clamp(
-        window.scrollY,
-        0,
-        document.body.scrollHeight - window.innerHeight,
-      )
-
-      if (isInitial.current) {
-        setProperty('--header-position', 'sticky')
-      }
-
-      setProperty('--content-offset', `${downDelay}px`)
-
-      if (isInitial.current || scrollY < downDelay) {
-        setProperty('--header-height', `${downDelay + height}px`)
-        setProperty('--header-mb', `${-downDelay}px`)
-      } else if (top + height < -upDelay) {
-        const offset = Math.max(height, scrollY - upDelay)
-        setProperty('--header-height', `${offset}px`)
-        setProperty('--header-mb', `${height - offset}px`)
-      } else if (top === 0) {
-        setProperty('--header-height', `${scrollY + height}px`)
-        setProperty('--header-mb', `${-scrollY}px`)
-      }
-
-      if (top === 0 && scrollY > 0 && scrollY >= downDelay) {
-        setProperty('--header-inner-position', 'fixed')
-        removeProperty('--header-top')
-        removeProperty('--avatar-top')
-      } else {
-        removeProperty('--header-inner-position')
-        setProperty('--header-top', '0px')
-        setProperty('--avatar-top', '0px')
-      }
-    }
-
-    function updateAvatarStyles() {
-      if (!isHomePage) return
-
-      const fromScale = 1
-      const toScale = 36 / 64
-      const fromX = 0
-      const toX = 2 / 16
-
-      const scrollY = downDelay - window.scrollY
-
-      let scale = (scrollY * (fromScale - toScale)) / downDelay + toScale
-      scale = clamp(scale, fromScale, toScale)
-
-      let x = (scrollY * (fromX - toX)) / downDelay + toX
-      x = clamp(x, fromX, toX)
-
-      setProperty(
-        '--avatar-image-transform',
-        `translate3d(${x}rem, 0, 0) scale(${scale})`,
-      )
-
-      const borderScale = 1 / (toScale / scale)
-      const borderX = (-toX + x) * borderScale
-      const borderTransform = `translate3d(${borderX}rem, 0, 0) scale(${borderScale})`
-
-      setProperty('--avatar-border-transform', borderTransform)
-      setProperty('--avatar-border-opacity', scale === toScale ? '1' : '0')
-    }
-
-    const updateStyles = throttle(() => {
-      updateHeaderStyles()
-      updateAvatarStyles()
-      isInitial.current = false
-    }, 16)
-
-    updateStyles()
-    window.addEventListener('scroll', updateStyles, { passive: true })
-    window.addEventListener('resize', updateStyles)
-
-    return () => {
-      window.removeEventListener('scroll', updateStyles)
-      window.removeEventListener('resize', updateStyles)
-    }
-  }, [isHomePage])
+  const clampedAvatarScale = useTransform(avatarScale, (latest) => {
+    return latest < 0.6 ? 0.6 : latest
+  })
 
   return (
     <React.Fragment>
-      <header className="pointer-events-none relative z-50 flex flex-col [height:var(--header-height)] [margin-bottom:var(--header-mb)]">
+      <header className="pointer-events-none z-50 flex flex-col">
         {isHomePage && (
           <React.Fragment>
-            <div
-              ref={avatarRef}
-              className="order-last mt-[calc(--spacing(16)-(--spacing(3)))]"
-            />
-            <Container className="top-0 order-last -mb-3 pt-3 [position:var(--header-position)]">
-              <div className="top-(--avatar-top,--spacing(3)) w-full [position:var(--header-inner-position)]">
-                <div className="relative">
-                  <AvatarContainer className="absolute left-0 top-3 origin-left transition-opacity [opacity:var(--avatar-border-opacity,0)] [transform:var(--avatar-border-transform)]" />
-                  <Avatar
-                    large
-                    className="block h-16 w-16 origin-left [transform:var(--avatar-image-transform)]"
-                  />
-                </div>
+            <div className="order-last mt-[calc(--spacing(16)-(--spacing(3)))]" />
+            <Container className="top-0 order-last -mb-3 pt-3">
+              <div className="top-(--avatar-top,--spacing(3)) w-full">
+                <motion.div
+                  className="origin-top-left"
+                  style={{
+                    scale: clampedAvatarScale,
+                  }}
+                >
+                  <Avatar large className="block h-16 w-16" />
+                </motion.div>
               </div>
             </Container>
           </React.Fragment>
         )}
-        <div
-          ref={headerRef}
-          className="top-0 z-10 h-16 pt-6 [position:var(--header-position)]"
-        >
-          <Container className="top-(--header-top,--spacing(6)) w-full [position:var(--header-inner-position)]">
+        <div ref={headerRef} className="top-0 z-10 h-16 pt-6">
+          <Container className="top-(--header-top,--spacing(6)) w-full">
             <div className="relative flex gap-4">
               <div className="flex flex-1">
                 {!isHomePage && (
-                  <AvatarContainer>
+                  <div className="h-10 w-10 rounded-full bg-white/90 p-0.5 shadow-lg shadow-zinc-800/5 ring-1 ring-zinc-900/5 backdrop-blur dark:bg-zinc-800/90 dark:ring-white/10">
                     <Avatar />
-                  </AvatarContainer>
+                  </div>
                 )}
               </div>
               <div className="flex flex-1 justify-end md:justify-center">
@@ -189,9 +82,7 @@ export function Header() {
           </Container>
         </div>
       </header>
-      {isHomePage && (
-        <div className="flex-none [height:var(--content-offset)]" />
-      )}
+      {isHomePage && <div className="flex-none" />}
     </React.Fragment>
   )
 }
@@ -224,21 +115,6 @@ function Avatar({
         )}
       />
     </Link>
-  )
-}
-
-function AvatarContainer({
-  className,
-  ...props
-}: React.HTMLAttributes<HTMLDivElement>) {
-  return (
-    <div
-      className={cn(
-        className,
-        'h-10 w-10 rounded-full bg-white/90 p-0.5 shadow-lg shadow-zinc-800/5 ring-1 ring-zinc-900/5 backdrop-blur dark:bg-zinc-800/90 dark:ring-white/10',
-      )}
-      {...props}
-    />
   )
 }
 

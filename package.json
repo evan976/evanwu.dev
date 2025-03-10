@@ -13,6 +13,7 @@
     "@tailwindcss/postcss": "4.0.10",
     "clsx": "2.1.1",
     "date-fns": "4.1.0",
+    "motion": "12.4.10",
     "next": "15.2.1",
     "next-intl": "3.26.5",
     "next-mdx-remote": "5.0.0",

@@ -64,16 +64,6 @@ function Article({ article }: { article: ArticleType }) {
         <CardDescription>{article?.metadata.description}</CardDescription>
         <CardCTA>{t('articles.read_article')}</CardCTA>
       </Card>
-      <CardEyebrow
-        as="time"
-        dateTime={article?.metadata.publishedAt}
-        className="mt-1 hidden md:block"
-      >
-        {format(
-          new Date(article?.metadata.publishedAt ?? new Date()),
-          'MMMM d, yyyy',
-        )}
-      </CardEyebrow>
     </article>
   )
 }
