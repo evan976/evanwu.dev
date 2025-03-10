@@ -3,6 +3,7 @@ import { baseUrl } from '@/app/sitemap'
 import { Footer } from '@/components/footer'
 import { Header } from '@/components/header'
 import { cn } from '@/lib/utils'
+import { SpeedInsights } from '@vercel/speed-insights/next'
 import type { Metadata } from 'next'
 import { NextIntlClientProvider } from 'next-intl'
 import { getLocale, getMessages, getTranslations } from 'next-intl/server'
@@ -111,6 +112,7 @@ export default async function RootLayout({
             </div>
           </ThemeProvider>
         </NextIntlClientProvider>
+        <SpeedInsights />
       </body>
     </html>
   )

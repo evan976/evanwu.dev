@@ -11,6 +11,7 @@
   "dependencies": {
     "@headlessui/react": "2.2.0",
     "@tailwindcss/postcss": "4.0.10",
+    "@vercel/speed-insights": "1.2.0",
     "clsx": "2.1.1",
     "date-fns": "4.1.0",
     "motion": "12.4.10",
@@ -35,7 +36,12 @@
     "typescript": "^5"
   },
   "pnpm": {
-    "onlyBuiltDependencies": ["@biomejs/biome", "sharp", "simple-git-hooks"]
+    "onlyBuiltDependencies": [
+      "@biomejs/biome",
+      "@vercel/speed-insights",
+      "sharp",
+      "simple-git-hooks"
+    ]
   },
   "simple-git-hooks": {
     "pre-commit": "pnpm lint"
