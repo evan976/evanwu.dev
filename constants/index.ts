@@ -1,6 +1,5 @@
 import logoHackQuest from '@/public/hackquest.jpeg'
-import logoSolana from '@/public/solana.svg'
-import logoWorkOS from '@/public/workos.jpeg'
+import logoSeaMaid from '@/public/seamaid.png'
 
 export const resume = [
   {
@@ -12,19 +11,11 @@ export const resume = [
     end: new Date(),
   },
   {
-    company: 'Solana',
-    url: 'https://solana.com',
-    title: 'Full Stack Developer',
-    logo: logoSolana,
-    start: '2022-03',
-    end: '2024-04',
-  },
-  {
-    company: 'WorkOS',
-    url: 'https://workos.com',
+    company: 'SeaMaid Tech',
+    url: 'https://haiyaogame.com',
     title: 'Frontend Developer',
-    logo: logoWorkOS,
+    logo: logoSeaMaid,
     start: '2021-12',
-    end: '2022-02',
+    end: '2024-04',
   },
 ]

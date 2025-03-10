@@ -15,7 +15,7 @@
       "title": "Stay up to date",
       "description": "Get notified when I publish something new, and unsubscribe at any time.",
       "placeholder": "Email address",
-      "join": "Join"
+      "subscribe": "Subscribe"
     },
     "articles": {
       "read_article": "Read article"

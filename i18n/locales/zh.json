@@ -15,7 +15,7 @@
       "title": "保持更新",
       "description": "当我在发布新内容时，请通知我，并随时可以取消订阅。",
       "placeholder": "电子邮件地址",
-      "join": "加入"
+      "subscribe": "订阅"
     },
     "articles": {
       "read_article": "阅读文章"

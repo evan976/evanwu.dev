@@ -7,7 +7,8 @@ import {
   CardTitle,
 } from '@/components/card'
 import { Container } from '@/components/container'
-import { ArrowDownIcon, BriefcaseIcon, MailIcon } from '@/components/icons'
+import { ArrowDownIcon, BriefcaseIcon } from '@/components/icons'
+import { SubscribeForm } from '@/components/subscribe-form'
 import { resume } from '@/constants'
 import { type Article as ArticleType, getArticles } from '@/lib/article'
 import { cn } from '@/lib/utils'
@@ -121,7 +122,7 @@ export default function Page() {
             ))}
           </div>
           <div className="space-y-10 lg:pl-16 xl:pl-24">
-            <Newsletter />
+            <SubscribeForm />
             <Resume />
           </div>
         </div>
@@ -180,36 +181,6 @@ function Article({ article }: { article: ArticleType }) {
       <CardDescription>{article?.metadata.description}</CardDescription>
       <CardCTA>{t('articles.read_article')}</CardCTA>
     </Card>
-  )
-}
-
-function Newsletter() {
-  const t = useTranslations('home')
-  return (
-    <form
-      action="/thank-you"
-      className="rounded-2xl border border-zinc-100 p-6 dark:border-zinc-700/40"
-    >
-      <h2 className="flex items-center text-sm font-semibold text-zinc-900 dark:text-zinc-100">
-        <MailIcon className="size-6 flex-none" />
-        <span className="ml-3">{t('newsletter.title')}</span>
-      </h2>
-      <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-        {t('newsletter.description')}
-      </p>
-      <div className="mt-6 flex">
-        <input
-          type="email"
-          placeholder={t('newsletter.placeholder')}
-          aria-label={t('newsletter.placeholder')}
-          required
-          className="min-w-0 flex-auto appearance-none rounded-md border border-zinc-900/10 bg-white px-3 py-2 shadow-md shadow-zinc-800/5 placeholder:text-zinc-400 focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-500/10 dark:border-zinc-700 dark:bg-zinc-700/15 dark:text-zinc-200 dark:placeholder:text-zinc-500 dark:focus:border-teal-400 dark:focus:ring-teal-400/10 sm:text-sm"
-        />
-        <Button type="submit" className="ml-4 flex-none min-w-16">
-          {t('newsletter.join')}
-        </Button>
-      </div>
-    </form>
   )
 }
 

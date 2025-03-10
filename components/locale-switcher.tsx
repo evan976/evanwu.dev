@@ -22,7 +22,7 @@ export function LocaleSwitcher() {
     <div className="relative">
       <Select
         className={cn(
-          'outline-0 border-none text-sm appearance-none text-zinc-500 dark:text-zinc-400 px-4',
+          'outline-hidden border-none text-sm appearance-none text-zinc-500 dark:text-zinc-400 px-4',
           {
             'pointer-events-none opacity-60': isPending,
           },

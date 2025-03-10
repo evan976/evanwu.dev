@@ -192,7 +192,11 @@ function MobileNavItem({
 }) {
   return (
     <li>
-      <PopoverButton as={Link} href={href} className="block outline-0 py-2">
+      <PopoverButton
+        as={Link}
+        href={href}
+        className="block outline-hidden py-2"
+      >
         {children}
       </PopoverButton>
     </li>
@@ -203,7 +207,7 @@ function MobileNavigation(props: React.ComponentProps<typeof Popover>) {
   const t = useTranslations('nav')
   return (
     <Popover {...props}>
-      <PopoverButton className="group flex items-center rounded-full bg-white/90 px-4 py-2.5 text-sm font-medium text-zinc-800 shadow-lg shadow-zinc-800/5 ring-1 ring-zinc-900/5 backdrop-blur dark:bg-zinc-800/90 dark:text-zinc-200 dark:ring-white/10 dark:hover:ring-white/20 outline-0">
+      <PopoverButton className="group flex items-center rounded-full bg-white/90 px-4 py-2.5 text-sm font-medium text-zinc-800 shadow-lg shadow-zinc-800/5 ring-1 ring-zinc-900/5 backdrop-blur dark:bg-zinc-800/90 dark:text-zinc-200 dark:ring-white/10 dark:hover:ring-white/20 outline-hidden">
         {t('menu')}
         <ChevronDownIcon className="ml-3 h-auto w-2 stroke-zinc-500 group-hover:stroke-zinc-700 dark:group-hover:stroke-zinc-400" />
       </PopoverButton>
@@ -235,7 +239,7 @@ function MobileNavigation(props: React.ComponentProps<typeof Popover>) {
             <div className="flex flex-row-reverse items-center justify-between">
               <PopoverButton
                 aria-label="Close menu"
-                className="-m-1 p-1 outline-0"
+                className="-m-1 p-1 outline-hidden"
               >
                 <CloseIcon className="h-6 w-6 text-zinc-500 dark:text-zinc-400" />
               </PopoverButton>

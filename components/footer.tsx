@@ -59,7 +59,7 @@ export function Footer() {
                   <svg
                     viewBox="0 0 24 24"
                     aria-hidden="true"
-                    className="size-[1.125rem]"
+                    className="size-[1.125rem] fill-zinc-800 dark:fill-zinc-200"
                   >
                     <path
                       fillRule="evenodd"
