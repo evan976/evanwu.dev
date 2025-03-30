@@ -91,6 +91,12 @@ export default async function RootLayout({
       <body
         className={cn('flex h-full bg-zinc-50 dark:bg-black', inter.variable)}
       >
+        <script defer src="https://reacthub.store/insights/script.min.js" />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: 'window.visio.init()',
+          }}
+        />
         <NextIntlClientProvider messages={messages}>
           <ThemeProvider
             attribute="class"
