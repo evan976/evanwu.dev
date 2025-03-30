@@ -1,5 +1,6 @@
 import '@/app/globals.css'
 import { baseUrl } from '@/app/sitemap'
+import { Analytics } from '@/components/analytics'
 import { Footer } from '@/components/footer'
 import { Header } from '@/components/header'
 import { cn } from '@/lib/utils'
@@ -91,7 +92,6 @@ export default async function RootLayout({
       <body
         className={cn('flex h-full bg-zinc-50 dark:bg-black', inter.variable)}
       >
-        <script src="https://reacthub.store/insights/analytics.min.js" />
         <NextIntlClientProvider messages={messages}>
           <ThemeProvider
             attribute="class"
@@ -114,6 +114,7 @@ export default async function RootLayout({
           </ThemeProvider>
         </NextIntlClientProvider>
         <SpeedInsights />
+        <Analytics />
       </body>
     </html>
   )
