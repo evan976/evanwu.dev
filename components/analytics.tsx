@@ -48,7 +48,7 @@ function getCookie(name: string) {
 }
 
 function visioAnalytics() {
-  let domain = window.location.hostname
+  let domain = window.location.hostname.replace('www.', '')
 
   function init(endpoint?: string) {
     if (endpoint) {
@@ -91,9 +91,8 @@ function visioAnalytics() {
       sessionId: getSessionId(),
       url: window.location.pathname,
       timestamp: new Date(),
-      ...(type === 'pageview' &&
-        data && { referrer: document.referrer, ...data }),
-      ...(type === 'event' && metadata && data && { ...data, metadata }),
+      ...(type === 'pageview' && { referrer: document.referrer, ...data }),
+      ...(type === 'event' && { ...data, metadata }),
     }
 
     try {
