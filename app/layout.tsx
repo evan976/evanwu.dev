@@ -1,6 +1,5 @@
 import '@/app/globals.css'
 import { baseUrl } from '@/app/sitemap'
-import { Analytics } from '@/components/analytics'
 import { Footer } from '@/components/footer'
 import { Header } from '@/components/header'
 import { cn } from '@/lib/utils'
@@ -114,7 +113,6 @@ export default async function RootLayout({
           </ThemeProvider>
         </NextIntlClientProvider>
         <SpeedInsights />
-        <Analytics />
       </body>
     </html>
   )
