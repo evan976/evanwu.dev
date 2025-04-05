@@ -177,7 +177,7 @@ function Resume() {
         ))}
       </ol>
       <Button
-        href="/linkedin"
+        href="https://www.linkedin.com/in/evan976"
         target="_blank"
         rel="noopener noreferrer"
         variant="secondary"
