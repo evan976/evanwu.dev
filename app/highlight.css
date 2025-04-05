@@ -1,23 +1,23 @@
 .highlight {
-  --hl-keyword: var(--color-red-600);
-  --hl-entity: var(--color-purple-600);
-  --hl-constant: var(--color-blue-600);
+  --hl-keyword: var(--color-rose-500);
+  --hl-entity: var(--color-purple-500);
+  --hl-constant: var(--color-blue-500);
   --hl-string: var(--color-sky-800);
   --hl-variable: var(--color-orange-500);
-  --hl-comment: var(--color-zinc-600);
-  --hl-entity-tag: var(--color-green-600);
-  --hl-storage-modifier-import: var(--color-zinc-800);
-  --hl-markup-heading: var(--color-blue-600);
+  --hl-comment: var(--color-zinc-400);
+  --hl-entity-tag: var(--color-green-500);
+  --hl-storage-modifier-import: var(--color-zinc-600);
+  --hl-markup-heading: var(--color-blue-500);
   --hl-markup-list: var(--color-yellow-600);
-  --hl-markup-italic: var(--color-zinc-800);
-  --hl-markup-bold: var(--color-zinc-800);
+  --hl-markup-italic: var(--color-zinc-500);
+  --hl-markup-bold: var(--color-zinc-600);
   --hl-markup-inserted: var(--color-green-600);
   --hl-markup-inserted-bg: var(--color-green-100);
   --hl-markup-deleted: var(--color-red-600);
   --hl-markup-deleted-bg: var(--color-red-100);
 
   &:where(.dark, .dark *) {
-    --hl-keyword: var(--color-red-400);
+    --hl-keyword: var(--color-rose-400);
     --hl-entity: var(--color-purple-400);
     --hl-constant: var(--color-blue-400);
     --hl-string: var(--color-sky-300);
@@ -31,13 +31,13 @@
     --hl-markup-bold: var(--color-zinc-300);
     --hl-markup-inserted: var(--color-green-300);
     --hl-markup-inserted-bg: var(--color-green-900);
-    --hl-markup-deleted: var(--color-red-300);
-    --hl-markup-deleted-bg: var(--color-red-900);
+    --hl-markup-deleted: var(--color-rose-300);
+    --hl-markup-deleted-bg: var(--color-rose-900);
   }
 
   @media (prefers-color-scheme: dark) {
     &:where(.system, .system *) {
-      --hl-keyword: var(--color-red-400);
+      --hl-keyword: var(--color-rose-400);
       --hl-entity: var(--color-purple-400);
       --hl-constant: var(--color-blue-400);
       --hl-string: var(--color-sky-300);
@@ -51,8 +51,8 @@
       --hl-markup-bold: var(--color-zinc-300);
       --hl-markup-inserted: var(--color-green-300);
       --hl-markup-inserted-bg: var(--color-green-900);
-      --hl-markup-deleted: var(--color-red-300);
-      --hl-markup-deleted-bg: var(--color-red-900);
+      --hl-markup-deleted: var(--color-rose-300);
+      --hl-markup-deleted-bg: var(--color-rose-900);
     }
   }
 

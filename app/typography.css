@@ -11,8 +11,7 @@
   --prose-hr: var(--color-zinc-100);
   --prose-quote-borders: var(--color-zinc-200);
   --prose-captions: var(--color-zinc-400);
-  --prose-code: var(--color-teal-700);
-  --prose-code-bg: --alpha(var(--color-zinc-950) / 20%);
+  --prose-code: var(--color-rose-600);
   --prose-pre-code: var(--color-zinc-800);
   --prose-pre-bg: var(--color-zinc-100);
   --prose-pre-border: transparent;
@@ -33,7 +32,6 @@
     --prose-quote-borders: var(--color-zinc-500);
     --prose-captions: var(--color-zinc-500);
     --prose-code: var(--color-teal-300);
-    --prose-code-bg: --alpha(var(--color-zinc-200) / 5%);
     --prose-pre-code: var(--color-zinc-100);
     --prose-pre-bg: --alpha(var(--color-black) / 40%);
     --prose-pre-border: --alpha(var(--color-zinc-200) / 10%);
@@ -56,7 +54,6 @@
       --prose-quote-borders: var(--color-zinc-500);
       --prose-captions: var(--color-zinc-500);
       --prose-code: var(--color-zinc-300);
-      --prose-code-bg: --alpha(var(--color-zinc-200) / 5%);
       --prose-pre-code: var(--color-zinc-100);
       --prose-pre-bg: --alpha(var(--color-black) / 40%);
       --prose-pre-border: --alpha(var(--color-zinc-200) / 10%);
@@ -184,7 +181,7 @@
     overflow-x: auto;
     color: var(--prose-pre-code);
     background-color: var(--prose-pre-bg);
-    border-radius: var(--radius-xl);
+    border-radius: var(--radius-lg);
     padding: calc(var(--spacing) * 4);
     border: 1px solid var(--prose-pre-border);
   }

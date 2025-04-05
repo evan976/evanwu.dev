@@ -1,6 +1,6 @@
 'use server'
 
-import { createClient } from '@/lib/supabase'
+import { neon } from '@neondatabase/serverless'
 import * as z from 'zod'
 
 const schema = z.object({
@@ -11,45 +11,46 @@ type FormState = {
   message: string
 }
 
-export async function subscribe(formState: FormState, formData: FormData) {
-  const supabase = await createClient()
+export async function subscribe(_formState: FormState, formData: FormData) {
+  const sql = neon(process.env.DATABASE_URL!)
 
-  try {
-    const validatedData = schema.safeParse({
-      email: formData.get('email'),
-    })
+  const validatedData = schema.safeParse({
+    email: formData.get('email'),
+  })
 
-    if (!validatedData.success) {
-      return {
-        success: false,
-        message: 'Invalid email address',
-      }
+  if (!validatedData.success) {
+    return {
+      success: false,
+      message: 'Invalid email address',
     }
+  }
 
-    const response = await supabase.from('subscriptions').insert({
-      email: validatedData.data.email,
-    })
+  const { email } = validatedData.data
 
-    if (response.error) {
-      if (response.error.code === '23505') {
-        return {
-          success: false,
-          message: 'You are already subscribed',
-        }
-      }
-      return {
-        success: false,
-        message: response.error.message || 'Failed to subscribe',
-      }
+  const existing = await sql`
+    SELECT 1 FROM subscription WHERE email = ${email} LIMIT 1
+  `
+
+  if (existing.length > 0) {
+    return {
+      success: false,
+      message: 'This email is already subscribed',
     }
+  }
+
+  const result = await sql`
+    INSERT INTO subscription (email) VALUES (${email})
+  `
+
+  if (result.length === 0) {
     return {
       success: true,
       message: 'You have been subscribed',
     }
-  } catch (error) {
-    return {
-      success: false,
-      message: 'Failed to subscribe',
-    }
+  }
+
+  return {
+    success: false,
+    message: 'Failed to subscribe',
   }
 }

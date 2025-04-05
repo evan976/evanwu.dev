@@ -1,12 +1,7 @@
 'use client'
 
 import { Container } from '@/components/container'
-import {
-  ChevronDownIcon,
-  CloseIcon,
-  MoonIcon,
-  SunIcon,
-} from '@/components/icons'
+import { ChevronDownIcon, CloseIcon } from '@/components/icons'
 import { cn } from '@/lib/utils'
 import avatarImage from '@/public/avatar.png'
 import {
@@ -18,8 +13,6 @@ import {
   TransitionChild,
 } from '@headlessui/react'
 import { motion, useScroll, useTransform } from 'motion/react'
-import { useTranslations } from 'next-intl'
-import { useTheme } from 'next-themes'
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
@@ -62,21 +55,16 @@ export function Header() {
         <div ref={headerRef} className="top-0 z-10 h-16 pt-6">
           <Container className="top-(--header-top,--spacing(6)) w-full">
             <div className="relative flex gap-4">
-              <div className="flex flex-1">
-                {!isHomePage && (
+              {!isHomePage && (
+                <div className="absolute left-0 top-0">
                   <div className="h-10 w-10 rounded-full bg-white/90 p-0.5 shadow-lg shadow-zinc-800/5 ring-1 ring-zinc-900/5 backdrop-blur dark:bg-zinc-800/90 dark:ring-white/10">
                     <Avatar />
                   </div>
-                )}
-              </div>
+                </div>
+              )}
               <div className="flex flex-1 justify-end md:justify-center">
                 <MobileNavigation className="pointer-events-auto md:hidden" />
                 <DesktopNavigation className="pointer-events-auto hidden md:block" />
-              </div>
-              <div className="flex justify-end md:flex-1">
-                <div className="pointer-events-auto">
-                  <ModeToggle />
-                </div>
               </div>
             </div>
           </Container>
@@ -101,7 +89,7 @@ function Avatar({
       prefetch
       href="/"
       aria-label="Back to home"
-      className={cn(className, 'pointer-events-auto')}
+      className={cn('pointer-events-auto', className)}
       style={style}
     >
       <Image
@@ -115,26 +103,6 @@ function Avatar({
         )}
       />
     </Link>
-  )
-}
-
-function ModeToggle() {
-  const { theme, setTheme } = useTheme()
-
-  function toggleMode() {
-    setTheme(theme === 'dark' ? 'light' : 'dark')
-  }
-
-  return (
-    <button
-      type="button"
-      aria-label="Toggle dark mode"
-      className="group rounded-full cursor-pointer bg-white/90 p-2 shadow-lg shadow-zinc-800/5 ring-1 ring-zinc-900/5 backdrop-blur transition dark:bg-zinc-800/90 dark:ring-white/10 dark:hover:ring-white/20"
-      onClick={toggleMode}
-    >
-      <SunIcon className="size-6 fill-zinc-100 stroke-zinc-500 transition group-hover:fill-zinc-200 group-hover:stroke-zinc-700 dark:hidden [@media(prefers-color-scheme:dark)]:fill-teal-50 [@media(prefers-color-scheme:dark)]:stroke-teal-500 [@media(prefers-color-scheme:dark)]:group-hover:fill-teal-50 [@media(prefers-color-scheme:dark)]:group-hover:stroke-teal-500" />
-      <MoonIcon className="hidden size-6 fill-zinc-700 stroke-zinc-500 transition dark:block [@media(prefers-color-scheme:dark)]:group-hover:stroke-zinc-400 [@media_not_(prefers-color-scheme:dark)]:fill-teal-400/10 [@media_not_(prefers-color-scheme:dark)]:stroke-teal-600" />
-    </button>
   )
 }
 
@@ -169,15 +137,14 @@ function NavItem({
 }
 
 function DesktopNavigation(props: React.HTMLAttributes<HTMLDetailsElement>) {
-  const t = useTranslations('nav')
   return (
     <nav {...props}>
       <ul className="flex rounded-full bg-white/90 px-3 text-sm font-medium text-zinc-800 shadow-lg shadow-zinc-800/5 ring-1 ring-zinc-900/5 backdrop-blur dark:bg-zinc-800/90 dark:text-zinc-200 dark:ring-white/10">
-        <NavItem href="/about">{t('about')}</NavItem>
-        <NavItem href="/articles">{t('articles')}</NavItem>
-        <NavItem href="/projects">{t('projects')}</NavItem>
-        <NavItem href="/photography">{t('photography')}</NavItem>
-        <NavItem href="/uses">{t('uses')}</NavItem>
+        <NavItem href="/about">About</NavItem>
+        <NavItem href="/articles">Articles</NavItem>
+        <NavItem href="/projects">Projects</NavItem>
+        <NavItem href="/photography">Photography</NavItem>
+        <NavItem href="/uses">Uses</NavItem>
       </ul>
     </nav>
   )
@@ -204,11 +171,10 @@ function MobileNavItem({
 }
 
 function MobileNavigation(props: React.ComponentProps<typeof Popover>) {
-  const t = useTranslations('nav')
   return (
     <Popover {...props}>
       <PopoverButton className="group flex items-center rounded-full bg-white/90 px-4 py-2.5 text-sm font-medium text-zinc-800 shadow-lg shadow-zinc-800/5 ring-1 ring-zinc-900/5 backdrop-blur dark:bg-zinc-800/90 dark:text-zinc-200 dark:ring-white/10 dark:hover:ring-white/20 outline-hidden">
-        {t('menu')}
+        Menu
         <ChevronDownIcon className="ml-3 h-auto w-2 stroke-zinc-500 group-hover:stroke-zinc-700 dark:group-hover:stroke-zinc-400" />
       </PopoverButton>
       <Transition>
@@ -244,18 +210,16 @@ function MobileNavigation(props: React.ComponentProps<typeof Popover>) {
                 <CloseIcon className="h-6 w-6 text-zinc-500 dark:text-zinc-400" />
               </PopoverButton>
               <h2 className="text-sm font-medium text-zinc-600 dark:text-zinc-400">
-                {t('navigation')}
+                Navigation
               </h2>
             </div>
             <nav className="mt-6">
               <ul className="-my-2 divide-y divide-zinc-100 text-base text-zinc-800 dark:divide-zinc-100/5 dark:text-zinc-300">
-                <MobileNavItem href="/about">{t('about')}</MobileNavItem>
-                <MobileNavItem href="/articles">{t('articles')}</MobileNavItem>
-                <MobileNavItem href="/projects">{t('projects')}</MobileNavItem>
-                <MobileNavItem href="/photography">
-                  {t('photography')}
-                </MobileNavItem>
-                <MobileNavItem href="/uses">{t('uses')}</MobileNavItem>
+                <MobileNavItem href="/about">About</MobileNavItem>
+                <MobileNavItem href="/articles">Articles</MobileNavItem>
+                <MobileNavItem href="/projects">Projects</MobileNavItem>
+                <MobileNavItem href="/photography">Photography</MobileNavItem>
+                <MobileNavItem href="/uses">Uses</MobileNavItem>
               </ul>
             </nav>
           </PopoverPanel>
