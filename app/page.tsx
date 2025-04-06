@@ -1,3 +1,4 @@
+import { AuroraText } from '@/components/aurora-text'
 import { Button } from '@/components/button'
 import {
   Card,
@@ -37,7 +38,11 @@ export default function Page() {
       <Container className="mt-9">
         <div className="max-w-2xl text-lg">
           <h1 className="text-4xl font-bold tracking-tight text-zinc-800 dark:text-zinc-100 sm:text-5xl">
-            Frontend developer, designer, and open source enthusiast
+            <span>Frontend</span> <AuroraText>developer,</AuroraText>{' '}
+            <AuroraText colors={['#f0b100', '#ff2056']}>designer,</AuroraText>{' '}
+            <span>and</span>{' '}
+            <AuroraText colors={['#2b7fff', '#00c951']}>open source</AuroraText>{' '}
+            <span>enthusiast</span>
           </h1>
           <p className="mt-6 text-base text-zinc-600 dark:text-zinc-400">
             I’m Evan, a frontend developer based in Chengdu, China. I like to
