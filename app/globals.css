@@ -9,7 +9,7 @@
   @keyframes aurora {
     0% {
       background-position: 0 50%;
-      transform: rotate(-5deg) scale(.9);
+      transform: rotate(-5deg) scale(0.9);
     }
 
     25% {
@@ -19,7 +19,7 @@
 
     50% {
       background-position: 100% 50%;
-      transform: rotate(-3deg) scale(.95);
+      transform: rotate(-3deg) scale(0.95);
     }
 
     75% {
@@ -29,15 +29,13 @@
 
     100% {
       background-position: 0 50%;
-      transform: rotate(-5deg) scale(.9);
+      transform: rotate(-5deg) scale(0.9);
     }
   }
 }
 
 @layer base {
-
   :where(.dark) {
-
     .shiki,
     .shiki span {
       background-color: var(--color-zinc-900) !important;
