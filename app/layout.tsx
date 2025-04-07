@@ -14,12 +14,12 @@ export const metadata: Metadata = {
     template: '%s - Evan',
     default: 'Evan',
   },
-  description: 'I have a computer, and I build user interface.',
+  description: 'I build user interfaces',
   keywords:
     'Evan, Blog, Developer, Full Stack, Frontend, Engineer, Designer, Open Source',
   openGraph: {
     title: 'Evan',
-    description: 'I have a computer, and I build user interfaces.',
+    description: 'I build user interfaces',
     url: baseUrl,
     siteName: 'Evan',
     locale: 'en',
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Evan',
-    description: 'I have a computer, and I build user interfaces.',
+    description: 'I build user interfaces',
     creator: '@evan1297',
     images: [{ url: '/api/og?path=/' }],
   },
