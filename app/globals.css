@@ -1,10 +1,50 @@
 @import "tailwindcss";
 @import "./typography.css" layer(components);
-@import "./highlight.css" layer(components);
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+@theme {
+  --animate-aurora: aurora 8s ease-in-out infinite alternate;
+
+  @keyframes aurora {
+    0% {
+      background-position: 0 50%;
+      transform: rotate(-5deg) scale(.9);
+    }
+
+    25% {
+      background-position: 50% 100%;
+      transform: rotate(5deg) scale(1.1);
+    }
+
+    50% {
+      background-position: 100% 50%;
+      transform: rotate(-3deg) scale(.95);
+    }
+
+    75% {
+      background-position: 50% 0;
+      transform: rotate(3deg) scale(1.05);
+    }
+
+    100% {
+      background-position: 0 50%;
+      transform: rotate(-5deg) scale(.9);
+    }
+  }
+}
+
 @layer base {
+
+  :where(.dark) {
+
+    .shiki,
+    .shiki span {
+      background-color: var(--color-zinc-900) !important;
+      color: var(--shiki-dark) !important;
+    }
+  }
+
   button:not(:disabled),
   [role="button"]:not(:disabled) {
     cursor: pointer;

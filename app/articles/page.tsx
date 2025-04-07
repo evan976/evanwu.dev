@@ -6,15 +6,8 @@ import {
   CardTitle,
 } from '@/components/card'
 import { Layout } from '@/components/layout'
-import { type Article as ArticleType, getArticles } from '@/lib/article'
+import { getArticles } from '@/lib/article'
 import { format } from 'date-fns'
-
-export async function generateStaticParams() {
-  const articles = getArticles()
-  return articles.map((article) => ({
-    slug: article.slug,
-  }))
-}
 
 export async function generateMetadata() {
   return {
@@ -25,7 +18,7 @@ export async function generateMetadata() {
 }
 
 export default async function Page() {
-  const articles = getArticles()
+  const articles = await getArticles()
   return (
     <Layout
       title="Articles"
@@ -42,25 +35,26 @@ export default async function Page() {
   )
 }
 
-function Article({ article }: { article: ArticleType }) {
+function Article({
+  article,
+}: {
+  article: Awaited<ReturnType<typeof getArticles>>[number]
+}) {
   return (
     <article className="md:grid md:grid-cols-4 md:items-baseline">
       <Card className="md:col-span-3">
-        <CardTitle href={`/articles/${article?.slug}`}>
-          {article?.metadata.title}
+        <CardTitle href={`/articles/${article.slug}`}>
+          {article.title}
         </CardTitle>
         <CardEyebrow
           as="time"
-          dateTime={article?.metadata.publishedAt}
+          dateTime={article.publishedAt}
           className="md:hidden"
           decorate
         >
-          {format(
-            new Date(article?.metadata.publishedAt ?? new Date()),
-            'MMMM d, yyyy',
-          )}
+          {format(new Date(article.publishedAt ?? new Date()), 'MMMM d, yyyy')}
         </CardEyebrow>
-        <CardDescription>{article?.metadata.description}</CardDescription>
+        <CardDescription>{article.description}</CardDescription>
         <CardCTA>Read article</CardCTA>
       </Card>
     </article>

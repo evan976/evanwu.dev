@@ -11,7 +11,7 @@ import { Container } from '@/components/container'
 import { ArrowDownIcon, BriefcaseIcon } from '@/components/icons'
 import { SocialLink } from '@/components/social-link'
 import { SubscribeForm } from '@/components/subscribe-form'
-import { type Article as ArticleType, getArticles } from '@/lib/article'
+import { getArticles } from '@/lib/article'
 import { links, resume } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 import beach from '@/public/beach.jpg'
@@ -31,17 +31,21 @@ export const metadata: Metadata = {
     'I’m Evan, a frontend developer based in Chengdu, China. I like to build products that help people live better lives, I wish to make the world a better place.',
 }
 
-export default function Page() {
-  const articles = getArticles()
+export default async function Page() {
+  const articles = await getArticles()
   return (
     <React.Fragment>
       <Container className="mt-9">
         <div className="max-w-2xl text-lg">
           <h1 className="text-4xl font-bold tracking-tight text-zinc-800 dark:text-zinc-100 sm:text-5xl">
             <span>Frontend</span> <AuroraText>developer,</AuroraText>{' '}
-            <AuroraText colors={['#f0b100', '#ff2056']}>designer,</AuroraText>{' '}
+            <AuroraText colors={['#f0b100', '#ff2056', '#e12afb', '#ff6900']}>
+              designer,
+            </AuroraText>{' '}
             <span>and</span>{' '}
-            <AuroraText colors={['#2b7fff', '#00c951']}>open source</AuroraText>{' '}
+            <AuroraText colors={['#2b7fff', '#7ccf00', '#00b8db', '#00a6f4']}>
+              open source
+            </AuroraText>{' '}
             <span>enthusiast</span>
           </h1>
           <p className="mt-6 text-base text-zinc-600 dark:text-zinc-400">
@@ -108,19 +112,16 @@ function Photos() {
   )
 }
 
-function Article({ article }: { article: ArticleType }) {
+function Article({
+  article,
+}: { article: Awaited<ReturnType<typeof getArticles>>[number] }) {
   return (
     <Card as="article">
-      <CardTitle href={`/articles/${article?.slug}`}>
-        {article?.metadata.title}
-      </CardTitle>
-      <CardEyebrow as="time" dateTime={article?.metadata.publishedAt} decorate>
-        {format(
-          new Date(article?.metadata.publishedAt ?? new Date()),
-          'MMMM d, yyyy',
-        )}
+      <CardTitle href={`/articles/${article?.slug}`}>{article.title}</CardTitle>
+      <CardEyebrow as="time" dateTime={article.publishedAt} decorate>
+        {format(new Date(article.publishedAt ?? new Date()), 'MMMM d, yyyy')}
       </CardEyebrow>
-      <CardDescription>{article?.metadata.description}</CardDescription>
+      <CardDescription>{article.description}</CardDescription>
       <CardCTA>Read article</CardCTA>
     </Card>
   )

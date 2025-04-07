@@ -1,70 +1,86 @@
-import fs from 'node:fs'
+import fs from 'node:fs/promises'
 import path from 'node:path'
+import { fileURLToPath } from 'node:url'
+import type * as React from 'react'
 import readingTime from 'reading-time'
 
-export type Metadata = {
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+const filePath = path.join(__dirname, '../content')
+
+type Metadata = {
   title: string
-  publishedAt: string
   description: string
-  image?: string
+  publishedAt: string
+  readingTime: ReturnType<typeof readingTime>
 }
 
-export type Article = ReturnType<typeof getArticleBySlug>
-
-function parseFrontmatter(fileContent: string) {
-  const frontmatterRegex = /---\s*([\s\S]*?)\s*---/
-  const match = frontmatterRegex.exec(fileContent)
-  const frontMatterBlock = match![1]
-  const content = fileContent.replace(frontmatterRegex, '').trim()
-  const frontMatterLines = frontMatterBlock.trim().split('\n')
-  const metadata: Partial<Metadata> = {}
-
-  frontMatterLines.forEach((line) => {
-    const [key, ...valueArr] = line.split(': ')
-    let value = valueArr.join(': ').trim()
-    value = value.replace(/^['"](.*)['"]$/, '$1')
-    metadata[key.trim() as keyof Metadata] = value
-  })
-
-  return { metadata: metadata as Metadata, content }
+async function readMDXFile(filePath: string) {
+  const raw = await fs.readFile(filePath, 'utf-8')
+  return raw
 }
 
-function getMDXFiles(dir: string) {
-  return fs.readdirSync(dir).filter((file) => path.extname(file) === '.mdx')
-}
+export async function getArticleBySlug(slug: string): Promise<null | {
+  Component: React.FC
+  metadata: Metadata
+}> {
+  try {
+    if (
+      !(await fs
+        .stat(path.join(process.cwd(), 'content', `${slug}.mdx`))
+        .catch(() => false))
+    ) {
+      return null
+    }
 
-function readMDXFile(filePath: string) {
-  const rawContent = fs.readFileSync(filePath, 'utf-8')
-  return parseFrontmatter(rawContent)
-}
+    const module = await import(`../content/${slug}.mdx`)
+    const raw = await readMDXFile(path.join(filePath, `${slug}.mdx`))
 
-function getMDXData(dir: string) {
-  const mdxFiles = getMDXFiles(dir)
-  return mdxFiles.map((file) => {
-    const { metadata, content } = readMDXFile(path.join(dir, file))
-    const slug = path.basename(file, path.extname(file))
+    if (!module.default) {
+      return null
+    }
 
     return {
+      Component: module.default,
       metadata: {
-        ...metadata,
-        readingTime: readingTime(content),
+        title: module.title,
+        description: module.description,
+        publishedAt: module.publishedAt,
+        readingTime: readingTime(raw),
       },
-      slug,
-      content,
     }
-  })
+  } catch (error) {
+    console.error(error)
+    return null
+  }
 }
 
-export function getArticles() {
-  const articles = getMDXData(path.join(process.cwd(), 'content'))
+export async function getArticleSlugs() {
+  const slugs = []
+  const files = await fs.readdir(path.join(__dirname, '../content'))
+
+  for (const file of files) {
+    if (!file.endsWith('.mdx')) continue
+    slugs.push(path.parse(file).name)
+  }
+  return slugs
+}
+
+export async function getArticles() {
+  const slugs = await getArticleSlugs()
+  const articles = []
+
+  for (const slug of slugs) {
+    const article = await getArticleBySlug(slug)
+    if (!article) continue
+    articles.push({
+      slug,
+      ...article.metadata,
+    })
+  }
+
   return articles.sort(
     (a, b) =>
-      new Date(b.metadata.publishedAt).getTime() -
-      new Date(a.metadata.publishedAt).getTime(),
+      new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime(),
   )
-}
-
-export function getArticleBySlug(slug: string) {
-  const articles = getArticles()
-  return articles.find((article) => article.slug === slug)
 }

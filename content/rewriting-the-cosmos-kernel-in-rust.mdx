@@ -1,12 +1,11 @@
----
-title: 'Rewriting the Cosmos Kernel in Rust'
-publishedAt: '2024-12-31'
-description: 'When we released the first version of cosmOS last year, it was written in Go. Go is a wonderful programming language with a lot of benefits, but it’s been a while since I’ve seen an article on the front page of Hacker News about rewriting some important tool in Go and I see articles on there about rewriting things in Rust every single week.'
----
+export const title = 'Rewriting the Cosmos Kernel in Rust'
+export const description = 'When we released the first version of cosmOS last year, it was written in Go. Go is a wonderful programming language with a lot of benefits, but it’s been a while since I’ve seen an article on the front page of Hacker News about rewriting some important tool in Go and I see articles on there about rewriting things in Rust every single week.'
+export const publishedAt = '2024-12-31'
 
 When we released the first version of cosmOS last year, it was written in `Go`. `Go` is a wonderful programming language with a lot of benefits, but it’s been a while since I’ve seen an article on the front page of Hacker News about rewriting some important tool in `Go` and I see articles on there about rewriting things in `Rust` every single week.
 
 ```rust
+/* [!code filename:src/main.rs] */
 use ferris_says::say;
 use std::io::{stdout, BufWriter};
 
@@ -29,6 +28,7 @@ Lorem markdownum, bracchia in redibam! Terque unda puppi nec, linguae posterior 
 Deus feram verumque, fecit, ira tamen, terras per alienae victum. Mutantur levitate quas ubi arcum ripas oculos abest. Adest commissaque victae in gemitus nectareis ire diva dotibus ora, et findi huic invenit; fatis? Fractaque dare superinposita nimiumque simulatoremque sanguine, at voce aestibus diu! Quid veterum hausit tu nil utinam paternos ima, commentaque.
 
 ```rust
+/* [!code filename:src/main.rs] */
 exbibyte_wins = gigahertz(3);
 grayscaleUtilityClient = control_uat;
 pcmciaHibernate = oop_virus_console(text_mountain);

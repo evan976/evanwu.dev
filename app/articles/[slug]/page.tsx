@@ -1,11 +1,15 @@
 import { baseUrl } from '@/app/sitemap'
 import { ArrowLeftIcon } from '@/components/icons'
-import { CustomMDX } from '@/components/mdx'
-import { getArticleBySlug } from '@/lib/article'
+import { getArticleBySlug, getArticleSlugs } from '@/lib/article'
 import { format } from 'date-fns'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import * as React from 'react'
+
+export async function generateStaticParams() {
+  const slugs = await getArticleSlugs()
+  return slugs.map((slug) => ({ slug }))
+}
 
 export async function generateMetadata({
   params,
@@ -13,41 +17,31 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>
 }) {
   const { slug } = await params
-  const article = getArticleBySlug(slug)
+  const article = await getArticleBySlug(slug)
 
   if (!article) return
 
-  const {
-    title,
-    description,
-    publishedAt: publishedTime,
-    image,
-  } = article.metadata
+  const { title, description, publishedAt } = article.metadata
 
-  const ogImage = image
-    ? image
-    : `${baseUrl}/og?title=${encodeURIComponent(title ?? '')}`
+  const ogUrl = `/api/og?path=/articles/${slug}`
 
   return {
+    metadataBase: new URL(baseUrl),
     title,
     description,
     openGraph: {
       title,
       description,
       type: 'article',
-      publishedTime,
-      url: `${baseUrl}/articles/${slug}`,
-      images: [
-        {
-          url: ogImage,
-        },
-      ],
+      publishedTime: publishedAt,
+      url: `/articles/${slug}`,
+      images: [{ url: ogUrl }],
     },
     twitter: {
       card: 'summary_large_image',
       title,
       description,
-      images: [ogImage],
+      images: [{ url: ogUrl }],
     },
   }
 }
@@ -58,19 +52,14 @@ export default async function Page({
   params: Promise<{ slug: string }>
 }) {
   const { slug } = await params
-  const article = getArticleBySlug(slug)
+
+  const article = await getArticleBySlug(slug)
 
   if (!article) {
     notFound()
   }
 
-  const {
-    title,
-    description,
-    publishedAt: publishedTime,
-    image,
-    readingTime,
-  } = article.metadata
+  const { title, description, publishedAt, readingTime } = article.metadata
 
   return (
     <section>
@@ -82,13 +71,11 @@ export default async function Page({
             '@context': 'https://schema.org',
             '@type': 'BlogPosting',
             headline: title,
-            datePublished: publishedTime,
-            dateModified: publishedTime,
+            datePublished: publishedAt,
+            dateModified: publishedAt,
             description,
-            image: image
-              ? `${baseUrl}${image}`
-              : `/og?title=${encodeURIComponent(title)}`,
-            url: `${baseUrl}/articles/${slug}`,
+            image: `/api/og?path=/articles/${slug}`,
+            url: `/articles/${slug}`,
             author: {
               '@type': 'Person',
               name: 'Evan',
@@ -116,12 +103,12 @@ export default async function Page({
                       </h1>
                       <div className="order-first flex items-center gap-4 text-sm">
                         <time
-                          dateTime={publishedTime}
+                          dateTime={publishedAt}
                           className="text-zinc-400 dark:text-zinc-500 flex items-center"
                         >
                           <span className="h-4 w-0.5 rounded-full bg-zinc-200 dark:bg-zinc-500" />
                           <span className="ml-3">
-                            {format(new Date(publishedTime), 'MMMM d, yyyy')}
+                            {format(new Date(publishedAt), 'MMMM d, yyyy')}
                           </span>
                         </time>
                         <span className="text-zinc-400 dark:text-zinc-500">
@@ -131,7 +118,7 @@ export default async function Page({
                     </header>
                     <div className="mt-8 prose highlight">
                       <React.Suspense>
-                        <CustomMDX source={article.content} />
+                        <article.Component />
                       </React.Suspense>
                     </div>
                   </article>

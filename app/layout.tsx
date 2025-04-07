@@ -24,26 +24,14 @@ export const metadata: Metadata = {
     siteName: 'Evan',
     locale: 'en',
     type: 'website',
-    images: [
-      {
-        url: `${baseUrl}/og`,
-        width: 1200,
-        height: 630,
-      },
-    ],
+    images: [{ url: '/api/og?path=/' }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Evan',
     description: 'I have a computer, and I build user interfaces.',
     creator: '@evan1297',
-    images: [
-      {
-        url: `${baseUrl}/og`,
-        width: 1200,
-        height: 630,
-      },
-    ],
+    images: [{ url: '/api/og?path=/' }],
   },
   robots: {
     index: true,
