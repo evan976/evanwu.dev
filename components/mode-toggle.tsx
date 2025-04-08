@@ -45,15 +45,15 @@ export function ModeToggle() {
           aria-label={label}
           aria-checked={theme === value}
           className={cn(
-            'size-5 text-neutral-500 hover:text-neutral-800 inline-flex items-center justify-center rounded-full outline-none transition-colors dark:hover:text-neutral-300',
+            'size-5 text-zinc-500 hover:text-zinc-800 inline-flex items-center justify-center rounded-full outline-none transition-colors dark:hover:text-zinc-300',
             {
-              'ring-1 bg-zinc-100 ring-zinc-900/10 dark:bg-zinc-800 dark:text-gray-300 dark:ring-white/20 text-zinc-800 shadow-[0_1px_5px_-4px_rgba(19,19,22,0.4),0_2px_5px_rgba(34,42,53,0.06)]':
+              'ring-1 bg-zinc-100 ring-zinc-900/10 dark:bg-zinc-800 dark:text-zinc-300 dark:ring-white/20 text-zinc-800 shadow-[0_1px_5px_-4px_rgba(19,19,22,0.4),0_2px_5px_rgba(34,42,53,0.06)]':
                 theme === value,
             },
           )}
           onClick={() => setTheme(value)}
         >
-          <Icon className="size-3.5" />
+          <Icon className="size-3.5 shrink-0" />
         </button>
       ))}
     </div>

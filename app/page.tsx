@@ -1,14 +1,6 @@
 import { AuroraText } from '@/components/aurora-text'
 import { Button } from '@/components/button'
-import {
-  Card,
-  CardCTA,
-  CardDescription,
-  CardEyebrow,
-  CardTitle,
-} from '@/components/card'
 import { Container } from '@/components/container'
-import { ArrowDownIcon, BriefcaseIcon } from '@/components/icons'
 import { SocialLink } from '@/components/social-link'
 import { SubscribeForm } from '@/components/subscribe-form'
 import { getArticles } from '@/lib/article'
@@ -20,6 +12,7 @@ import mountain from '@/public/mountain.jpg'
 import peace from '@/public/peace.jpg'
 import travel from '@/public/travel.jpg'
 import { format, isToday } from 'date-fns'
+import { ArrowRightIcon, BriefcaseIcon, ChevronRightIcon } from 'lucide-react'
 import type { Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -65,7 +58,40 @@ export default async function Page() {
         <div className="mx-auto grid max-w-xl grid-cols-1 gap-y-20 lg:max-w-none lg:grid-cols-2">
           <div className="flex flex-col gap-16">
             {articles.map((article) => (
-              <Article key={article.slug} article={article} />
+              <article
+                key={article.slug}
+                className="group relative flex flex-col items-start"
+              >
+                <h2 className="text-base font-semibold tracking-tight text-zinc-800 dark:text-zinc-100">
+                  <div className="absolute -inset-x-4 -inset-y-6 z-0 scale-95 bg-zinc-50 opacity-0 transition group-hover:scale-100 group-hover:opacity-100 sm:-inset-x-6 sm:rounded-xl dark:bg-zinc-800/50" />
+                  <Link href={`/articles/${article.slug}`}>
+                    <span className="absolute -inset-x-4 -inset-y-6 z-20 sm:-inset-x-6 sm:rounded-2xl" />
+                    <span className="relative z-10">{article.title}</span>
+                  </Link>
+                </h2>
+                <time
+                  dateTime={article.publishedAt}
+                  className="relative z-10 order-first mb-3 flex items-center text-sm text-zinc-400 dark:text-zinc-500 pl-3.5"
+                >
+                  <span
+                    aria-hidden="true"
+                    className="absolute inset-y-0 left-0 flex items-center"
+                  >
+                    <span className="h-4 w-0.5 rounded-full bg-zinc-200 dark:bg-zinc-500" />
+                  </span>
+                  {format(new Date(article.publishedAt), 'MMMM d, yyyy')}
+                </time>
+                <p className="relative z-10 mt-2 text-sm text-zinc-600 dark:text-zinc-400">
+                  {article.description}
+                </p>
+                <div
+                  aria-hidden="true"
+                  className="relative z-10 mt-4 flex items-center text-sm font-medium text-teal-500"
+                >
+                  Read article
+                  <ChevronRightIcon className="ml-1 mt-0.5 size-3" />
+                </div>
+              </article>
             ))}
           </div>
           <div className="space-y-10 lg:pl-16 xl:pl-24">
@@ -112,26 +138,11 @@ function Photos() {
   )
 }
 
-function Article({
-  article,
-}: { article: Awaited<ReturnType<typeof getArticles>>[number] }) {
-  return (
-    <Card as="article">
-      <CardTitle href={`/articles/${article?.slug}`}>{article.title}</CardTitle>
-      <CardEyebrow as="time" dateTime={article.publishedAt} decorate>
-        {format(new Date(article.publishedAt ?? new Date()), 'MMMM d, yyyy')}
-      </CardEyebrow>
-      <CardDescription>{article.description}</CardDescription>
-      <CardCTA>Read article</CardCTA>
-    </Card>
-  )
-}
-
 function Resume() {
   return (
     <div className="rounded-2xl border border-zinc-100 p-6 dark:border-zinc-700/40">
       <h2 className="flex items-center text-sm font-semibold text-zinc-900 dark:text-zinc-100">
-        <BriefcaseIcon className="size-6 flex-none" />
+        <BriefcaseIcon className="size-5 flex-none text-zinc-400 dark:text-zinc-500" />
         <span className="ml-3">Work Experience</span>
       </h2>
       <ol className="mt-6 space-y-4">
@@ -190,7 +201,7 @@ function Resume() {
         className="group mt-6 w-full"
       >
         More in LinkedIn
-        <ArrowDownIcon className="size-4 -rotate-90 stroke-zinc-400 group-active:stroke-zinc-600 dark:group-hover:stroke-zinc-50 dark:group-active:stroke-zinc-50 group-hover:translate-x-0.5 transition-all duration-200" />
+        <ArrowRightIcon className="size-3.5 text-zinc-400 group-hover:translate-x-0.5 transition-all duration-200" />
       </Button>
     </div>
   )

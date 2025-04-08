@@ -1,6 +1,6 @@
 import { Container } from '@/components/container'
-import { RSSIcon } from '@/components/icons'
 import { ModeToggle } from '@/components/mode-toggle'
+import { RssIcon } from 'lucide-react'
 import Link from 'next/link'
 
 export function Footer() {
@@ -17,12 +17,12 @@ export function Footer() {
                   rel="noopener"
                   aria-label="RSS"
                 >
-                  <RSSIcon className="size-4 text-zinc-500 dark:text-zinc-400 transition hover:text-teal-500 dark:hover:text-teal-400" />
+                  <RssIcon className="size-4 text-zinc-500 dark:text-zinc-400 transition hover:text-teal-500 dark:hover:text-teal-400" />
                 </Link>
               </div>
               <div className="flex items-center gap-6">
                 <ModeToggle />
-                <p className="text-sm text-zinc-400 dark:text-zinc-300">
+                <p className="text-sm text-zinc-500 dark:text-zinc-400">
                   &copy; {new Date().getFullYear()} Evan. All rights reserved.
                 </p>
               </div>
