@@ -1,7 +1,7 @@
 'use client'
 
-import { MonitorIcon, MoonIcon, SunIcon } from '@/components/icons'
 import { cn } from '@/lib/utils'
+import { MonitorIcon, MoonIcon, SunIcon } from 'lucide-react'
 import { useTheme } from 'next-themes'
 import * as React from 'react'
 

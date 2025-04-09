@@ -7,11 +7,7 @@ const schema = z.object({
   email: z.string().email(),
 })
 
-type FormState = {
-  message: string
-}
-
-export async function subscribe(_formState: FormState, formData: FormData) {
+export async function subscribe(state: unknown, formData: FormData) {
   const sql = neon(process.env.DATABASE_URL!)
 
   const validatedData = schema.safeParse({
