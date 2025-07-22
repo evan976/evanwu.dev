@@ -1,7 +1,7 @@
-import { Container } from '@/components/container'
-import { ModeToggle } from '@/components/mode-toggle'
 import { RssIcon } from 'lucide-react'
 import Link from 'next/link'
+import { Container } from '@/components/container'
+import { ModeToggle } from '@/components/mode-toggle'
 
 export function Footer() {
   return (

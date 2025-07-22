@@ -1,3 +1,9 @@
+import * as React from 'react'
+import type { Metadata } from 'next'
+import { format, isToday } from 'date-fns'
+import { ArrowRightIcon, BriefcaseIcon, ChevronRightIcon } from 'lucide-react'
+import Image from 'next/image'
+import Link from 'next/link'
 import { AuroraText } from '@/components/aurora-text'
 import { Button } from '@/components/button'
 import { Container } from '@/components/container'
@@ -11,12 +17,6 @@ import computer from '@/public/computer.jpg'
 import mountain from '@/public/mountain.jpg'
 import peace from '@/public/peace.jpg'
 import travel from '@/public/travel.jpg'
-import { format, isToday } from 'date-fns'
-import { ArrowRightIcon, BriefcaseIcon, ChevronRightIcon } from 'lucide-react'
-import type { Metadata } from 'next'
-import Image from 'next/image'
-import Link from 'next/link'
-import * as React from 'react'
 
 export const metadata: Metadata = {
   title: 'Frontend developer, designer, and open source enthusiast',
@@ -174,6 +174,7 @@ function Resume() {
               </dd>
               <dt className="sr-only">Date</dt>
               <dd
+                role="tooltip"
                 className="ml-auto text-xs text-zinc-500 dark:text-zinc-500"
                 aria-label={`${format(new Date(role.start), 'MMMM yyyy')} until ${isToday(new Date(role.end)) ? 'Present' : format(new Date(role.end), 'MMMM yyyy')}`}
               >

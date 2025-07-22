@@ -1,7 +1,7 @@
-import { Layout } from '@/components/layout'
 import { LinkIcon } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
+import { Layout } from '@/components/layout'
 
 export const metadata = {
   title: 'Projects',

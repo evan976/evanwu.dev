@@ -1,7 +1,7 @@
-import { Container } from '@/components/container'
-import { GithubIcon, LinkedInIcon, XIcon } from '@/components/icons'
 import Image from 'next/image'
 import Link from 'next/link'
+import { Container } from '@/components/container'
+import { GithubIcon, LinkedInIcon, XIcon } from '@/components/icons'
 
 export const metadata = {
   title: 'About',

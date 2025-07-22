@@ -1,6 +1,6 @@
+import * as React from 'react'
 import type { MDXComponents } from 'mdx/types'
 import Link from 'next/link'
-import * as React from 'react'
 import { MDXCode } from './components/mdx-code'
 
 function getTextContent(node: React.ReactNode): string {
@@ -13,8 +13,10 @@ function getTextContent(node: React.ReactNode): string {
       return ''
     }
 
-    // @ts-ignore
-    return getTextContent(node.props.children)
+    return getTextContent(
+      (node as React.ReactElement<{ children: React.ReactNode }>).props
+        .children,
+    )
   }
 
   if (Array.isArray(node)) {
@@ -30,8 +32,8 @@ function slugify(str: React.ReactNode) {
     .trim()
     .replace(/\s+/g, '-')
     .replace(/&/g, '-and-')
-    .replace(/[^\w\-]+/g, '')
-    .replace(/\-\-+/g, '-')
+    .replace(/[^\w-]+/g, '')
+    .replace(/--+/g, '-')
 }
 
 function createHeading(level: 1 | 2 | 3 | 4 | 5 | 6) {
@@ -61,19 +63,13 @@ function createHeading(level: 1 | 2 | 3 | 4 | 5 | 6) {
 export function useMDXComponents(components: MDXComponents): MDXComponents {
   return {
     ...components,
-
-    // headings
     h1: createHeading(1),
     h2: createHeading(2),
     h3: createHeading(3),
     h4: createHeading(4),
     h5: createHeading(5),
     h6: createHeading(6),
-
-    // link
     a: (props) => <Link {...props} />,
-
-    // code
     code: ({ children, ...props }) => {
       if (typeof children !== 'string') {
         return <code {...props}>{children}</code>
@@ -97,9 +93,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
         </code>
       )
     },
-
-    // pre
-    pre: ({ children, ...props }) => {
+    pre: ({ children }) => {
       const child = React.Children.only(children) as React.ReactElement<{
         className?: string
         children: string
@@ -108,10 +102,10 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
 
       let { className, children: code } = child.props
       const lang = className ? className.replace('language-', '') : ''
-      let filename = undefined
+      let filename: string | undefined
 
       const lines = code.split('\n')
-      const filenameRegex = /\[\!code filename\:(.+)\]/
+      const filenameRegex = /\[!code filename:(.+)\]/
       const match = lines[0].match(filenameRegex)
 
       if (match) {
@@ -120,6 +114,9 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
       }
 
       return <MDXCode source={{ lang, code }} filename={filename} />
+    },
+    table: (props) => {
+      return <table {...props} className="table-auto" />
     },
   }
 }

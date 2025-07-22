@@ -1,8 +1,8 @@
-import { Layout } from '@/components/layout'
-import { getArticles } from '@/lib/article'
 import { format } from 'date-fns'
 import { ChevronRightIcon } from 'lucide-react'
 import Link from 'next/link'
+import { Layout } from '@/components/layout'
+import { getArticles } from '@/lib/article'
 
 export async function generateMetadata() {
   return {

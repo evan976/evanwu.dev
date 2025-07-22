@@ -1,9 +1,9 @@
 'use client'
 
-import { cn } from '@/lib/utils'
+import * as React from 'react'
 import { MonitorIcon, MoonIcon, SunIcon } from 'lucide-react'
 import { useTheme } from 'next-themes'
-import * as React from 'react'
+import { cn } from '@/lib/utils'
 
 const themes = [
   {
@@ -35,11 +35,13 @@ export function ModeToggle() {
 
   return (
     <div
+      role="group"
       aria-label="Theme"
       className="flex gap-x-1.5 rounded-full bg-white p-1 ring-1 ring-zinc-600/10 light:ring-inset dark:bg-zinc-950/30 dark:ring-zinc-50/5 not-dark:ring-inset"
     >
       {themes.map(({ label, icon: Icon, value }) => (
         <button
+          role="radio"
           type="button"
           key={value}
           aria-label={label}

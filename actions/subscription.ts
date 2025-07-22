@@ -4,10 +4,10 @@ import { neon } from '@neondatabase/serverless'
 import * as z from 'zod'
 
 const schema = z.object({
-  email: z.string().email(),
+  email: z.email(),
 })
 
-export async function subscribe(state: unknown, formData: FormData) {
+export async function subscribe(_: unknown, formData: FormData) {
   const sql = neon(process.env.DATABASE_URL!)
 
   const validatedData = schema.safeParse({

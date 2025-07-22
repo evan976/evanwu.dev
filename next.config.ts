@@ -1,5 +1,5 @@
-import createMDX from '@next/mdx'
 import type { NextConfig } from 'next'
+import createMDX from '@next/mdx'
 
 const nextConfig: NextConfig = {
   reactStrictMode: false,
@@ -9,6 +9,21 @@ const nextConfig: NextConfig = {
   },
 }
 
-const withMDX = createMDX()
+const withMDX = createMDX({
+  extension: /\.mdx?$/,
+  options: {
+    remarkPlugins: [
+      [
+        // @ts-expect-error - remark-gfm is not typed
+        'remark-gfm',
+        {
+          strict: true,
+          throwOnError: true,
+        },
+      ],
+    ],
+    rehypePlugins: [],
+  },
+})
 
 export default withMDX(nextConfig)

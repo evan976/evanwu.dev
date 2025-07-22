@@ -1,10 +1,12 @@
-import { baseUrl } from '@/app/sitemap'
-import { ArrowLeftIcon } from '@/components/icons'
-import { getArticleBySlug, getArticleSlugs } from '@/lib/article'
+import * as React from 'react'
 import { format } from 'date-fns'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import * as React from 'react'
+import { baseUrl } from '@/app/sitemap'
+import { ArrowLeftIcon } from '@/components/icons'
+import { getArticleBySlug, getArticleSlugs } from '@/lib/article'
+
+export const dynamicParams = false
 
 export async function generateStaticParams() {
   const slugs = await getArticleSlugs()
@@ -116,7 +118,7 @@ export default async function Page({
                         </span>
                       </div>
                     </header>
-                    <div className="mt-8 prose highlight">
+                    <div className="mt-8 prose">
                       <React.Suspense>
                         <article.Component />
                       </React.Suspense>

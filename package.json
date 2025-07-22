@@ -3,51 +3,44 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack --port 4000",
+    "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "biome check --write"
+    "lint": "biome format --write"
   },
   "dependencies": {
-    "@headlessui/react": "2.2.0",
+    "@headlessui/react": "2.2.4",
     "@mdx-js/loader": "3.1.0",
     "@mdx-js/react": "3.1.0",
-    "@neondatabase/serverless": "1.0.0",
-    "@next/mdx": "15.2.4",
-    "@tailwindcss/postcss": "4.0.10",
+    "@neondatabase/serverless": "1.0.1",
+    "@next/mdx": "15.4.2",
+    "@tailwindcss/postcss": "4.1.11",
     "@vercel/speed-insights": "1.2.0",
     "clsx": "2.1.1",
     "date-fns": "4.1.0",
-    "lucide-react": "0.487.0",
-    "motion": "12.4.10",
-    "next": "15.2.4",
-    "next-themes": "0.4.4",
+    "lucide-react": "0.525.0",
+    "motion": "12.23.6",
+    "next": "15.4.2",
+    "next-themes": "0.4.6",
     "open-graph-scraper-lite": "2.1.0",
-    "postcss": "8.5.3",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
+    "postcss": "8.5.6",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
     "reading-time": "1.5.0",
-    "shiki": "3.2.1",
-    "tailwind-merge": "3.0.2",
-    "tailwindcss": "4.0.10",
-    "zod": "3.24.2"
+    "shiki": "3.8.1",
+    "tailwind-merge": "3.3.1",
+    "tailwindcss": "4.1.11",
+    "zod": "4.0.5"
   },
   "devDependencies": {
-    "@biomejs/biome": "1.9.4",
+    "@biomejs/biome": "2.1.2",
     "@types/mdx": "2.0.13",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "remark-gfm": "4.0.1",
     "simple-git-hooks": "2.11.1",
     "typescript": "^5"
-  },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "@biomejs/biome",
-      "@vercel/speed-insights",
-      "sharp",
-      "simple-git-hooks"
-    ]
   },
   "simple-git-hooks": {
     "pre-commit": "pnpm lint"

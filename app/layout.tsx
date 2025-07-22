@@ -1,12 +1,12 @@
 import '@/app/globals.css'
+import type { Metadata } from 'next'
+import { SpeedInsights } from '@vercel/speed-insights/next'
+import { ThemeProvider } from 'next-themes'
 import { baseUrl } from '@/app/sitemap'
 import { Footer } from '@/components/footer'
 import { Header } from '@/components/header'
 import { geist, geistMono } from '@/lib/fonts'
 import { cn } from '@/lib/utils'
-import { SpeedInsights } from '@vercel/speed-insights/next'
-import type { Metadata } from 'next'
-import { ThemeProvider } from 'next-themes'
 
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),

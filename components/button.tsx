@@ -1,6 +1,6 @@
 import type { UrlObject } from 'node:url'
-import { cn } from '@/lib/utils'
 import Link from 'next/link'
+import { cn } from '@/lib/utils'
 
 const variantStyles = {
   primary:

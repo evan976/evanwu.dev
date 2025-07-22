@@ -1,7 +1,7 @@
-import { baseUrl } from '@/app/sitemap'
 import { ImageResponse } from 'next/og'
 import { type NextRequest, NextResponse } from 'next/server'
 import openGraphScraper from 'open-graph-scraper-lite'
+import { baseUrl } from '@/app/sitemap'
 
 const HOST =
   process.env.NODE_ENV === 'production' ? baseUrl : 'http://localhost:4000'

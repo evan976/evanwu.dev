@@ -1,0 +1,133 @@
+export const title = 'React Server Components（RSC）'
+export const description = 'Learn about React Server Components, how they work, and how to use them.'
+export const publishedAt = '2025-04-12'
+
+React Server Components 是 React 引入的最新架构升级之一，为开发者提供了构建更加高效、现代化 Web 应用的新方式。
+
+## 什么是 React Server Components?
+
+React Server Components（简称 RSC）是运行在服务端的 React 组件。它们不会被打包进客户端 JS bundle，因此可以大大减小前端资源体积，提高首屏加载性能。
+
+### ✅ 核心特性：
+
+- **运行位置**：在服务器端运行
+- **可访问资源**：可以访问数据库、文件系统、后端 API 等服务端能力
+- **不包含在 JS bundle 中**：不会被发送到浏览器，减小客户端体积
+- **不可交互**：不能使用 `useState`、`useEffect` 等 React Hooks
+- **可以嵌套 Client Components**：可在其中引用 Client Components
+
+> 💡 非常适合展示数据、静态内容、无需交互的 UI 片段，例如文章详情页、列表页、SEO 页面等
+
+## React Server Components 是如何工作的?
+
+React Server Components 并不是 SSR（Server-Side Rendering）或 SSG（Static Site Generation）的替代品，而是与它们配合使用的一种新的组件运行方式
+
+以下是一张图示，帮助你理解 Server Component 到 Client 的数据流：
+
+![React Server Components Workflow](/with-react-server-components.avif)
+
+### 📦 工作机制简述：
+
+1. **服务器渲染 Server Component**，生成中间层 JSON 数据
+2. **客户端 React 渲染器接收数据**，将其组合为完整 UI
+3. **Client Component 嵌套在 Server Component 中**，实现交互能力
+
+## 如何使用 React Server Components?
+
+RSC 通常配合框架使用，例如 [Next.js 13+](https://nextjs.org/docs/app/building-your-application/rendering/server-components) 默认启用 RSC 支持
+
+### 📁 项目结构示意
+
+```
+app/
+  posts/
+    page.tsx         ← Server Component
+components/
+  post-card.tsx       ← Client Component
+lib/
+  db.ts              ← 数据源访问
+```
+
+### ✅ 创建一个 Server Component
+
+```tsx
+/* [!code filename:app/posts/page.tsx] */
+import { getPosts } from '@/lib/db'
+import { PostCard } from '@/components/post-card'
+
+export default async function PostsPage() {
+  const posts = await getPosts()
+
+  return (
+    <div className="space-y-4">
+      {posts.map((post) => (
+        <PostCard key={post.id} post={post} />
+      ))}
+    </div>
+  )
+}
+```
+
+### 📦 创建一个 Client Component
+
+```tsx
+/* [!code filename:components/post-card.tsx] */
+'use client'
+
+import * as React from 'react'
+
+type Props = {
+  post: {
+    id: number
+    title: string
+    content: string
+  }
+}
+
+export function PostCard({ post }: Props) {
+  const [liked, setLiked] = React.useState(false)
+
+  return (
+    <div className="border p-4 rounded-md shadow">
+      <h2 className="font-bold text-xl">{post.title}</h2>
+      <p className="text-gray-700">{post.content}</p>
+      <button
+        onClick={() => setLiked(!liked)}
+        className="mt-2 text-sm text-blue-500"
+      >
+        {liked ? '💙 Liked' : '🤍 Like'}
+      </button>
+    </div>
+  )
+}
+```
+
+### 🚨 注意事项
+
+| 特性                 | Server Component | Client Component |
+|----------------------|------------------|------------------|
+| 执行位置             | 服务器           | 浏览器           |
+| 是否打包到客户端     | ❌               | ✅               |
+| 可访问服务器资源     | ✅               | ❌               |
+| 使用状态/生命周期     | ❌               | ✅               |
+| 使用场景             | 数据渲染、静态内容 | 表单、动画、交互逻辑 |
+
+### 📌 使用建议
+
+- ✅ 将页面布局、大段数据展示、SEO 内容写在 Server Components 中
+- ✅ 将输入表单、按钮交互、Tab 切换等写在 Client Components 中
+- ❌ 避免将所有组件标记为 `'use client'`，否则会失去 RSC 带来的优化
+- ✅ 在 Server Components 中优先处理数据逻辑，提升代码可读性
+
+### 🔚 总结
+
+React Server Components 是 React 构建现代 Web 应用的关键进化之一，它让我们可以更合理地拆分客户端和服务端的逻辑。
+
+通过使用 RSC，我们可以：
+
+- 显著减少客户端 JS 体积
+- 提高初始加载性能
+- 保持组件级别的组织和复用
+- 利用服务端能力而无需额外的 API 层
+
+未来，随着 Next.js 和其他框架的支持，RSC 将成为大型 Web 应用的基础架构之一。

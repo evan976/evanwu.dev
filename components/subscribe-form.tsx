@@ -1,10 +1,10 @@
 'use client'
 
+import * as React from 'react'
+import { MailIcon } from 'lucide-react'
 import { subscribe } from '@/actions/subscription'
 import { Button } from '@/components/button'
 import { cn } from '@/lib/utils'
-import { MailIcon } from 'lucide-react'
-import * as React from 'react'
 
 const initialState = {
   success: false,

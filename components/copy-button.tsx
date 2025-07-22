@@ -1,34 +1,91 @@
 'use client'
 
-import { CheckIcon, CopyIcon } from 'lucide-react'
 import * as React from 'react'
+import { CheckIcon, CopyIcon } from 'lucide-react'
+import { AnimatePresence, motion, type Variants } from 'motion/react'
+import { cn } from '@/lib/utils'
 
-export function CopyButton({
-  text,
-}: {
-  text: string
-}) {
-  const [copied, setCopied] = React.useState(false)
+const variants: Variants = {
+  visible: {
+    opacity: 1,
+    scale: 1,
+    transition: {
+      duration: 0.2,
+    },
+  },
+  hidden: {
+    opacity: 0,
+    scale: 0.8,
+    transition: {
+      duration: 0.1,
+    },
+  },
+}
 
-  function onCopy() {
-    setCopied(true)
-    navigator.clipboard.writeText(text)
-    setTimeout(() => setCopied(false), 1000)
-  }
+function CopyButtonIcon({ isCopied }: { isCopied: boolean }) {
+  return (
+    <AnimatePresence mode="wait">
+      {isCopied ? (
+        <motion.div
+          animate="visible"
+          exit="hidden"
+          initial="hidden"
+          key="copied"
+          variants={variants}
+        >
+          <CheckIcon className="size-3.5" />
+        </motion.div>
+      ) : (
+        <motion.div
+          animate="visible"
+          exit="hidden"
+          initial="hidden"
+          key="copy"
+          variants={variants}
+        >
+          <CopyIcon className="size-3.5" />
+        </motion.div>
+      )}
+    </AnimatePresence>
+  )
+}
+
+interface CopyButtonProps
+  extends Omit<React.ComponentProps<'button'>, 'value'> {
+  value?: string | null
+}
+
+export function CopyButton({ value, className, ...props }: CopyButtonProps) {
+  const timeout = React.useRef(0)
+  const [isCopied, setIsCopied] = React.useState(false)
+
+  const copyToClipboard = React.useCallback(async (text: string) => {
+    window.clearTimeout(timeout.current)
+
+    try {
+      await navigator.clipboard.writeText(text)
+    } catch {}
+  }, [])
+
+  const onCopy = React.useCallback(() => {
+    if (!value) return
+    copyToClipboard(value)
+    setIsCopied(true)
+
+    setTimeout(() => {
+      setIsCopied(false)
+    }, 2000)
+  }, [copyToClipboard, value])
 
   return (
     <button
       type="button"
-      aria-label="Copy code"
-      disabled={copied}
+      aria-label="Copy to clipboard"
+      className={cn('cursor-copy', className)}
       onClick={onCopy}
-      className="text-zinc-400 ml-auto dark:text-white/50 transition-colors hover:text-zinc-500 dark:hover:text-white/70"
+      {...props}
     >
-      {copied ? (
-        <CheckIcon className="size-4" />
-      ) : (
-        <CopyIcon className="size-4" />
-      )}
+      <CopyButtonIcon isCopied={isCopied} />
     </button>
   )
 }

@@ -1,8 +1,6 @@
 'use client'
 
-import { Container } from '@/components/container'
-import { cn } from '@/lib/utils'
-import avatarImage from '@/public/avatar.png'
+import * as React from 'react'
 import {
   Popover,
   PopoverBackdrop,
@@ -16,7 +14,9 @@ import { motion, useScroll, useTransform } from 'motion/react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import * as React from 'react'
+import { Container } from '@/components/container'
+import { cn } from '@/lib/utils'
+import avatarImage from '@/public/avatar.png'
 
 export function Header() {
   const pathname = usePathname()
