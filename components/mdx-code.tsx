@@ -27,7 +27,7 @@ export async function MDXCode({
             {filename}
           </span>
         ) : null}
-        <CopyButton value={source.code} />
+        <CopyButton value={source.code} className="ml-auto" />
       </div>
       <div
         className="*:flex *:*:max-w-none *:*:shrink-0 *:*:grow *:overflow-auto *:p-4 *:text-sm/relaxed
