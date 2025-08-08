@@ -1,6 +1,6 @@
-# jihuawu.top
+# Website
 
-This is the repository for my personal website, evanspace.me.
+This is the repository for my personal website, evanwu.dev.
 
 ![evanspace.me](https://upload.cc/i1/2025/04/09/4aJHge.png)
 
