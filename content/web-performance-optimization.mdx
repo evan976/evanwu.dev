@@ -1,0 +1,824 @@
+export const title = 'Web Performance Optimization in Next.js'
+export const description = 'Web performance describes how fast or slow a web app is. It is crucial to application development. A highly optimized web app is quick, appeals to users\' experience, and leads to improved product conversion rates and high search engine ranking.'
+export const publishedAt = '2025-10-15'
+export const image = '/web-performance-optimization.jpg'
+
+## Overview of User Experience
+
+Users determine a product's success rate; their experience navigating or interacting with its web app can indirectly affect revenue. Building web pages that load faster when users request them is essential. This would improve the user's frontend experience.
+
+Excluding the speed and user interactivity of a web app, it is also important that the contents displayed on the user interface of a web page maintain visual stability and do not always change their position, shifting from one space to the other.
+
+## Factors Affecting Web Performance
+
+Certain resources can negatively impact web app performance if not used effectively. Let's examine each one.
+
+### Multimedia File Size
+
+mage and video files take up much space in a web browser. When these files are of high quality, they become too large, resulting in slower load time and a shift in the position of other contents on the web page. The browser causes the shift after the files have been rendered because the browser cannot calculate the appropriate width and height of these files. This shift is known as **Cumulative Layout Shift (CLS)**, a CWV metric that determines if the surrounding contents of an image (or other elements) move to another position after the image (or element) has loaded. In some instances, multimedia files represent the main contents of a web page. When these files load slowly, they affect the web page's **Largest Contentful Paint (LCP)**. LCP determines how fast visually important web content is rendered.
+
+### Network Requests
+
+Remote resources such as libraries, scripts, packages, and APIs requested from network servers are considered resource-blocking. This affects a web app's INP score. **Interaction to Next Paint (INP)** is also a CWV metric. It signifies the time it takes for web content to be rendered entirely after user interaction during request time.
+
+### Memory Usage
+
+Large-scale applications require larger resources, which affects a web app's performance. To achieve optimized memory usage during build time, enable lazy loading, minimize the size of resources used, eliminate redundant code, enable caching, and analyze memory issues with tools such as Chrome DevTools.
+
+### URL Redirect
+
+URL redirect means visiting a web page from another web page. These web pages have URL patterns that differ from one another. When these patterns do not match, an error occurs in the browser, leading users to view an unexpected web page. A URL redirect is useful when a web page has updated features or after form submission. When URL redirect is not implemented effectively, it can lead to slow load time and low search engine ranking of the web page.
+
+Let us implement the best practices and how to optimize performance based on the abovementioned factors.
+
+## 1. Display Images with the built-in Next.js `Image` component
+
+Next.js has a built-in `Image` component with props, making controlling how we want to render an image easier. Here is an explanation on the purpose of each prop:
+
+### Required Props
+
+- `src` (required): The source of an image. The image can be stored locally in the repository or remotely on a network server.
+- `alt` (required): The alt property provides textual information as an alternative to an image. It can be read aloud by screen-reader assistive technology, contributing to an accessible web app. The alt can be set to an empty value if the image does not add significant information to the user interface.
+- `width` (required for remote images): This determines how broad an image appears.
+- `height` (required for remote images): This determines the length of an image.
+
+### Optional Props
+
+Here are some non-required properties of the Next.js `Image` component.
+
+- `priority`: When an Image has a priority prop, the browser will pre-load the image before it is displayed, loading it faster. This improves the LCP score of a web app.
+- `fill`: The fill property indicates that the parent element determines an image's width and height.
+- `sizes`: This sizes specifies the width and height of an image at different breakpoints of a user's device.
+- `loader`: A function that returns a URL string for an image. It accepts src, width, and quality as parameters.
+- `placeholder`: A placeholder fills the blank space of an image before it is rendered completely.
+- `loading`: Accepts a value of `{lazy}` to specify lazy-loading.
+- `style`: Enhances an image's visual appeal. Does not include other accepted Image props as its property.
+- `onLoad`, `onError`: Event handlers.
+
+Here, let us control how we want to render different Next.js images.
+
+### Rendering Local Images in Next.js
+
+```tsx
+/* [!code filename:components/local-image.tsx] */
+import Image from 'next/image'
+import roseFlower from '../public/roseImage.png'
+
+export function FlowerImage() {
+  return (
+    <main>
+      <div style={{ width: "600px", height: "600px" }}>
+        <Image
+          src={roseFlower}
+          alt="Rose Flower"
+          style={{ objectFit: "contain" }}
+          fill
+          priority
+        />
+      </div>
+    </main>
+  )
+}
+```
+
+In the `local-image.tsx` file above, we did not specify the `height` and `width` inside the `Image` component since `roseFlower` is a local image. Next.js automatically calculates the `width` and `height` of a locally stored image. The `roseFlower` is prioritized during load time with the `priority` prop.
+
+However, the `width` and `height` of the `roseflower` are determined by its parent element using the `fill` prop.
+
+### Rendering Remote Images
+
+Specifying the `width` and `height` of an image rendered from an external source is required. This gives us more control over the image's space before it is rendered.
+
+```tsx
+/* [!code filename:components/remote-image.tsx] */
+import Image from 'next/image'
+
+export function MonalisaImage() {
+  return (
+    <Image
+      src="https://s3.amazonaws.com/my-bucket/monalisa.webp"
+      alt="Monalisa"
+      height={600}
+      width={600}
+    />
+  )
+}
+```
+
+Images rendered from external sources can affect the security of a web app. To ensure that a web app renders images from specified URLs only, we have to include `remotePatterns` in our next.config.js file. `remotePatterns` accepts an object of `protocol`, `hostname`, `port`, and `pathname`.
+
+Let us configure our `next.config.ts` file to render images from `https://s3.amazonaws.com/my-bucket/**` URL paths only, with different possible number of path segments or subdomains at the end:
+
+```tsx
+/* [!code filename:next.config.ts] */
+import type { NextConfig } from 'next'
+
+const nextConfig: NextConfig = {
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 's3.amazonaws.com',
+        port: '',
+        pathname: '/my-bucket/**'
+      },
+    ],
+  },
+}
+
+export default nextConfig
+```
+
+To specify path segments or subdomains at the beginning of the URL, place `**` at the start of the URL paths. For example, `hostname: '**.amazonaws.com'` means that s3 can be replaced with another subdomain or path segment.
+
+Use `*` instead of `**` for a single path segment or subdomain.
+
+### Rendering Images using Next.js loader Function
+
+The `loader` function accepts `src`, `width` and `quality` as parameters while generating dynamic URLs for an image. It works in client components only. You can use loader for local images or remote images. Here is an example of how to use `loader`:
+
+```tsx
+/* [!code filename:components/image-loader.tsx] */
+'use client'
+
+import Image from 'next/image'
+
+function loader({ src, width, quality }) {
+  return `https://example.com/${src}?w=${width}q=${quality}`
+}
+
+export function ImageLoader() {
+  return (
+    <Image
+      loader={loader}
+      src='/roseImage.png'
+      alt="Rose Image"
+      width={600}
+      height={600}
+      quality={80}
+    />
+  )
+}
+```
+
+### Adding `placeholder` to Images
+
+Placeholder solves slow network connectivity issues for image rendering.
+
+Here in the `gallery-image.tsx` file, the image loads with a blurry effect before it is fully rendered:
+
+```tsx
+/* [!code filename:components/gallery-image.tsx] */
+import Image from 'next/image'
+import roseFlower from '@/public/rose.png'
+
+export function GalleryImage() {
+  return (
+    <Image
+      src={roseFlower}
+      alt="Rose Image"
+      placeholder="blur"
+      loading="lazy"
+    />
+  )
+}
+```
+
+In the code above, `loading='lazy'` enables delayed image rendering. Next.js Lazy loading images is useful for images, not the LCP for a web page. The image `placeholder` can equally be set to `empty` or `data:image/...`.
+
+#### Using a Separate Image as `placeholder`
+
+When the `placeholder` is set to `data:image/...`, the `src` image loads after the `placeholder` image, an image data type with a URI converted to `base64`. This is useful when the `placeholder` image has dominant colors that blend with the `src` image. It keeps users on the web page without waiting while the `src` image loads.
+
+```js
+placeholder='data:image/<jpeg|png|...>;base64,<data-uri>'
+```
+
+For example:
+
+```tsx
+/* [!code filename:components/placeholder-image.tsx] */
+import Image from 'next/image'
+import roseFlower from '@/public/rose.png'
+
+export function PlaceholderImage() {
+  return (
+    <Image
+      src={roseFlower}
+      alt="Rose Image"
+      placeholder="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/wcAAwAB/1vq1+sAAAAASUVORK5CYII="
+      loading="lazy"
+    />
+  )
+}
+```
+
+#### Set the Separate image `placeholder` To Have Blurry Effect
+
+To blur a `placeholder` with an image data type, use `blurDataURL` prop and the `placeholder` prop.
+
+```js
+placeholder='blur'
+blurDataURL='data:image/jpeg;base64,<data-uri>'
+```
+
+For example:
+
+```tsx
+/* [!code filename:components/blur-image.tsx] */
+import Image from 'next/image'
+import roseFlower from '@/public/rose.png'
+
+export function BlurImage() {
+  return (
+    <Image
+      src={roseFlower}
+      alt="Rose Image"
+      placeholder="blur"
+      blurDataURL="data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/wcAAwAB/1vq1+sAAAAASUVORK5CYII="
+      loading="lazy"
+    />
+  )
+}
+```
+
+> Alternatively, you can automatically generate placeholders using [plaiceholder](https://plaiceholder.co/docs/nextjs).
+
+#### Display an Image Across Different Viewports Using `sizes` Property.
+
+In the example below, using media queries, the rose image renders at different sizes based on the user's screen size.
+
+```tsx
+/* [!code filename:components/sizes-image.tsx] */
+import Image from 'next/image'
+
+export function SizesImage() {
+  return (
+    <Image
+      src='/rose.png'
+      alt="Rose Image"
+      sizes= "(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+    />
+  )
+}
+```
+
+## 2. Enhance Video Players with `<video>` and `<iframe/>`
+
+You can render video players in two ways: using the `<video>` HTML tag for locally stored videos or using the `<iframe/>` HTML tag for remote videos requested from network servers.
+
+### Rendering local videos with `<video>`
+
+`<video>` accepts the width and height properties to specify the space the video player occupies. To indicate the source of the video file, use the src attribute inside the `<source />` tag.
+
+The control attribute inside the `<video>` tag enables keyboard navigation and screen reader accessibility features.
+
+The `<track />` tag helps to provide alternative information such as captions, subtitles, descriptions, chapters, or metadata for a video player, these are specified with the kind attribute. To specify the source of the track file, use the src attribute.
+
+The textual information within the `<video>...</video>` tag is a fallback content. It keeps the users engaged in the web page.
+
+```tsx
+/* [!code filename:components/local-video.tsx] */
+export function LocalVideo() {
+  return (
+    <video width="600" height="500" controls preload="none">
+      <source src="/flower.mp4" type="video/mp4" />
+      <track 
+        src="/flower.vtt"
+        kind="subtitles"
+        srcLang="en"
+        label="English"
+      />
+      This video is not supported by your browser.
+    </video>
+  )
+}
+```
+
+### Rendering remote videos with `<iframe/>` and React `Suspense`
+
+In Next.js, remote videos are first generated on the server. To render remote video players, use the `<iframe />` HTML tag.
+
+The video player is rendered without a border in the `local-video.tsx` file below. The `title` attribute enables the screen reader to associate the video player with the information it provides.
+
+```tsx
+/* [!code filename:components/remote-video.tsx] */
+export function RemoteVideo() {
+  return (
+    <iframe
+      width="600"
+      height="600"
+      src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+      frameBorder="0"
+      loading="lazy"
+      title="Remote Video"
+      allowfullscreen
+    />
+  )
+}
+```
+
+When a video loads, it is not interactive until the JavaScript for the file is equally loaded or fetched. This process is known as Hydration. It leads to slow response time when users need to interact with the video, causing the web app to have a poor INP score. React `Suspense` solves the hydration problem by providing fallback content for videos, leading to improved user experience.
+
+Let us better understand how to use `Suspense`.
+
+`Suspense` is a React component. It enables you to load an alternative layout that the video replaces with the `fallback` prop before the video is rendered completely.
+
+Let us create a fallback component:
+
+```tsx
+/* [!code filename:components/video-fallback.tsx] */
+export function VideoFallback() {
+  return (
+    <div>Loading...</div>
+  )
+}
+```
+
+Wrap the `<iframe/>` tag inside the React `<Suspense>...</Suspense>` component.
+
+```tsx
+/* [!code filename:components/video-suspense.tsx] */
+import { Suspense } from 'react'
+import { VideoFallback } from './video-fallback'
+
+export function VideoSuspense() {
+  return (
+    <Suspense fallback={<VideoFallback />}>
+      <iframe
+        {/* ... */}
+      />
+    </Suspense>
+  )
+}
+```
+
+## 3. Eliminate External Fonts download
+
+Fonts loaded from network servers take a long time to render. Next.js self-hosts Google fonts and local fonts without rendering fonts from external sources.
+
+Next.js fonts are functions called with an object of different properties:
+
+- `src` (required in local fonts): The path where the local font file is stored.
+- `declarations` (local fonts only): Describes generated font face.
+- `subsets` (google fonts only): An array of strings. It is useful for preloaded font subsets.
+- `axes` (google fonts only): Specifies the axes of variable fonts.
+- `weight`: Represents font-weight.
+- `style`: Represents font-style. Can be set to italic, oblique or normal.
+- `display`: Possible string value of auto, block, swap, fallback or optional.
+- `preload`: Specifies whether a font will preload. Sets to true or false.
+- `fallback`: An array of strings. Replace the imported fonts when a loading error occurs. To style a fallback, use a CSS class selector for the element it is applied to.
+- `adjustFontFallback`: Reduces the effect of font fallback on Cumulative Layout Shift (CLS). Sets to true or false.
+- `variable`: A string value of the declared CSS variable name.
+
+### Using local Fonts
+
+Local fonts are downloaded fonts. In the project's root directory, you can save local font files in a `./styles/fonts/` folder.
+
+To use local fonts, import `localFont` from `next/font/local`:
+
+```tsx
+/* [!code filename:app/layout.tsx] */
+import localFont from 'next/font/local'
+
+const myFont = localFont({
+  src: './fonts/my-font.woff2',
+  style: 'italic',
+  display: 'swap',
+  fallback: ['arial'],
+  variable: '--font-my-font',
+})
+
+export default function RootLayout({ children }) {
+  return(
+    <html lang="en" className={myFont.variable} >
+      <body>{children}</body>
+    </html>
+  )
+}
+```
+
+### Using Google Fonts
+
+Google fonts are classified into different types. When using a non-variable font, it is important to specify its `weight`.
+
+To use Google fonts, import the font type from `next/font/google`:
+
+```tsx
+/* [!code filename:app/layout.tsx] */
+import { Geist } from 'next/font/google'
+
+export const geist = Geist({
+  subsets: ['latin'],
+  variable: '--font-sans',
+})
+
+export default function RootLayout({ children }) {
+  return(
+    <html lang="en" className={geist.variable} >
+      <body>{children}</body>
+    </html>
+  )
+}
+```
+
+### Rendering and Reusing Multiple Fonts
+
+To use multiple fonts in a reusable manner, call the fonts in a single fonts file as an `export const`:
+
+```tsx
+/* [!code filename:lib/fonts.ts] */
+import { Geist, Geist_Mono } from 'next/font/google'
+
+export const geist = Geist({
+  subsets: ['latin'],
+  variable: '--font-sans',
+})
+
+export const geistMono = Geist_Mono({
+  subsets: ['latin'],
+  variable: '--font-mono',
+})
+```
+
+Next, render the font in the file you want to apply.
+
+In the example below, the font is only rendered in the `collection/page.tsx` file:
+
+```tsx
+/* [!code filename:app/collection/page.tsx] */
+import { geist } from '@/lib/fonts'
+
+export default function Page() {
+  return <div className={geist.className}>Collection</div>
+}
+```
+
+## 4. Amplify Search Engine ranking with `metadata`
+
+Metadata provides additional information about the data in a web app. These data include documents, files, images, audio, videos, and web pages. When a web app has enriched metadata information, it takes high precedence and relevance over other web apps on search engines.
+
+In Next.js, metadata is classified as either static or dynamic. Dynamic metadata provides information bound to change, such as the current route parameter, external data, or `metadata` in parent segments.
+
+You can add metadata either through configuration or special files:
+
+### Adding metadata through configuration
+
+You can export static metadata using Next.js built-in `metadata` object, while you can export dynamically generated metadata with changing values using the built-in `generateMetadata()` function. The `metadata` object and `generateMetadata()` function are exported in either `layout.tsx` or `page.tsx` files and can only be used for server components.
+
+- **Adding Static Metadata with metadata object**
+
+```tsx
+/* [!code filename:app/page.tsx] */
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: '...',
+  description: '...',
+}
+
+export default function Page() {
+  return <div>Page</div>
+}
+```
+
+- **Adding Dynamic Metadata with `generateMetadata()` Function**
+
+The `generateMetadata()` function accepts the props object and parent as parameters. The props object includes `params` and `searchParams`. The `params` contains the dynamic route parameters from the root segment to the segment where `generateMetadata()` is called. The `searchParams` contains the search params of the current URL. And the `parent` parameter is the resolved metadata's promise from the parent route segments.
+
+Below is an example:
+
+```tsx
+/* [!code filename:app/articles/[slug]/page.tsx] */
+import type { Metadata } from 'next'
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>
+}) {
+  const { slug } = await params
+  const article = await getArticle(slug)
+
+  return {
+    title: article.title,
+    description: article.description,
+    openGraph: {
+      title: article.title,
+      description: article.description,
+      // ...
+    },
+  }
+}
+
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ slug: string }>
+}) {
+  const { slug } = await params
+
+  const article = await getArticle(slug)
+
+  return (
+    <div>
+      <h1>{article.title}</h1>
+      <p>{article.description}</p>
+    </div>
+  )
+}
+```
+
+## 5. Loading Scripts with `Script` Component
+
+Next.js has a built-in `Script` component lets us control how to render scripts for a specific folder or the app root layout. To optimize performance, render the scripts in the specific folders' layouts where they are needed.
+
+Scripts can equally be loaded in `Page` files.
+
+Specifying the `id` prop in `Script` is useful for optimization.
+
+### Loading inline Scripts
+
+Inline scripts are written directly in the Script component. The `id` prop is required in inline scripts. Inline scripts can be written in two ways:
+
+- **With curly braces:**
+
+```tsx
+/* [!code filename:app/page.tsx] */
+import Script from 'next/script'
+
+export default function Page() {
+  return (
+    <div>
+      <h1>Inline Script</h1>
+      <section>...</section>
+      <Script id="inline-script">
+        { 
+          document.getElementbyId=('inline-script').classList.remove('hidden') 
+        }
+      </Script>
+    </div>
+  )
+}
+```
+
+- **With `dangerouslyStyleInnerHTML` prop:**
+
+```tsx
+/* [!code filename:app/page.tsx] */
+import Script from 'next/script'
+
+export default function Page() {
+  return (
+    <div>
+      <h1>Inline Script</h1>
+      <section>...</section>
+      <Script 
+        id="inline-script"
+        dangerouslySetInnerHTML={{
+          __html: "document.getElementById('inline-script').classList.remove('hidden')",
+        }}
+      />
+    </div>
+  )
+}
+```
+
+### Loading external Scripts
+
+External scripts are loaded with a required src prop to specify the URL.
+
+```tsx
+/* [!code filename:app/page.tsx] */
+import Script from 'next/script'
+
+export default function Page() {
+  return (
+    <div>
+      <h1>External Script</h1>
+      <Script src="https://example.com/script.js" />
+    </div>
+  )
+}
+```
+
+### Specifying How Scripts Should Load Using the `strategy` Prop
+
+Although the `Script` is loaded only once in the web app, you can control how it loads with the following loading strategies:
+
+- `beforeInteractive`: The script will load before the Next.js code loads and before page hydration happens.
+- `afterInteractive`: The script will load immediately after page hydration happens.
+- `lazyOnLoad`: The script wll load in a delayed manner after every other code have been loaded in the browser.
+
+**worker**: The script will load in a web worker.
+
+Here, render the script before page hdration occurs:
+
+```tsx
+<Script
+  src="https://example.com/script.js"
+  strategy="beforeInteractive" 
+/>
+```
+
+### Adding Event Handlers to Scripts
+
+To control how a web page responds to certain events, you can use the following event handlers which can only be used in client components:
+
+- `onLoad`: Responds inmediately the script has finished loading.
+- `onReady`: This function responds after the script has finished loading and the component is fully displayed.
+- `onError`: Responds when an error occurs with script loading.
+
+```tsx
+/* [!code filename:app/page.tsx] */
+'use client'
+
+import Script from 'next/script'
+
+export default function Page() {
+  return (
+    <div>
+      <h1>External Script</h1>
+      <Script
+        src="https://example.com/script.js"
+        onLoad={() => {
+          console.log('Script loaded')
+        }}
+        onReady={() => {
+          console.log('Script ready')
+        }}
+        onError={() => {
+          console.log('Script error')
+        }}
+      />
+    </div>
+  )
+}
+```
+
+## 6. Implement URL Redirects
+
+Implement URL redirect with Next.js built-in functions and hooks based on different use cases.
+
+### Redirecting Users After Mutations or Events
+
+Mutation involves updating data to a network server. Use `redirect` or `permanentRedirect` to enable URL redirect in server components, actions, or route handlers.
+
+Using `redirect` function:
+
+```ts
+/* [!code filename:app/action.ts] */
+'use server'
+
+import { redirect } from 'next/navigation'
+import { revalidatePath } from 'next/cache'
+
+export async function updateArticle(id: string) {
+  try {
+    // ...
+  } catch (error) {
+    // ...
+  }
+
+  revalidatePath('/articles')
+  redirect(`/articles/${id}`)
+}
+```
+
+As shown in the example above, `revalidatePath` will update the cached bidArts page. Once the user `bidArts` server action is called, the URL pattern will change from `../articles` to `../articles/id`.
+
+If you want to replace the URL path, use:
+
+```ts
+redirect(`/articles/${id}`, replace)
+```
+
+### using `permanentRedirect` function
+
+To redirect users to a permanently changed URL, use `permanentRedirect`:
+
+```ts
+/* [!code filename:app/action.ts] */
+'use server'
+
+import { permanentRedirect } from 'next/navigation'
+import { revalidateTag } from 'next/cache'
+
+export async function updateArticle(id: string) {
+  try {
+    // ...
+  } catch (error) {
+    // ...
+  }
+}
+
+revalidateTag('articles')
+permanentRedirect(`/articles/${id}`)
+```
+
+## 7. Bundling and Analyzing packages with `@next/bundle-analyzer`
+
+To minimize memory usage, you can bundle the packages used in your web app with a bundler. A bundler automatically merges all the code written in the web app into a single file, helping to solve dependency and latency issues. Certain resources depend on other resources, such as remote libraries, components, and frameworks, and are complex to manage. Latency is a measure of the time distance between a user's device and the network server that is being requested.
+
+Next.js has a built-in plugin `@next/bundle-analyzer` which identifies and reports dependencies issues.
+
+### Installing `@next/bundle-analyzer` plugin:
+
+```bash
+npm i @next/bundle-analyzer
+
+# or
+
+yarn add @next/bundle-analyzer
+
+# or
+
+pnpm add @next/bundle-analyzer
+```
+
+### Using `@next/bundle-analyzer` plugin:
+
+```ts
+/* [!code filename:next.config.ts] */
+import type { NextConfig } from 'next'
+import bundleAnalyzer from '@next/bundle-analyzer'
+
+const nextConfig: NextConfig = {
+  // ...
+}
+
+const withBundleAnalyzer = bundleAnalyzer({
+  enabled: process.env.ANALYZE === 'true',
+})
+
+export default withBundleAnalyzer(nextConfig)
+```
+
+### Analyzing the bundle
+
+```bash
+ANALYZE=true npm run build
+
+# or
+
+ANALYZE=true yarn build
+
+# or
+
+ANALYZE=true pnpm build
+```
+
+## 8. Implement Next.js Lazy Loading Strategies
+
+azy loading is a performance strategy that reduces page load time by rendering web pages lightweight until users actively navigate to certain components. It is useful for enjoyable scrolling engagements. So far, in this article, you have implemented Next.js lazy loading for images and videos.
+
+Server components have features that enable automatic render delay. To enable manual lazy loading in server components, implement Streaming.
+
+Client components cannot be delayed automatically. You must use `dynamic` imports or `Suspense` to achieve Next.js lazy loading in client components.
+
+In this section, you will lazy load client components only:
+
+### Using Next.js Dynamic Imports
+
+dynamic is a callback function that returns the components we want to lazy load as imports. To disable pre-rendering in client components, set the ssr option to false. To enable custom loading in dynamic imports, set the loading option to a preferred UI.
+
+```tsx
+/* [!code filename:components/lazy-loading.tsx] */
+import dynamic from 'next/dynamic'
+
+const LazyLoading = dynamic(() => import('./lazy-loading'), {
+  ssr: false,
+  loading: () => <div>Loading...</div>,
+})
+```
+
+### Using Suspense
+
+Suspense is a React component that allows us to load a component asynchronously. It is useful for lazy loading client components.
+
+```tsx
+/* [!code filename:app/page.tsx] */
+import { Suspense } from 'react'
+
+export default function Page() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <LazyLoading />
+    </Suspense>
+  )
+}
+```
+
+## Measuring Web Performance in Next.js
+
+In Next.js, you can always keep track of performance issues in production using:
+
+- `reportWebVitals` hook: monitors Core Web Vitals (CWV) metrics and sends observed reports manually.
+- `Vercel's built-in observability` tool: integrated with other observability tools such as OpenTelementry, Datadog, through a process known as instrumentation.
+- `Google Lighthouse`: Lighthouse measures and provides reports on the score of different CWV metrics based on the URL of each web page, with suggested ways to fix the performance issues.
+
+## Conclusion
+
+In this article, you have understood how different resources affect the user experience of a web app. You have also implemented techniques to optimize images, videos, fonts, metadata, URL redirects, scripts, and packages. You have also implemented Next.js lazy loading strategies for client components and other resources.
+
+Optimization enables your Next.js web app to be highly performant, lightweight, and enjoyable. You have also learned about different performance metrics and possible ways to measure your web app's performance.

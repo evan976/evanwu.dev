@@ -1,25 +1,26 @@
 export const title = 'React Server Components'
-export const description = 'React 服务器组件（RSC）代表了我们构建 React 应用程序方式的范式转变。作为实验性功能于 2020 年 12 月发布，RSC 现已成为 React 生态系统的核心部分，尤其是随着像 Next.js 这样利用此技术的框架的兴起。在本博客中，我们将探索一些关于 React 服务器组件的最佳技术资源，并配有代码示例，帮助你更好地理解这些概念。'
+export const description = 'React Server Components (RSC) represent a paradigm shift in how we build React applications. Released as an experimental feature in December 2020, RSCs are now a core part of the React ecosystem, especially with the rise of frameworks like Next.js that leverage this technology. In this blog, we\'ll explore some of the best technical resources on React Server Components, complete with code examples to help you understand the concepts better.'
 export const publishedAt = '2025-08-09'
+export const image = '/react-server-component.png'
 
-## 什么是 React 服务器组件？
+## What are React Server Components?
 
-React 服务器组件允许开发者在服务器上渲染组件，减少发送到客户端的 `JavaScript` 包大小并提高性能。与传统的客户端渲染或服务器端渲染不同，RSC 创建了一种新的思维模型，其中某些组件专门在服务器上运行，而其他组件则在客户端运行。
+React Server Components allow developers to render components on the server, reducing the JavaScript bundle size sent to the client and improving performance. Unlike traditional client-side rendering or server-side rendering, RSCs create a new mental model where some components run exclusively on the server while others run on the client.
 
-### 主要优势：
+### Main Advantages:
 
-- 服务器组件零包大小
-- 直接访问后端资源
-- 自动代码分割
-- 改善数据获取场景的性能
+- Zero bundle size for server components
+- Direct access to backend resources
+- Automatic code splitting
+- Improved performance for data-fetching scenarios
 
-## 值得阅读的技术深度文章
+## Technical Deep Dives Worth Reading
 
-### 1. React 官方文档
+### 1. The Official React Documentation
 
-React 团队的文档提供了关于服务器组件最权威的解释。他们涵盖了核心概念、架构和使用模式。
+The React team's documentation provides the most authoritative explanation of Server Components. They cover the core concepts, architecture, and usage patterns.
 
-以下是一个服务器组件的基本示例：
+Here's a basic example of a Server Component:
 
 ```tsx
 /* [!code filename:components/server-component.tsx] */
@@ -42,11 +43,11 @@ export async function ServerComponent() {
 
 ```
 
-### 2. Dan Abramov 对 RSC 架构的解释
+### 2. Dan Abramov's Explanation of the RSC Architecture
 
-Dan Abramov，React 团队的成员，已经广泛撰写了关于 React 服务器组件架构的文章。他的解释帮助开发者理解 RSC 如何融入 React 生态系统。
+Dan Abramov, a member of the React team, has written extensively about the architecture behind React Server Components. His explanations help developers understand how RSCs fit into the React ecosystem.
 
-他解释的一个关键概念是服务器组件和客户端组件之间的分离：
+One key concept he explains is the separation between Server and Client Components:
 
 ```tsx
 /* [!code filename:components/client-component.tsx] */
@@ -69,7 +70,7 @@ export function ClientComponent() {
 
 ```
 
-以及它们如何组合在一起：
+And how they can be composed together:
 
 ```tsx
 /* [!code filename:components/server-component.tsx] */
@@ -90,11 +91,11 @@ export async function ServerComponent() {
 
 ```
 
-### 3. Next.js 关于服务器组件的文档
+### 3. Next.js Documentation on Server Components
 
-Next.js 已将 React 服务器组件作为其架构的核心部分。他们的文档提供了在全栈应用程序上下文中使用 RSC 的实用示例。
+Next.js has embraced React Server Components as a core part of its architecture. Their documentation provides practical examples of using RSCs in a full-stack application context.
 
-以下是在 Next.js 服务器组件中数据获取的工作方式：
+Here's how data fetching works in a Next.js Server Component:
 
 ```tsx
 /* [!code filename:app/page.tsx] */
@@ -120,11 +121,11 @@ export default async function Page() {
 }
 ```
 
-### 4. Kent C. Dodds 关于 RSC 思维模型的博客
+### 4. Kent C. Dodds's Blog on RSC Mental Model
 
-Kent C. Dodds 撰写了关于使用 React 服务器组件所需的思维模型转变的文章。他的博客文章帮助开发者理解何时使用服务器组件与客户端组件。
+Kent C. Dodds wrote an article about the mental model shift required to use React Server Components. His blog posts help developers understand when to use Server Components and Client Components.
 
-他讨论的一个关键模式是 RSC 上下文中的"容器/呈现器"模式：
+One key pattern he discusses is the "container/presenter" pattern in the RSC context:
 
 ```tsx
 /* [!code filename:components/user-profile-container.tsx] */
@@ -188,9 +189,9 @@ export function UserProfilePresenter({ userData, posts }) {
 }
 ```
 
-## 理解 RSC 的流式处理
+## Understanding Streaming with RSCs
 
-React 服务器组件最强大的功能之一是能够从服务器流式传输 UI。这允许在数据可用时逐步渲染组件。
+One of the most powerful features of React Server Components is the ability to stream UI from the server. This allows for progressive rendering of components as data becomes available.
 
 ```tsx
 /* [!code filename:app/page.tsx] */
@@ -217,11 +218,11 @@ export default async function Page() {
 }
 ```
 
-## 常见模式和最佳实践
+## Common Patterns and Best Practices
 
-### 1. 数据获取方式
+### 1. Data Fetching Patterns
 
-使用 RSC，数据获取移至服务器，这里更高效：
+Using RSC, data fetching is moved to the server, which is more efficient here:
 
 ```tsx
 /* [!code filename:app/page.tsx] */
@@ -247,9 +248,9 @@ export default async function Page({ productId }) {
 }
 ```
 
-### 2. 渐进增强模式
+### 2. Progressive Enhancement Patterns
 
-从服务器组件开始，根据需要用客户端组件增强：
+Start with a server component and enhance it with client components as needed:
 
 ```tsx
 /* [!code filename:components/form.tsx] */
@@ -291,11 +292,11 @@ export function SubmitButton() {
 }
 ```
 
-## 常见挑战和解决方案
+## Common Challenges and Solutions
 
-### 1. 状态管理
+### 1. State Management
 
-由于服务器组件无法访问 React Hook，因此需要采用不同的方法来管理状态：
+Since server components cannot access React Hooks, different methods are needed to manage state:
 
 ```tsx
 /* [!code filename:components/user-dashboard.tsx] */
@@ -357,9 +358,9 @@ export function UserSettings({ initialSettings, userId }) {
 }
 ```
 
-### 2. 第三方库
+### 2. Third-Party Libraries
 
-并非所有库都与服务器组件兼容。以下是处理方法：
+Not all libraries are compatible with server components. Here are some solutions:
 
 ```tsx
 /* [!code filename:components/client-wrapper.tsx] */
@@ -391,13 +392,13 @@ export async function Page() {
 }
 ```
 
-## 结论
+## Conclusion
 
-React 服务器组件代表了 React 应用程序构建方式的重大演变。通过采用同时利用服务器和客户端能力的混合渲染模型，开发者可以创建更高性能和可扩展的应用程序。
+React Server Components represent a significant shift in how we build React applications. By adopting a hybrid rendering model that leverages both server and client capabilities, developers can create higher-performance and scalable applications.
 
-本博客提供的资源和代码示例应该能帮助你理解 React 服务器组件开发中使用的核心概念和模式。随着这项技术的不断成熟，我们可以期待看到更多构建现代 Web 应用程序的创新方法。
+The resources and code examples provided in this blog should help you understand the core concepts and patterns used in React Server Component development. As this technology continues to mature, we can expect to see more innovative approaches to building modern web applications.
 
-### 其他资源
+### Other Resources
 
 - [React Labs: What We've Been Working On](https://react.dev/blog/2023/03/22/react-labs-what-we-have-been-working-on-march-2023#react-server-components)
 - [Next.js Documentation on Server Components](https://nextjs.org/docs/app/building-your-application/rendering/server-components)

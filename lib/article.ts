@@ -13,6 +13,7 @@ type Metadata = {
   description: string
   publishedAt: string
   readingTime: ReturnType<typeof readingTime>
+  image?: string
 }
 
 async function readMDXFile(filePath: string) {
@@ -47,6 +48,7 @@ export async function getArticleBySlug(slug: string): Promise<null | {
         description: module.description,
         publishedAt: module.publishedAt,
         readingTime: readingTime(raw),
+        image: module.image,
       },
     }
   } catch (error) {

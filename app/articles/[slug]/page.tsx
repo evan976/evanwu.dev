@@ -1,5 +1,6 @@
 import * as React from 'react'
 import { format } from 'date-fns'
+import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { baseUrl } from '@/app/sitemap'
@@ -61,7 +62,8 @@ export default async function Page({
     notFound()
   }
 
-  const { title, description, publishedAt, readingTime } = article.metadata
+  const { title, description, publishedAt, readingTime, image } =
+    article.metadata
 
   return (
     <section>
@@ -118,6 +120,18 @@ export default async function Page({
                         </span>
                       </div>
                     </header>
+                    {image && (
+                      <div className="mt-8">
+                        <Image
+                          src={image}
+                          alt={title}
+                          width={672}
+                          height={378}
+                          priority
+                          className="rounded-xl"
+                        />
+                      </div>
+                    )}
                     <div className="mt-8 prose">
                       <React.Suspense>
                         <article.Component />
