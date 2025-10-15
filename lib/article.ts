@@ -1,12 +1,7 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
-import { fileURLToPath } from 'node:url'
 import type * as React from 'react'
 import readingTime from 'reading-time'
-
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
-const filePath = path.join(__dirname, '../content')
 
 type Metadata = {
   title: string
@@ -35,7 +30,9 @@ export async function getArticleBySlug(slug: string): Promise<null | {
     }
 
     const module = await import(`../content/${slug}.mdx`)
-    const raw = await readMDXFile(path.join(filePath, `${slug}.mdx`))
+    const raw = await readMDXFile(
+      path.join(process.cwd(), 'content', `${slug}.mdx`),
+    )
 
     if (!module.default) {
       return null
@@ -59,7 +56,7 @@ export async function getArticleBySlug(slug: string): Promise<null | {
 
 export async function getArticleSlugs() {
   const slugs = []
-  const files = await fs.readdir(path.join(__dirname, '../content'))
+  const files = await fs.readdir(path.join(process.cwd(), 'content'))
 
   for (const file of files) {
     if (!file.endsWith('.mdx')) continue
