@@ -12,10 +12,10 @@ export function Footer() {
             <div className="flex flex-col items-center justify-between gap-6 sm:flex-row">
               <div className="flex gap-4 text-sm font-medium text-zinc-800 dark:text-zinc-200">
                 <Link
-                  href="/rss"
+                  href="/rss.xml"
                   target="_blank"
                   rel="noopener"
-                  aria-label="RSS"
+                  aria-label="RSS Feed"
                 >
                   <RssIcon className="size-4 text-zinc-500 dark:text-zinc-400 transition hover:text-teal-500 dark:hover:text-teal-400" />
                 </Link>

@@ -1,6 +1,6 @@
 import { getArticles } from '@/lib/article'
 
-export const baseUrl = 'https://evanspace.me'
+export const baseUrl = 'https://evanwu.dev'
 
 export default async function sitemap() {
   const articles = (await getArticles()).map((article) => ({
