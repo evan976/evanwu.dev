@@ -1,4 +1,5 @@
 import * as React from 'react'
+import type { Metadata } from 'next'
 import { format } from 'date-fns'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -18,7 +19,7 @@ export async function generateMetadata({
   params,
 }: {
   params: Promise<{ slug: string }>
-}) {
+}): Promise<Metadata | undefined> {
   const { slug } = await params
   const article = await getArticleBySlug(slug)
 
@@ -40,7 +41,25 @@ export async function generateMetadata({
       locale: 'en_US',
       publishedTime: publishedAt,
       url: `/articles/${slug}`,
-      images: [{ url: ogUrl, alt: title }],
+      images: [
+        {
+          url: ogUrl,
+          width: 1200,
+          height: 630,
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [
+        {
+          url: ogUrl,
+          width: 1200,
+          height: 630,
+        },
+      ],
     },
   }
 }
