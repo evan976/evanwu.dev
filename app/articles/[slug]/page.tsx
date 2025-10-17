@@ -24,9 +24,9 @@ export async function generateMetadata({
 
   if (!article) return
 
-  const { title, description, publishedAt } = article.metadata
+  const { title, description, publishedAt, image } = article.metadata
 
-  const ogUrl = `/api/og?path=/articles/${slug}`
+  const ogUrl = image ? image : `/api/og?path=/articles/${slug}`
 
   return {
     metadataBase: new URL(baseUrl),
@@ -36,15 +36,11 @@ export async function generateMetadata({
       title,
       description,
       type: 'article',
+      siteName: "Evan's Blog",
+      locale: 'en_US',
       publishedTime: publishedAt,
       url: `/articles/${slug}`,
-      images: [{ url: ogUrl }],
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title,
-      description,
-      images: [{ url: ogUrl }],
+      images: [{ url: ogUrl, alt: title }],
     },
   }
 }

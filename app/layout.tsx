@@ -1,5 +1,5 @@
 import '@/app/globals.css'
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Analytics } from '@vercel/analytics/next'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import { ThemeProvider } from 'next-themes'
@@ -22,17 +22,29 @@ export const metadata: Metadata = {
     title: 'Evan',
     description: 'I build user interfaces',
     url: baseUrl,
-    siteName: 'Evan',
-    locale: 'en',
+    siteName: "Evan's Blog",
+    locale: 'en_US',
     type: 'website',
-    images: [{ url: '/api/og?path=/' }],
+    images: [
+      {
+        url: '/opengraph-image.png',
+        width: 1200,
+        height: 630,
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Evan',
     description: 'I build user interfaces',
     creator: '@evan1297',
-    images: [{ url: '/api/og?path=/' }],
+    images: [
+      {
+        url: '/opengraph-image.png',
+        width: 1200,
+        height: 630,
+      },
+    ],
   },
   robots: {
     index: true,
@@ -54,6 +66,13 @@ export const metadata: Metadata = {
     ],
     apple: '/logo.svg',
   },
+}
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#fff' },
+    { media: '(prefers-color-scheme: dark)', color: '#000' },
+  ],
 }
 
 export default function RootLayout({
