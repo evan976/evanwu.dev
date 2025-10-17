@@ -1,0 +1,131 @@
+export const title = 'React 19.2: The Future of React'
+export const description = 'Explore the latest features in React 19.2, including the new Activity component for controlling app visibility and performance, and useEffectEvent for handling external system events.'
+export const publishedAt = '2025-10-17'
+export const image = '/react-19-2.webp'
+
+## New React Features
+
+`<Activity />`
+
+`<Activity>` lets you break your app into “activities” that can be controlled and prioritized.
+
+You can use Activity as an alternative to conditionally rendering parts of your app:
+
+```tsx
+// Before
+{isVisible && <Page />}
+
+// After
+<Activity mode={isVisible ? 'visible' : 'hidden'}>
+  <Page />
+</Activity>
+```
+
+In React 19.2, Activity supports two modes: `visible` and `hidden`.
+
+- `hidden`: hides the children, unmounts effects, and defers all updates until React has nothing left to work on.
+- `visible`: shows the children, mounts effects, and allows updates to be processed normally.
+
+This means you can pre-render and keep rendering hidden parts of the app without impacting the performance of anything visible on screen.
+
+You can use Activity to render hidden parts of the app that a user is likely to navigate to next, or to save the state of parts the user navigates away from. This helps make navigations quicker by loading data, css, and images in the background, and allows back navigations to maintain state such as input fields.
+
+In the future, we plan to add more modes to Activity for different use cases.
+
+For examples on how to use Activity, check out the [Activity docs](https://react.dev/reference/react/Activity).
+
+`useEffectEvent`
+
+One common pattern with useEffect is to notify the app code about some kind of “events” from an external system. For example, when a chat room gets connected, you might want to display a notification:
+
+```tsx
+/* [!code filename:components/chat-room.tsx] */
+function ChatRoom({ roomId, theme }) {
+  useEffect(() => {
+    const connection = createConnection(serverUrl, roomId)
+    connection.on('connected', () => {
+      showNotification('Connected!', theme)
+    })
+    connection.connect()
+
+    return () => {
+      connection.disconnect()
+    }
+  }, [roomId, theme])
+
+  return <ChatInterface theme={theme} />
+}
+```
+
+The problem with the code above is that a change to any values used inside such an “event” will cause the surrounding Effect to re-run. For example, changing the `theme` will cause the chat room to reconnect. This makes sense for values related to the Effect logic itself, like `roomId`, but it doesn’t make sense for `theme`.
+
+To solve this, most users just disable the lint rule and exclude the dependency. But that can lead to bugs since the linter can no longer help you keep the dependencies up to date if you need to update the Effect later.
+
+With `useEffectEvent`, you can split the “event” part of this logic out of the Effect that emits it:
+
+```tsx
+/* [!code filename:components/chat-room.tsx] */
+function ChatRoom({ roomId, theme }) {
+  const onConnected = useEffectEvent(() => {
+    showNotification('Connected!', theme)
+  })
+
+  useEffect(() => {
+    const connection = createConnection(serverUrl, roomId)
+    connection.on('connected', () => {
+      onConnected()
+    })
+    connection.connect()
+    return () => connection.disconnect()
+  }, [roomId]) // ✅ All dependencies declared (Effect Events aren't dependencies)
+
+  return <ChatInterface theme={theme} />
+}
+```
+
+Similar to DOM events, Effect Events always “see” the latest props and state.
+
+`cacheSignal`
+
+> `cacheSignal` is only for use with **React Server Components**.
+
+`cacheSignal` allows you to know when the `cache()` lifetime is over:
+
+```ts
+import { cache, cacheSignal } from 'react'
+const dedupedFetch = cache(fetch)
+
+async function Component() {
+  await dedupedFetch(url, { signal: cacheSignal() })
+}
+```
+
+This allows you to clean up or abort work when the result will no longer be used in the cache, such as:
+
+- React has successfully completed rendering
+- The render was aborted
+- The render has failed
+
+**Performance Tracks**
+
+React 19.2 adds a new set of custom tracks to Chrome DevTools performance profiles to provide more information about the performance of your React app:
+
+![Performance Tracks](/perf-tracks.png)
+
+The [React Performance Tracks](https://react.dev/reference/dev-tools/react-performance-tracks) docs explain everything included in the tracks, but here is a high-level overview.
+
+### Scheduler ⚛
+
+The Scheduler track shows what React is working on for different priorities such as “blocking” for user interactions, or “transition” for updates inside startTransition. Inside each track, you will see the type of work being performed such as the event that scheduled an update, and when the render for that update happened.
+
+We also show information such as when an update is blocked waiting for a different priority, or when React is waiting for paint before continuing. The Scheduler track helps you understand how React splits your code into different priorities, and the order it completed the work.
+
+See the [Scheduler track](https://react.dev/reference/dev-tools/react-performance-tracks#scheduler) docs to see everything included.
+
+### Components ⚛
+
+The Components track shows the tree of components that React is working on either to render or run effects. Inside you’ll see labels such as “Mount” for when children mount or effects are mounted, or “Blocked” for when rendering is blocked due to yielding to work outside React.
+
+The Components track helps you understand when components are rendered or run effects, and the time it takes to complete that work to help identify performance problems.
+
+See the [Components track](https://react.dev/reference/dev-tools/react-performance-tracks#components) docs to see everything included.

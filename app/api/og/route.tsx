@@ -4,7 +4,7 @@ import openGraphScraper from 'open-graph-scraper-lite'
 import { baseUrl } from '@/app/sitemap'
 
 const HOST =
-  process.env.NODE_ENV === 'production' ? baseUrl : 'http://localhost:4000'
+  process.env.NODE_ENV === 'production' ? baseUrl : 'http://localhost:3000'
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)

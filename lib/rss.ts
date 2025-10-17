@@ -3,14 +3,14 @@ import { baseUrl } from '@/app/sitemap'
 import { getArticles } from './article'
 
 export async function generateRSS() {
-  const site_url =
-    process.env.NODE_ENV === 'production' ? baseUrl : 'http://localhost:3002'
+  const siteUrl =
+    process.env.NODE_ENV === 'production' ? baseUrl : 'http://localhost:3000'
 
   const feedOptions = {
     title: "Evan's Blog | RSS Feed",
     description: "Welcome to Evan's Blog!",
-    site_url: site_url,
-    feed_url: `${site_url}/rss.xml`,
+    site_url: siteUrl,
+    feed_url: `${siteUrl}/rss.xml`,
     pubDate: new Date(),
     copyright: `All rights reserved ${new Date().getFullYear()}`,
   }
@@ -23,7 +23,7 @@ export async function generateRSS() {
     feed.item({
       title: article.title,
       description: article.description,
-      url: `${site_url}/articles/${article.slug}`,
+      url: `${siteUrl}/articles/${article.slug}`,
       date: article.publishedAt,
     })
   })
