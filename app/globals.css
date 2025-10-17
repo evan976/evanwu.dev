@@ -35,10 +35,17 @@
 }
 
 @layer base {
+
+  .shiki,
+  .shiki span {
+    background-color: var(--color-zinc-50) !important;
+  }
+
   :where(.dark) {
+
     .shiki,
     .shiki span {
-      background-color: var(--color-zinc-900) !important;
+      background-color: var(--color-zinc-800) !important;
       color: var(--shiki-dark) !important;
     }
   }
