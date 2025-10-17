@@ -2,7 +2,7 @@
 
 This is the repository for my personal website, evanwu.dev.
 
-![evanspace.me](https://upload.cc/i1/2025/04/09/4aJHge.png)
+![evanwu.dev](/public/opengraph-image.png)
 
 ## Tech Stack
 
