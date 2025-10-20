@@ -2,6 +2,7 @@ import * as React from 'react'
 import type { Metadata } from 'next'
 import { format, isToday } from 'date-fns'
 import { ArrowRightIcon, BriefcaseIcon, ChevronRightIcon } from 'lucide-react'
+import * as motion from 'motion/react-client'
 import Image from 'next/image'
 import Link from 'next/link'
 import { AuroraText } from '@/components/aurora-text'
@@ -11,12 +12,11 @@ import { SocialLink } from '@/components/social-link'
 import { SubscribeForm } from '@/components/subscribe-form'
 import { getArticles } from '@/lib/article'
 import { links, resume } from '@/lib/constants'
-import { cn } from '@/lib/utils'
-import beach from '@/public/beach.jpg'
-import computer from '@/public/computer.jpg'
+import beach from '@/public/beach.jpeg'
+import fall from '@/public/fall.jpg'
 import mountain from '@/public/mountain.jpg'
-import peace from '@/public/peace.jpg'
-import travel from '@/public/travel.jpg'
+import sea from '@/public/sea.jpeg'
+import snow from '@/public/snow.jpg'
 
 export const metadata: Metadata = {
   title: 'Frontend developer, designer, and open source enthusiast',
@@ -106,32 +106,42 @@ export default async function Page() {
 
 function Photos() {
   const rotations = [
-    'rotate-2',
-    '-rotate-2',
-    'rotate-2',
-    'rotate-2',
-    '-rotate-2',
+    '0.290229deg',
+    '-9.00747deg',
+    '1.19904deg',
+    '4.1674deg',
+    '-0.90447deg',
   ]
 
   return (
     <div className="mt-16 sm:mt-20">
-      <div className="-my-4 flex justify-center gap-5 overflow-hidden py-4 sm:gap-8">
-        {[beach, computer, peace, mountain, travel].map((image, imageIndex) => (
-          <div
+      <div className="flex justify-center items-center">
+        {[sea, beach, fall, mountain, snow].map((image, imageIndex) => (
+          <motion.div
             key={imageIndex}
-            className={cn(
-              'relative aspect-[9/10] w-44 flex-none overflow-hidden rounded-xl bg-zinc-100 dark:bg-zinc-800 sm:w-72 sm:rounded-2xl',
-              rotations[imageIndex % rotations.length],
-            )}
+            tabIndex={0}
+            className="relative aspect-[9/10] w-44 p-1 flex-none bg-zinc-100 dark:bg-zinc-800 sm:w-72 sm:rounded-2xl rounded-xl dark:border-neutral-700 border border-zinc-200 shrink-0 overflow-hidden"
+            initial={{
+              scale: 1.0,
+              transform: `rotate(${rotations[imageIndex % rotations.length]})`,
+              zIndex: 1,
+            }}
+            whileHover={{
+              scale: 1.1,
+              transform: 'rotate(0deg)',
+              zIndex: 100,
+            }}
           >
             <Image
               src={image}
               alt="Photo"
               priority
+              width={299}
+              height={330}
               sizes="(min-width: 640px) 18rem, 11rem"
-              className="absolute inset-0 h-full w-full object-cover"
+              className="rounded-xl object-cover shrink-0 size-full"
             />
-          </div>
+          </motion.div>
         ))}
       </div>
     </div>

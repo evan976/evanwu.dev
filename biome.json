@@ -33,7 +33,8 @@
         "useKeyWithClickEvents": "off",
         "useSemanticElements": "off",
         "noSvgWithoutTitle": "off",
-        "useAriaPropsForRole": "off"
+        "useAriaPropsForRole": "off",
+        "noNoninteractiveTabindex": "off"
       },
       "complexity": {
         "noUselessFragments": "off"
