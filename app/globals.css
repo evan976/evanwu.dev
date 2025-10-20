@@ -36,6 +36,10 @@
 
 @layer base {
 
+  body {
+    text-autospace: normal;
+  }
+
   .shiki,
   .shiki span {
     background-color: var(--color-zinc-50) !important;
