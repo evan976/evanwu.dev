@@ -35,7 +35,6 @@
 }
 
 @layer base {
-
   body {
     text-autospace: normal;
   }
@@ -46,7 +45,6 @@
   }
 
   :where(.dark) {
-
     .shiki,
     .shiki span {
       background-color: var(--color-zinc-800) !important;
