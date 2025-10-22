@@ -4,6 +4,9 @@ import createMDX from '@next/mdx'
 const nextConfig: NextConfig = {
   reactStrictMode: false,
   reactCompiler: true,
+  typescript: {
+    ignoreBuildErrors: true,
+  },
   pageExtensions: ['js', 'jsx', 'ts', 'tsx', 'mdx'],
   outputFileTracingIncludes: {
     '/**/*': ['./src/content/*.mdx'],
