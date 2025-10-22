@@ -114,10 +114,10 @@ export default async function Page() {
 
 function Photos() {
   const rotations = [
-    '0.990229deg',
+    '1.990229deg',
     '-9.00747deg',
-    '1.19904deg',
-    '6.1674deg',
+    '0.19904deg',
+    '8.1674deg',
     '-4.90447deg',
   ]
 
@@ -127,7 +127,7 @@ function Photos() {
         <motion.div
           key={imageIndex}
           tabIndex={0}
-          className="relative aspect-[9/10] w-44 p-1 flex-none bg-zinc-100 dark:bg-zinc-800 sm:w-72 sm:rounded-2xl rounded-xl dark:border-neutral-700 border border-zinc-200 shrink-0 overflow-hidden"
+          className="aspect-[9/10] cursor-pointer w-44 select-none p-1 flex-none bg-white sm:w-72 sm:rounded-2xl rounded-xl ring-2 ring-black/5 dark:ring-white/5 dark:bg-zinc-800 shrink-0 overflow-hidden"
           initial={{
             scale: 1.0,
             transform: `rotate(${rotations[imageIndex % rotations.length]})`,
@@ -139,15 +139,17 @@ function Photos() {
             zIndex: 100,
           }}
         >
-          <Image
-            src={image}
-            alt="Photo"
-            priority
-            width={299}
-            height={330}
-            sizes="(min-width: 640px) 18rem, 11rem"
-            className="rounded-xl object-cover shrink-0 size-full"
-          />
+          <div className="relative size-full">
+            <Image
+              src={image}
+              alt="Photo"
+              priority
+              fill
+              draggable={false}
+              sizes="(min-width: 640px) 18rem, 11rem"
+              className="rounded-lg sm:rounded-xl object-cover shrink-0"
+            />
+          </div>
         </motion.div>
       ))}
     </div>
