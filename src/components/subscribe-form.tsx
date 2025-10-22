@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from 'react'
+import { sendGAEvent } from '@next/third-parties/google'
 import { MailIcon } from 'lucide-react'
 import { subscribe } from '@/actions/subscription'
 import { Button } from '@/components/button'
@@ -12,6 +13,7 @@ const initialState = {
 }
 
 export function SubscribeForm() {
+  const [email, setEmail] = React.useState('')
   const [formState, formAction, pending] = React.useActionState(
     subscribe,
     initialState,
@@ -31,6 +33,8 @@ export function SubscribeForm() {
       </p>
       <div className="mt-6 flex">
         <input
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
           required
           type="email"
           name="email"
@@ -43,6 +47,11 @@ export function SubscribeForm() {
           disabled={pending}
           aria-disabled={pending}
           className="ml-4 flex-none min-w-16"
+          onClick={() =>
+            sendGAEvent('event', 'subscribe_button_click', {
+              email,
+            })
+          }
         >
           {pending ? 'Subscribing...' : 'Subscribe'}
         </Button>
