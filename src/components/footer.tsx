@@ -22,7 +22,10 @@ export function Footer() {
               </div>
               <div className="flex items-center gap-6">
                 <ModeToggle />
-                <p className="text-sm text-zinc-500 dark:text-zinc-400">
+                <p
+                  className="text-sm text-zinc-500 dark:text-zinc-400"
+                  suppressHydrationWarning
+                >
                   &copy; {new Date().getFullYear()} Evan. All rights reserved.
                 </p>
               </div>

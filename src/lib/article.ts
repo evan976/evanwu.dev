@@ -23,7 +23,7 @@ export async function getArticleBySlug(slug: string): Promise<null | {
   try {
     if (
       !(await fs
-        .stat(path.join(process.cwd(), 'content', `${slug}.mdx`))
+        .stat(path.join(process.cwd(), 'src', 'content', `${slug}.mdx`))
         .catch(() => false))
     ) {
       return null
@@ -31,7 +31,7 @@ export async function getArticleBySlug(slug: string): Promise<null | {
 
     const module = await import(`../content/${slug}.mdx`)
     const raw = await readMDXFile(
-      path.join(process.cwd(), 'content', `${slug}.mdx`),
+      path.join(process.cwd(), 'src', 'content', `${slug}.mdx`),
     )
 
     if (!module.default) {
@@ -56,7 +56,7 @@ export async function getArticleBySlug(slug: string): Promise<null | {
 
 export async function getArticleSlugs() {
   const slugs = []
-  const files = await fs.readdir(path.join(process.cwd(), 'content'))
+  const files = await fs.readdir(path.join(process.cwd(), 'src', 'content'))
 
   for (const file of files) {
     if (!file.endsWith('.mdx')) continue
