@@ -162,7 +162,7 @@ function MobileNavItem({
       <PopoverButton
         as={Link}
         href={href}
-        className="block outline-hidden py-2"
+        className="block outline-hidden py-2.5"
       >
         {children}
       </PopoverButton>

@@ -1,13 +1,14 @@
 import * as React from 'react'
 import type { Metadata } from 'next'
 import { format, isToday } from 'date-fns'
-import { ArrowRightIcon, BriefcaseIcon, ChevronRightIcon } from 'lucide-react'
+import { ArrowRight, Briefcase, ChevronRight } from 'lucide-react'
 import * as motion from 'motion/react-client'
 import Image from 'next/image'
 import Link from 'next/link'
 import { AuroraText } from '@/components/aurora-text'
 import { Button } from '@/components/button'
 import { Container } from '@/components/container'
+import { Highlighter } from '@/components/highlighter'
 import { SocialLink } from '@/components/social-link'
 import { SubscribeForm } from '@/components/subscribe-form'
 import { getArticles } from '@/lib/article'
@@ -31,10 +32,15 @@ export default async function Page() {
       <Container className="mt-9">
         <div className="max-w-2xl text-lg">
           <h1 className="text-4xl font-bold tracking-tight text-zinc-800 dark:text-zinc-100 sm:text-5xl">
-            <span>Frontend</span> <AuroraText>developer,</AuroraText>{' '}
-            <AuroraText colors={['#f0b100', '#ff2056', '#e12afb', '#ff6900']}>
-              designer,
-            </AuroraText>{' '}
+            <span>Frontend</span>{' '}
+            <Highlighter action="underline" color="#38bdf8">
+              <AuroraText>developer,</AuroraText>
+            </Highlighter>{' '}
+            <Highlighter action="underline" color="#FF9800">
+              <AuroraText colors={['#f0b100', '#ff2056', '#e12afb', '#ff6900']}>
+                designer,
+              </AuroraText>
+            </Highlighter>{' '}
             <span>and</span>{' '}
             <AuroraText colors={['#2b7fff', '#7ccf00', '#00b8db', '#00a6f4']}>
               open source
@@ -54,7 +60,7 @@ export default async function Page() {
         </div>
       </Container>
       <Photos />
-      <Container className="mt-24 md:mt-28">
+      <Container>
         <div className="mx-auto grid max-w-xl grid-cols-1 gap-y-20 lg:max-w-none lg:grid-cols-2">
           <div className="flex flex-col gap-16">
             <React.Suspense>
@@ -90,7 +96,7 @@ export default async function Page() {
                     className="relative z-10 mt-4 flex items-center text-sm font-medium text-teal-500"
                   >
                     Read article
-                    <ChevronRightIcon className="ml-1 mt-0.5 size-3" />
+                    <ChevronRight className="ml-1 mt-0.5 size-3" />
                   </div>
                 </article>
               ))}
@@ -108,44 +114,42 @@ export default async function Page() {
 
 function Photos() {
   const rotations = [
-    '0.290229deg',
+    '0.990229deg',
     '-9.00747deg',
     '1.19904deg',
-    '4.1674deg',
-    '-0.90447deg',
+    '6.1674deg',
+    '-4.90447deg',
   ]
 
   return (
-    <div className="mt-16 sm:mt-20">
-      <div className="flex justify-center items-center">
-        {[sea, beach, fall, mountain, snow].map((image, imageIndex) => (
-          <motion.div
-            key={imageIndex}
-            tabIndex={0}
-            className="relative aspect-[9/10] w-44 p-1 flex-none bg-zinc-100 dark:bg-zinc-800 sm:w-72 sm:rounded-2xl rounded-xl dark:border-neutral-700 border border-zinc-200 shrink-0 overflow-hidden"
-            initial={{
-              scale: 1.0,
-              transform: `rotate(${rotations[imageIndex % rotations.length]})`,
-              zIndex: 1,
-            }}
-            whileHover={{
-              scale: 1.1,
-              transform: 'rotate(0deg)',
-              zIndex: 100,
-            }}
-          >
-            <Image
-              src={image}
-              alt="Photo"
-              priority
-              width={299}
-              height={330}
-              sizes="(min-width: 640px) 18rem, 11rem"
-              className="rounded-xl object-cover shrink-0 size-full"
-            />
-          </motion.div>
-        ))}
-      </div>
+    <div className="flex justify-center items-center py-16 sm:py-24 overflow-hidden">
+      {[sea, beach, fall, mountain, snow].map((image, imageIndex) => (
+        <motion.div
+          key={imageIndex}
+          tabIndex={0}
+          className="relative aspect-[9/10] w-44 p-1 flex-none bg-zinc-100 dark:bg-zinc-800 sm:w-72 sm:rounded-2xl rounded-xl dark:border-neutral-700 border border-zinc-200 shrink-0 overflow-hidden"
+          initial={{
+            scale: 1.0,
+            transform: `rotate(${rotations[imageIndex % rotations.length]})`,
+            zIndex: 1,
+          }}
+          whileHover={{
+            scale: 1.1,
+            transform: 'rotate(0deg)',
+            zIndex: 100,
+          }}
+        >
+          <Image
+            src={image}
+            alt="Photo"
+            priority
+            width={299}
+            height={330}
+            sizes="(min-width: 640px) 18rem, 11rem"
+            className="rounded-xl object-cover shrink-0 size-full"
+          />
+        </motion.div>
+      ))}
     </div>
   )
 }
@@ -154,7 +158,7 @@ function Resume() {
   return (
     <div className="rounded-2xl border border-zinc-100 p-6 dark:border-zinc-700/40">
       <h2 className="flex items-center text-sm font-semibold text-zinc-900 dark:text-zinc-100">
-        <BriefcaseIcon className="size-5 flex-none text-zinc-400 dark:text-zinc-500" />
+        <Briefcase className="size-5 flex-none text-zinc-400 dark:text-zinc-500" />
         <span className="ml-3">Work Experience</span>
       </h2>
       <ol className="mt-6 space-y-4">
@@ -214,7 +218,7 @@ function Resume() {
         className="group mt-6 w-full"
       >
         More in LinkedIn
-        <ArrowRightIcon className="size-3.5 text-zinc-400 group-hover:translate-x-0.5 transition-all duration-200" />
+        <ArrowRight className="size-3.5 text-zinc-400 group-hover:translate-x-0.5 transition-all duration-200" />
       </Button>
     </div>
   )
