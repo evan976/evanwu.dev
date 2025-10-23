@@ -2,6 +2,8 @@
 
 This is the repository for my personal website, [evanwu.dev](https://evanwu.dev).
 
+![Preview](./public/opengraph-image.png)
+
 ## Tech Stack
 
 - [Next.js](https://nextjs.org) 15.4.2
