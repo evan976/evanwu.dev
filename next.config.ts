@@ -18,7 +18,6 @@ const withMDX = createMDX({
   options: {
     remarkPlugins: [
       [
-        // @ts-expect-error - remark-gfm is not typed
         'remark-gfm',
         {
           strict: true,
