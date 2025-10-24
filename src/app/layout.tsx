@@ -3,6 +3,7 @@ import type { Metadata, Viewport } from 'next'
 import { GoogleAnalytics } from '@next/third-parties/google'
 import { Analytics } from '@vercel/analytics/next'
 import { SpeedInsights } from '@vercel/speed-insights/next'
+import { NextIntlClientProvider } from 'next-intl'
 import { ThemeProvider } from 'next-themes'
 import { baseUrl } from '@/app/sitemap'
 import { Footer } from '@/components/footer'
@@ -90,28 +91,30 @@ export default function RootLayout({
           geistMono.variable,
         )}
       >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <div className="flex w-full">
-            <div className="fixed inset-0 flex justify-center sm:px-8">
-              <div className="flex w-full max-w-7xl lg:px-8">
-                <div className="w-full bg-white ring-1 ring-zinc-100 dark:bg-zinc-900 dark:ring-zinc-300/20" />
+        <NextIntlClientProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <div className="flex w-full">
+              <div className="fixed inset-0 flex justify-center sm:px-8">
+                <div className="flex w-full max-w-7xl lg:px-8">
+                  <div className="w-full bg-white ring-1 ring-zinc-100 dark:bg-zinc-900 dark:ring-zinc-300/20" />
+                </div>
+              </div>
+              <div className="relative flex w-full flex-col">
+                <Header />
+                <main className="flex-auto">{children}</main>
+                <Footer />
               </div>
             </div>
-            <div className="relative flex w-full flex-col">
-              <Header />
-              <main className="flex-auto">{children}</main>
-              <Footer />
-            </div>
-          </div>
-        </ThemeProvider>
-        <SpeedInsights />
-        <Analytics />
+          </ThemeProvider>
+        </NextIntlClientProvider>
       </body>
+      <SpeedInsights />
+      <Analytics />
       <GoogleAnalytics gaId="G-MF7M0W46QW" />
     </html>
   )
