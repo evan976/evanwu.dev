@@ -1,0 +1,131 @@
+export const title = 'React 19.2: React 新特性'
+export const description = '探索 React 19.2 的最新特性，包括用于控制应用可见性和性能的全新 Activity 组件，以及用于处理外部系统事件的 useEffectEvent。'
+export const publishedAt = '2025-10-17'
+export const image = '/react-19-2.webp'
+
+## React 新特性
+
+`<Activity />`
+
+`<Activity>` 让你可以将应用拆分为多个可控制和优先级的"活动"。
+
+你可以使用 Activity 来替代条件渲染应用的部分内容：
+
+```tsx
+// Before
+{isVisible && <Page />}
+
+// After
+<Activity mode={isVisible ? 'visible' : 'hidden'}>
+  <Page />
+</Activity>
+```
+
+在 React 19.2 中，Activity 支持两种模式：`visible` 和 `hidden`。
+
+- `hidden`：隐藏子元素，卸载副作用，并将所有更新推迟到 React 无事可做时再处理。
+- `visible`：显示子元素，挂载副作用，并允许正常处理更新。
+
+这意味着你可以在不影响屏幕上可见内容性能的前提下，预渲染并持续渲染应用的隐藏部分。
+
+你可以使用 Activity 来渲染用户可能即将访问的应用隐藏部分，或者保存用户离开的部分的状态。这有助于通过在后台加载数据、CSS 和图片来加快导航速度，并使返回导航能够保持诸如输入框等状态。
+
+未来，React 团队计划为 Activity 添加更多模式以支持不同的使用场景。
+
+关于如何使用 Activity 的示例，请查看 [Activity 文档](https://react.dev/reference/react/Activity)。
+
+`useEffectEvent`
+
+使用 useEffect 的一个常见模式是通知应用代码有关外部系统的某种"事件"。例如，当聊天室连接成功时，你可能想要显示通知：
+
+```tsx
+/* [!code filename:components/chat-room.tsx] */
+function ChatRoom({ roomId, theme }) {
+  useEffect(() => {
+    const connection = createConnection(serverUrl, roomId)
+    connection.on('connected', () => {
+      showNotification('Connected!', theme)
+    })
+    connection.connect()
+
+    return () => {
+      connection.disconnect()
+    }
+  }, [roomId, theme])
+
+  return <ChatInterface theme={theme} />
+}
+```
+
+上述代码的问题在于，对任何在此类"事件"中使用的值的更改都会导致周围的 Effect 重新运行。例如，更改 `theme` 会导致聊天室重新连接。这对于与 Effect 逻辑本身相关的值（如 `roomId`）来说是合理的，但对于 `theme` 来说就不合理了。
+
+为了解决这个问题，大多数用户只是禁用 lint 规则并排除依赖项。但这可能导致 bug，因为如果需要稍后更新 Effect，linter 就无法再帮你保持依赖项的最新状态。
+
+使用 `useEffectEvent`，你可以将逻辑的"事件"部分从发出它的 Effect 中分离出来：
+
+```tsx
+/* [!code filename:components/chat-room.tsx] */
+function ChatRoom({ roomId, theme }) {
+  const onConnected = useEffectEvent(() => {
+    showNotification('Connected!', theme)
+  })
+
+  useEffect(() => {
+    const connection = createConnection(serverUrl, roomId)
+    connection.on('connected', () => {
+      onConnected()
+    })
+    connection.connect()
+    return () => connection.disconnect()
+  }, [roomId]) // ✅ 所有依赖已声明（Effect Events 不是依赖）
+
+  return <ChatInterface theme={theme} />
+}
+```
+
+与 DOM 事件类似，Effect Events 总是能够"看到"最新的 props 和 state。
+
+`cacheSignal`
+
+> `cacheSignal` 仅用于 **React Server Components**。
+
+`cacheSignal` 让你能够知道 `cache()` 的生命周期何时结束：
+
+```ts
+import { cache, cacheSignal } from 'react'
+const dedupedFetch = cache(fetch)
+
+async function Component() {
+  await dedupedFetch(url, { signal: cacheSignal() })
+}
+```
+
+这允许你在结果不再被缓存使用时清理或中止工作，例如：
+
+- React 已成功完成渲染
+- 渲染被中止
+- 渲染失败
+
+**性能轨迹**
+
+React 19.2 为 Chrome DevTools 性能配置文件添加了一套新的自定义轨迹，以提供有关 React 应用性能的更多信息：
+
+![Performance Tracks](/perf-tracks.png)
+
+[React Performance Tracks](https://react.dev/reference/dev-tools/react-performance-tracks) 文档解释了轨迹中包含的所有内容，这里提供高层概览。
+
+### Scheduler ⚛
+
+Scheduler 显示 React 正在处理哪些不同优先级的工作，例如用于用户交互的"blocking"，或用于 startTransition 内更新的"transition"。在每个轨迹内部，你会看到正在执行的工作类型，例如调度更新的事件，以及该更新的渲染发生的时间。
+
+我们还会显示信息，例如更新何时因等待不同优先级而被阻塞，或者 React 何时在继续之前等待绘制。Scheduler 帮助你理解 React 如何将代码拆分为不同的优先级，以及完成工作的顺序。
+
+查看 [Scheduler](https://react.dev/reference/dev-tools/react-performance-tracks#scheduler) 文档以了解所有包含的内容。
+
+### Components ⚛
+
+Components 显示 React 正在处理的组件树，用于渲染或运行副作用。在其中你会看到诸如子组件挂载或副作用挂载时的"Mount"标签，或由于让步给 React 外部工作而导致渲染被阻塞时的"Blocked"标签。
+
+Components 帮助你理解组件何时被渲染或运行副作用，以及完成该工作所需的时间，以帮助识别性能问题。
+
+查看 [Components](https://react.dev/reference/dev-tools/react-performance-tracks#components) 文档以了解所有包含的内容。

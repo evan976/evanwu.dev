@@ -14,18 +14,28 @@ import { getArticleBySlug, getArticleSlugs } from '@/lib/article'
 
 export const dynamicParams = false
 
-export async function generateStaticParams() {
-  const slugs = await getArticleSlugs()
+export async function generateStaticParams({
+  params,
+}: {
+  params: Promise<{
+    locale: string
+  }>
+}) {
+  const { locale } = await params
+  const slugs = await getArticleSlugs(locale)
   return slugs.map((slug) => ({ slug }))
 }
 
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ slug: string }>
+  params: Promise<{
+    slug: string
+    locale: string
+  }>
 }): Promise<Metadata | undefined> {
-  const { slug } = await params
-  const article = await getArticleBySlug(slug)
+  const { slug, locale } = await params
+  const article = await getArticleBySlug(slug, locale)
 
   if (!article) return
 
@@ -42,7 +52,7 @@ export async function generateMetadata({
       description,
       type: 'article',
       siteName: "Evan's Blog",
-      locale: 'en_US',
+      locale,
       publishedTime: publishedAt,
       url: `/articles/${slug}`,
       images: [
@@ -73,7 +83,7 @@ export default async function Page({
 }: PageProps<'/[locale]/articles/[slug]'>) {
   const { slug, locale } = await params
 
-  const article = await getArticleBySlug(slug)
+  const article = await getArticleBySlug(slug, locale)
   const t = await getTranslations('articles')
   const formatter = await getFormatter()
 

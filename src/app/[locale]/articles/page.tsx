@@ -12,8 +12,11 @@ export async function generateMetadata() {
   }
 }
 
-export default async function Page() {
-  const articles = await getArticles()
+export default async function Page({
+  params,
+}: PageProps<'/[locale]/articles'>) {
+  const { locale } = await params
+  const articles = await getArticles(locale)
   const t = await getTranslations()
   const formatter = await getFormatter()
   return (
