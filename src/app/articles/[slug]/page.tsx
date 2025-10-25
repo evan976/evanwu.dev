@@ -136,14 +136,15 @@ export default async function Page({
                       </div>
                     </header>
                     {image && (
-                      <div className="mt-8">
+                      <div className="mt-8 w-full p-1 rounded-xl overflow-hidden bg-white ring-1 ring-zinc-900/10 dark:bg-zinc-800/50 dark:ring-white/10">
                         <Image
                           src={image}
                           alt={title}
-                          width={672}
-                          height={378}
+                          width={1200}
+                          height={630}
+                          sizes="(min-width: 1024px) 100vw, 100vw"
                           priority
-                          className="rounded-xl"
+                          className="rounded-lg object-cover"
                         />
                       </div>
                     )}

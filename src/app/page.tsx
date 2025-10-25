@@ -64,7 +64,7 @@ export default async function Page() {
         <div className="mx-auto grid max-w-xl grid-cols-1 gap-y-20 lg:max-w-none lg:grid-cols-2">
           <div className="flex flex-col gap-16">
             <React.Suspense>
-              {articles.map((article) => (
+              {articles.slice(0, 3).map((article) => (
                 <article
                   key={article.slug}
                   className="group relative flex flex-col items-start"
@@ -88,7 +88,10 @@ export default async function Page() {
                     </span>
                     {format(new Date(article.publishedAt), 'MMMM d, yyyy')}
                   </time>
-                  <p className="relative z-10 mt-2 text-sm text-zinc-600 dark:text-zinc-400">
+                  <p
+                    title={article.description}
+                    className="relative z-10 mt-2 text-sm text-zinc-600 dark:text-zinc-400 line-clamp-2"
+                  >
                     {article.description}
                   </p>
                   <div
@@ -127,7 +130,7 @@ function Photos() {
         <motion.div
           key={imageIndex}
           tabIndex={0}
-          className="aspect-[9/10] cursor-pointer w-44 select-none p-1 flex-none bg-white sm:w-72 sm:rounded-2xl rounded-xl ring-2 ring-black/5 dark:ring-white/5 dark:bg-zinc-800 shrink-0 overflow-hidden"
+          className="aspect-9/10 cursor-pointer w-44 select-none p-1 flex-none bg-white sm:w-72 sm:rounded-2xl rounded-xl ring-2 ring-black/5 dark:ring-white/5 dark:bg-zinc-800 shrink-0 overflow-hidden"
           initial={{
             scale: 1.0,
             transform: `rotate(${rotations[imageIndex % rotations.length]})`,

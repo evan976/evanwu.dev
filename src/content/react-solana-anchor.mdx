@@ -1,0 +1,379 @@
+export const title = 'How to Build a React Frontend That Interacts with Solana Smart Contracts Using Anchor'
+export const description = 'Learn how to build a React frontend that interacts with Solana smart contracts using Anchor, a framework for building Solana smart contracts.'
+export const publishedAt = '2025-10-24'
+export const image = '/react-solana.webp'
+
+## Introduction
+
+Anchor is a framework for building Solana smart contracts. It is a high-level language that compiles to `Rust`, and it provides a number of features that make it easy to build Solana smart contracts.
+
+In this article, we will learn how to build a React frontend that interacts with Solana smart contracts using Anchor.
+
+### Prerequisites
+
+- Node.js 18+ and pnpm or npm installed
+- Solana CLI and Anchor CLI
+- A deployed Anchor program and its Program ID
+- Basic familiarity with React, Next.js App Router, and TypeScript
+
+## Create the Next.js project (App Router)
+
+```bash
+pnpm create next-app solana-anchor-next --ts --eslint --src-dir --app --import-alias "@/*"
+cd solana-anchor-next
+pnpm add @solana/web3.js @solana/wallet-adapter-react @solana/wallet-adapter-react-ui \
+  @solana/wallet-adapter-wallets @solana/wallet-adapter-base @solana/wallet-adapter-phantom \
+  @coral-xyz/anchor
+pnpm dev
+```
+
+Project structure additions:
+
+```bash
+src/idl/
+  my_program.json # copy your IDL here
+src/config/
+  solana.ts
+src/components/
+  wallet-button.tsx
+  providers.tsx
+src/hooks/
+  use-program.ts
+```
+
+## Environment variables
+
+Create a `.env.local` file:
+
+```bash
+NEXT_PUBLIC_RPC_URL=https://api.devnet.solana.com
+NEXT_PUBLIC_PROGRAM_ID=<program_id>
+```
+
+Never expose private keys in env files. `NEXT_PUBLIC_*` variables are readable by the browser.
+
+## Config helpers
+
+```ts
+/* [!code filename:src/config/solana.ts] */
+import { web3 } from '@coral-xyz/anchor'
+
+export const DEFAULT_COMMITMENT: web3.Commitment = 'confirmed'
+export const DEFAULT_RPC = process.env.NEXT_PUBLIC_RPC_URL || 'https://api.devnet.solana.com'
+export const PROGRAM_ID_STR = process.env.NEXT_PUBLIC_PROGRAM_ID!
+```
+
+```ts
+/* [!code filename:src/lib/anchor-client.ts] */
+import { AnchorProvider, BN, Idl, Program, setProvider } from '@coral-xyz/anchor'
+import * as anchor from '@coral-xyz/anchor'
+import { Connection } from '@solana/web3.js'
+import idl from '@/idl/my_program.json'
+
+export function getProvider(connection: Connection, wallet: anchor.Wallet) {
+  const provider = new AnchorProvider(connection, wallet, { commitment: 'confirmed' })
+  setProvider(provider)
+  return provider
+}
+
+export function getProgram(connection: Connection, wallet: anchor.Wallet) {
+  const provider = getProvider(connection, wallet)
+  const programId = new anchor.web3.PublicKey(process.env.NEXT_PUBLIC_PROGRAM_ID!)
+  return new Program(idl as Idl, programId, provider)
+}
+
+export { BN, Idl, Program, setProvider }
+```
+
+## App-wide Providers (client component)
+
+```tsx
+/* [!code filename:src/components/providers.tsx] */
+'use client'
+
+import { ReactNode, useMemo } from 'react'
+import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react'
+import { WalletModalProvider } from '@solana/wallet-adapter-react-ui'
+import { PhantomWalletAdapter, SolflareWalletAdapter } from '@solana/wallet-adapter-wallets'
+import '@solana/wallet-adapter-react-ui/styles.css'
+import { DEFAULT_RPC } from '@/config/solana'
+
+export default function Providers({ children }: { children: ReactNode }) {
+  const wallets = useMemo(() => [new PhantomWalletAdapter(), new SolflareWalletAdapter()], [])
+  return (
+    <ConnectionProvider endpoint={DEFAULT_RPC}>
+      <WalletProvider wallets={wallets} autoConnect>
+        <WalletModalProvider>{children}</WalletModalProvider>
+      </WalletProvider>
+    </ConnectionProvider>
+  )
+}
+```
+
+Include in the root layout.
+
+```tsx
+/* [!code filename:src/app/layout.tsx] */
+import type { Metadata } from 'next'
+import Providers from '@/components/providers'
+import '@/app/globals.css'
+
+export const metadata: Metadata = {
+  title: 'Solana + Anchor + Next.js',
+  description: 'A template for building a Solana + Anchor + Next.js project',
+}
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode
+}>) {
+  return (
+    <html lang="en">
+      <body>
+        <Providers>{children}</Providers>
+      </body>
+    </html>
+  )
+}
+```
+
+## Wallet UI
+
+```tsx
+/* [!code filename:src/components/wallet-button.tsx] */
+import { WalletMultiButton } from '@solana/wallet-adapter-react-ui'
+
+export function WalletButton() {
+  return <WalletMultiButton />
+}
+```
+
+## Program hook for Anchor calls
+
+```ts
+/* [!code filename:src/hooks/use-program.ts] */
+import { useCallback, useMemo, useState } from 'react'
+import { useConnection, useWallet } from '@solana/wallet-adapter-react'
+import { web3 } from '@coral-xyz/anchor'
+import { BN, getProgram } from '@/lib/anchor-client'
+
+export function useProgram() {
+  const { connection } = useConnection()
+  const wallet = useWallet()
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<Error | null>(null)
+
+  const program = useMemo(() => {
+    if (!wallet.publicKey || !wallet.signTransaction) return null
+    return getProgram(connection, wallet as any)
+  }, [connection, wallet.publicKey, wallet.signTransaction])
+
+  const pda = useMemo(() => {
+    if (!wallet.publicKey || !program) return null
+    const [addr] = web3.PublicKey.findProgramAddressSync(
+      [Buffer.from('state'), wallet.publicKey.toBuffer()],
+      program.programId
+    )
+    return addr
+  }, [wallet.publicKey, program])
+
+  const initialize = useCallback(async () => {
+    if (!program || !wallet.publicKey || !pda) throw new Error('Wallet or program not ready')
+    setLoading(true)
+    setError(null)
+    try {
+      const txSig = await program.methods.initialize().accounts({
+        authority: wallet.publicKey,
+        state: pda,
+        systemProgram: web3.SystemProgram.programId,
+      }).rpc()
+      return txSig
+    } catch (e: any) {
+      setError(e)
+      throw e
+    } finally { setLoading(false) }
+  }, [program, wallet.publicKey, pda])
+
+  const update = useCallback(async (value: number) => {
+    if (!program || !wallet.publicKey || !pda) throw new Error('Wallet or program not ready')
+    setLoading(true)
+    setError(null)
+    try {
+      const txSig = await program.methods.update(new BN(value)).accounts({
+        authority: wallet.publicKey,
+        state: pda,
+      }).rpc()
+      return txSig
+    } catch (e: any) {
+      setError(e)
+      throw e
+    } finally { setLoading(false) }
+  }, [program, wallet.publicKey, pda])
+
+  const fetchState = useCallback(async () => {
+    if (!program || !pda) throw new Error('Program not ready')
+    return await program.account.state.fetch(pda)
+  }, [program, pda])
+
+  return { program, pda, initialize, update, fetchState, loading, error }
+}
+```
+
+```tsx
+/* [!code filename:src/app/page.tsx] */
+import WalletButton from '@/components/wallet-button'
+import { HomeClient } from './page-client'
+
+export default function Page() {
+  return (
+    <main className="h-screen p-6 space-y-4 flex flex-col items-center justify-center">
+      <h1 className="text-2xl font-bold">Solana + Anchor + Next.js</h1>
+      <WalletButton />
+      <HomeClient />
+    </main>
+  )
+}
+```
+
+```tsx
+/* [!code filename:src/app/page-client.tsx] */
+'use client'
+
+import { useEffect, useState } from 'react'
+import { useProgram } from '@/hooks/use-program'
+
+export function HomeClient() {
+  const { initialize, update, fetchState, pda, loading, error } = useProgram()
+  const [value, setValue] = useState<number>(0)
+  const [account, setAccount] = useState<any>(null)
+
+  useEffect(() => {
+    (async () => {
+      try {
+        setAccount(await fetchState())
+      } catch {
+        setAccount(null)
+      }
+    })()
+  }, [fetchState])
+
+  return (
+    <section className="mt-4">
+      <p>PDA: {pda?.toBase58() ?? '-'}</p>
+      <button disabled={loading} onClick={() => initialize()}>Initialize</button>
+      <div className="mt-3">
+        <input type="number" value={value} onChange={(e) => setValue(Number(e.target.value))} />
+        <button disabled={loading} onClick={() => update(value)}>Update</button>
+      </div>
+      <button className="mt-3" disabled={loading} onClick={async () => setAccount(await fetchState())}>Refresh</button>
+      <pre className="mt-3">{account ? JSON.stringify(account, null, 2) : 'No state'}</pre>
+      {error && <pre className="text-red-500">{String(error.message || error)}</pre>}
+    </section>
+  )
+}
+```
+
+## Typical Anchor account and program snippets (Rust)
+
+```rust
+/* [!code filename:program.rs] */
+use anchor_lang::prelude::*;
+
+declare_id!("YourProgram111111111111111111111111111111111");
+
+#[program]
+pub mod <program_name> {
+    use super::*;
+
+    pub fn initialize(ctx: Context<Initialize>) -> Result<()> {
+        let state = &mut ctx.accounts.state;
+        state.authority = ctx.accounts.authority.key();
+        state.value = 0;
+        Ok(())
+    }
+
+    pub fn update(ctx: Context<Update>, new_value: u64) -> Result<()> {
+        require_keys_eq!(ctx.accounts.state.authority, ctx.accounts.authority.key(), CustomError::Unauthorized);
+        ctx.accounts.state.value = new_value;
+        Ok(())
+    }
+}
+
+#[derive(Accounts)]
+pub struct Initialize<'info> {
+    #[account(mut)]
+    pub authority: Signer<'info>,
+    #[account(
+        init,
+        payer = authority,
+        seeds = [b"state", authority.key().as_ref()],
+        bump,
+        space = 8 + 32 + 8,
+    )]
+    pub state: Account<'info, State>;
+    pub system_program: Program<'info, System>;
+}
+
+#[derive(Accounts)]
+pub struct Update<'info> {
+    pub authority: Signer<'info>,
+    #[account(mut, seeds = [b"state", authority.key().as_ref()], bump)]
+    pub state: Account<'info, State>;
+}
+
+#[account]
+pub struct State {
+    pub authority: Pubkey,
+    pub value: u64,
+}
+
+#[error_code]
+pub enum CustomError {
+    #[msg("Unauthorized")] 
+    Unauthorized,
+}
+```
+
+## Localnet and devnet workflows
+
+- Localnet
+    - Run: `solana-test-validator --reset`
+    - In Anchor workspace: `anchor build && anchor deploy -p my_program`
+    - Point app to local RPC: `NEXT_PUBLIC_RPC_URL=http://127.0.0.1:8899`
+- Devnet
+    - Airdrop: `solana airdrop 2` (devnet)
+    - Verify program: `solana program show <PROGRAM_ID>`
+    - Bundle IDL in `src/idl/` and import it in the client
+
+## Common pitfalls
+
+- Program ID mismatch between on-chain deploy and client env
+- IDL method or account names not matching the program
+- PDA seeds and bumps must match client derivation and on-chain constraints
+- Wallet adapter requires HTTPS in browsers, except [localhost](http://localhost)
+- Commitment and preflight errors from insufficient funds or wrong cluster
+
+## Production notes
+
+- Use a dedicated RPC provider URL
+- Consider transaction priority fees
+- Surface custom errors to the UI
+- Split client components from server components to keep bundles small
+- Consider `@solana/spl-token` and `@solana/spl-token-metadata` for token flows
+
+## Minimal checklist
+
+- [ ]  Program deployed and Program ID set in env
+- [ ]  IDL copied to `src/idl`
+- [ ]  Wallet adapter wired and connect button renders
+- [ ]  PDA derivation consistent with on-chain seeds
+- [ ]  Initialize runs without error on target cluster
+- [ ]  State fetch renders expected JSON
+
+## Next steps
+
+- Swap to your real IDL and Program ID
+- Extend the hook with more instructions
+- Add UI states and optimistic updates
+- Add tests with `@coral-xyz/anchor` Mocha framework
