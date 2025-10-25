@@ -16,22 +16,25 @@ async function readMDXFile(filePath: string) {
   return raw
 }
 
-export async function getArticleBySlug(slug: string): Promise<null | {
+export async function getArticleBySlug(
+  slug: string,
+  locale: string,
+): Promise<null | {
   Component: React.FC
   metadata: Metadata
 }> {
   try {
     if (
       !(await fs
-        .stat(path.join(process.cwd(), 'src', 'content', `${slug}.mdx`))
+        .stat(path.join(process.cwd(), 'src', 'content', locale, `${slug}.mdx`))
         .catch(() => false))
     ) {
       return null
     }
 
-    const module = await import(`../content/${slug}.mdx`)
+    const module = await import(`../content/${locale}/${slug}.mdx`)
     const raw = await readMDXFile(
-      path.join(process.cwd(), 'src', 'content', `${slug}.mdx`),
+      path.join(process.cwd(), 'src', 'content', locale, `${slug}.mdx`),
     )
 
     if (!module.default) {
@@ -54,9 +57,11 @@ export async function getArticleBySlug(slug: string): Promise<null | {
   }
 }
 
-export async function getArticleSlugs() {
+export async function getArticleSlugs(locale: string) {
   const slugs = []
-  const files = await fs.readdir(path.join(process.cwd(), 'src', 'content'))
+  const files = await fs.readdir(
+    path.join(process.cwd(), 'src', 'content', locale),
+  )
 
   for (const file of files) {
     if (!file.endsWith('.mdx')) continue
@@ -65,12 +70,12 @@ export async function getArticleSlugs() {
   return slugs
 }
 
-export async function getArticles() {
-  const slugs = await getArticleSlugs()
+export async function getArticles(locale: string) {
+  const slugs = await getArticleSlugs(locale)
   const articles = []
 
   for (const slug of slugs) {
-    const article = await getArticleBySlug(slug)
+    const article = await getArticleBySlug(slug, locale)
     if (!article) continue
     articles.push({
       slug,

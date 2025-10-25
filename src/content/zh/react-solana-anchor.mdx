@@ -1,0 +1,379 @@
+export const title = '如何使用 Anchor 构建与 Solana 智能合约交互的 React 前端'
+export const description = '学习如何使用 Anchor（一个用于构建 Solana 智能合约的框架）构建与 Solana 智能合约交互的 React 前端。'
+export const publishedAt = '2025-10-24'
+export const image = '/react-solana.webp'
+
+## 介绍
+
+Anchor 是一个用于构建 Solana 智能合约的框架。它是一种编译为 `Rust` 的高级语言，并提供了许多使构建 Solana 智能合约变得简单的功能。
+
+在本文中，我们将学习如何使用 Anchor 构建与 Solana 智能合约交互的 React 前端。
+
+### 前置要求
+
+- 已安装 Node.js 18+ 和 pnpm 或 npm
+- Solana CLI 和 Anchor CLI
+- 已部署的 Anchor 程序及其 Program ID
+- 熟悉 React、Next.js App Router 和 TypeScript
+
+## 创建 Next.js 项目（App Router）
+
+```bash
+pnpm create next-app solana-anchor-next --ts --eslint --src-dir --app --import-alias "@/*"
+cd solana-anchor-next
+pnpm add @solana/web3.js @solana/wallet-adapter-react @solana/wallet-adapter-react-ui \
+  @solana/wallet-adapter-wallets @solana/wallet-adapter-base @solana/wallet-adapter-phantom \
+  @coral-xyz/anchor
+pnpm dev
+```
+
+项目结构新增：
+
+```bash
+src/idl/
+  my_program.json # 将你的 IDL 复制到这里
+src/config/
+  solana.ts
+src/components/
+  wallet-button.tsx
+  providers.tsx
+src/hooks/
+  use-program.ts
+```
+
+## 环境变量
+
+创建 `.env.local` 文件：
+
+```bash
+NEXT_PUBLIC_RPC_URL=https://api.devnet.solana.com
+NEXT_PUBLIC_PROGRAM_ID=<program_id>
+```
+
+永远不要在环境文件中暴露私钥。`NEXT_PUBLIC_*` 变量可被浏览器读取。
+
+## 配置辅助函数
+
+```ts
+/* [!code filename:src/config/solana.ts] */
+import { web3 } from '@coral-xyz/anchor'
+
+export const DEFAULT_COMMITMENT: web3.Commitment = 'confirmed'
+export const DEFAULT_RPC = process.env.NEXT_PUBLIC_RPC_URL || 'https://api.devnet.solana.com'
+export const PROGRAM_ID_STR = process.env.NEXT_PUBLIC_PROGRAM_ID!
+```
+
+```ts
+/* [!code filename:src/lib/anchor-client.ts] */
+import { AnchorProvider, BN, Idl, Program, setProvider } from '@coral-xyz/anchor'
+import * as anchor from '@coral-xyz/anchor'
+import { Connection } from '@solana/web3.js'
+import idl from '@/idl/my_program.json'
+
+export function getProvider(connection: Connection, wallet: anchor.Wallet) {
+  const provider = new AnchorProvider(connection, wallet, { commitment: 'confirmed' })
+  setProvider(provider)
+  return provider
+}
+
+export function getProgram(connection: Connection, wallet: anchor.Wallet) {
+  const provider = getProvider(connection, wallet)
+  const programId = new anchor.web3.PublicKey(process.env.NEXT_PUBLIC_PROGRAM_ID!)
+  return new Program(idl as Idl, programId, provider)
+}
+
+export { BN, Idl, Program, setProvider }
+```
+
+## 应用级别的 Providers（客户端组件）
+
+```tsx
+/* [!code filename:src/components/providers.tsx] */
+'use client'
+
+import { ReactNode, useMemo } from 'react'
+import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react'
+import { WalletModalProvider } from '@solana/wallet-adapter-react-ui'
+import { PhantomWalletAdapter, SolflareWalletAdapter } from '@solana/wallet-adapter-wallets'
+import '@solana/wallet-adapter-react-ui/styles.css'
+import { DEFAULT_RPC } from '@/config/solana'
+
+export default function Providers({ children }: { children: ReactNode }) {
+  const wallets = useMemo(() => [new PhantomWalletAdapter(), new SolflareWalletAdapter()], [])
+  return (
+    <ConnectionProvider endpoint={DEFAULT_RPC}>
+      <WalletProvider wallets={wallets} autoConnect>
+        <WalletModalProvider>{children}</WalletModalProvider>
+      </WalletProvider>
+    </ConnectionProvider>
+  )
+}
+```
+
+包含在根布局中。
+
+```tsx
+/* [!code filename:src/app/layout.tsx] */
+import type { Metadata } from 'next'
+import Providers from '@/components/providers'
+import '@/app/globals.css'
+
+export const metadata: Metadata = {
+  title: 'Solana + Anchor + Next.js',
+  description: 'A template for building a Solana + Anchor + Next.js project',
+}
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode
+}>) {
+  return (
+    <html lang="en">
+      <body>
+        <Providers>{children}</Providers>
+      </body>
+    </html>
+  )
+}
+```
+
+## 钱包 UI
+
+```tsx
+/* [!code filename:src/components/wallet-button.tsx] */
+import { WalletMultiButton } from '@solana/wallet-adapter-react-ui'
+
+export function WalletButton() {
+  return <WalletMultiButton />
+}
+```
+
+## 用于 Anchor 调用的 Program hook
+
+```ts
+/* [!code filename:src/hooks/use-program.ts] */
+import { useCallback, useMemo, useState } from 'react'
+import { useConnection, useWallet } from '@solana/wallet-adapter-react'
+import { web3 } from '@coral-xyz/anchor'
+import { BN, getProgram } from '@/lib/anchor-client'
+
+export function useProgram() {
+  const { connection } = useConnection()
+  const wallet = useWallet()
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<Error | null>(null)
+
+  const program = useMemo(() => {
+    if (!wallet.publicKey || !wallet.signTransaction) return null
+    return getProgram(connection, wallet as any)
+  }, [connection, wallet.publicKey, wallet.signTransaction])
+
+  const pda = useMemo(() => {
+    if (!wallet.publicKey || !program) return null
+    const [addr] = web3.PublicKey.findProgramAddressSync(
+      [Buffer.from('state'), wallet.publicKey.toBuffer()],
+      program.programId
+    )
+    return addr
+  }, [wallet.publicKey, program])
+
+  const initialize = useCallback(async () => {
+    if (!program || !wallet.publicKey || !pda) throw new Error('Wallet or program not ready')
+    setLoading(true)
+    setError(null)
+    try {
+      const txSig = await program.methods.initialize().accounts({
+        authority: wallet.publicKey,
+        state: pda,
+        systemProgram: web3.SystemProgram.programId,
+      }).rpc()
+      return txSig
+    } catch (e: any) {
+      setError(e)
+      throw e
+    } finally { setLoading(false) }
+  }, [program, wallet.publicKey, pda])
+
+  const update = useCallback(async (value: number) => {
+    if (!program || !wallet.publicKey || !pda) throw new Error('Wallet or program not ready')
+    setLoading(true)
+    setError(null)
+    try {
+      const txSig = await program.methods.update(new BN(value)).accounts({
+        authority: wallet.publicKey,
+        state: pda,
+      }).rpc()
+      return txSig
+    } catch (e: any) {
+      setError(e)
+      throw e
+    } finally { setLoading(false) }
+  }, [program, wallet.publicKey, pda])
+
+  const fetchState = useCallback(async () => {
+    if (!program || !pda) throw new Error('Program not ready')
+    return await program.account.state.fetch(pda)
+  }, [program, pda])
+
+  return { program, pda, initialize, update, fetchState, loading, error }
+}
+```
+
+```tsx
+/* [!code filename:src/app/page.tsx] */
+import WalletButton from '@/components/wallet-button'
+import { HomeClient } from './page-client'
+
+export default function Page() {
+  return (
+    <main className="h-screen p-6 space-y-4 flex flex-col items-center justify-center">
+      <h1 className="text-2xl font-bold">Solana + Anchor + Next.js</h1>
+      <WalletButton />
+      <HomeClient />
+    </main>
+  )
+}
+```
+
+```tsx
+/* [!code filename:src/app/page-client.tsx] */
+'use client'
+
+import { useEffect, useState } from 'react'
+import { useProgram } from '@/hooks/use-program'
+
+export function HomeClient() {
+  const { initialize, update, fetchState, pda, loading, error } = useProgram()
+  const [value, setValue] = useState<number>(0)
+  const [account, setAccount] = useState<any>(null)
+
+  useEffect(() => {
+    (async () => {
+      try {
+        setAccount(await fetchState())
+      } catch {
+        setAccount(null)
+      }
+    })()
+  }, [fetchState])
+
+  return (
+    <section className="mt-4">
+      <p>PDA: {pda?.toBase58() ?? '-'}</p>
+      <button disabled={loading} onClick={() => initialize()}>Initialize</button>
+      <div className="mt-3">
+        <input type="number" value={value} onChange={(e) => setValue(Number(e.target.value))} />
+        <button disabled={loading} onClick={() => update(value)}>Update</button>
+      </div>
+      <button className="mt-3" disabled={loading} onClick={async () => setAccount(await fetchState())}>Refresh</button>
+      <pre className="mt-3">{account ? JSON.stringify(account, null, 2) : 'No state'}</pre>
+      {error && <pre className="text-red-500">{String(error.message || error)}</pre>}
+    </section>
+  )
+}
+```
+
+## 典型的 Anchor 账户和程序代码片段（Rust）
+
+```rust
+/* [!code filename:program.rs] */
+use anchor_lang::prelude::*;
+
+declare_id!("YourProgram111111111111111111111111111111111");
+
+#[program]
+pub mod <program_name> {
+    use super::*;
+
+    pub fn initialize(ctx: Context<Initialize>) -> Result<()> {
+        let state = &mut ctx.accounts.state;
+        state.authority = ctx.accounts.authority.key();
+        state.value = 0;
+        Ok(())
+    }
+
+    pub fn update(ctx: Context<Update>, new_value: u64) -> Result<()> {
+        require_keys_eq!(ctx.accounts.state.authority, ctx.accounts.authority.key(), CustomError::Unauthorized);
+        ctx.accounts.state.value = new_value;
+        Ok(())
+    }
+}
+
+#[derive(Accounts)]
+pub struct Initialize<'info> {
+    #[account(mut)]
+    pub authority: Signer<'info>,
+    #[account(
+        init,
+        payer = authority,
+        seeds = [b"state", authority.key().as_ref()],
+        bump,
+        space = 8 + 32 + 8,
+    )]
+    pub state: Account<'info, State>;
+    pub system_program: Program<'info, System>;
+}
+
+#[derive(Accounts)]
+pub struct Update<'info> {
+    pub authority: Signer<'info>,
+    #[account(mut, seeds = [b"state", authority.key().as_ref()], bump)]
+    pub state: Account<'info, State>;
+}
+
+#[account]
+pub struct State {
+    pub authority: Pubkey,
+    pub value: u64,
+}
+
+#[error_code]
+pub enum CustomError {
+    #[msg("Unauthorized")] 
+    Unauthorized,
+}
+```
+
+## Localnet 和 devnet 工作流程
+
+- Localnet
+    - 运行：`solana-test-validator --reset`
+    - 在 Anchor 工作区：`anchor build && anchor deploy -p my_program`
+    - 将应用指向本地 RPC：`NEXT_PUBLIC_RPC_URL=http://127.0.0.1:8899`
+- Devnet
+    - 空投：`solana airdrop 2`（devnet）
+    - 验证程序：`solana program show <PROGRAM_ID>`
+    - 将 IDL 打包到 `src/idl/` 并在客户端导入
+
+## 常见问题
+
+- 链上部署的 Program ID 与客户端环境中的不匹配
+- IDL 方法或账户名称与程序不匹配
+- PDA seeds 和 bumps 必须与客户端派生和链上约束匹配
+- 钱包适配器在浏览器中需要 HTTPS，除了 [localhost](http://localhost)
+- 因资金不足或错误的集群导致的 Commitment 和 preflight 错误
+
+## 生产环境注意事项
+
+- 使用专用的 RPC 提供商 URL
+- 考虑交易优先级费用
+- 将自定义错误展示到 UI
+- 将客户端组件与服务器组件分离以保持包体积小
+- 对于代币流，考虑使用 `@solana/spl-token` 和 `@solana/spl-token-metadata`
+
+## 检查清单
+
+- [ ]  程序已部署且 Program ID 在环境变量中设置
+- [ ]  IDL 已复制到 `src/idl`
+- [ ]  钱包适配器已连接且连接按钮已渲染
+- [ ]  PDA 派生与链上 seeds 一致
+- [ ]  Initialize 在目标集群上运行无错误
+- [ ]  State fetch 渲染了预期的 JSON
+
+## 下一步
+
+- 切换到你的真实 IDL 和 Program ID
+- 使用更多指令扩展 hook
+- 添加 UI 状态和乐观更新
+- 使用 `@coral-xyz/anchor` Mocha 框架添加测试

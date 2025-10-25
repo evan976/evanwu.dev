@@ -1,0 +1,824 @@
+export const title = 'Next.js 中的 Web 性能优化'
+export const description = 'Web 性能描述了 Web 应用的快慢程度。这对应用开发至关重要。高度优化的 Web 应用速度快，用户体验好，并能带来更高的产品转化率和更高的搜索引擎排名。'
+export const publishedAt = '2025-10-02'
+export const image = '/web-performance-optimization.jpg'
+
+## 用户体验概述
+
+用户决定了产品的成功率；他们在导航或与应用交互时的体验可能会间接影响收入。构建在用户请求时加载更快的网页至关重要。这将改善用户的前端体验。
+
+除了 Web 应用的速度和用户交互性外，网页界面上显示的内容保持视觉稳定性也很重要，它们不应该总是改变位置，从一个空间移动到另一个空间。
+
+## 影响 Web 性能的因素
+
+某些资源如果没有有效使用，可能会对 Web 应用性能产生负面影响。让我们逐一检查。
+
+### 多媒体文件大小
+
+图片和视频文件在 Web 浏览器中占用大量空间。当这些文件质量很高时，它们会变得太大，导致加载时间变慢，并导致网页上其他内容的位置发生移动。浏览器在文件渲染后会导致这种移动，因为浏览器无法计算这些文件的适当宽度和高度。这种移动被称为**累积布局偏移（CLS）**，这是一个 CWV 指标，用于确定图像（或其他元素）周围的字幕内容在图像（或元素）加载后是否移动到另一个位置。在某些情况下，多媒体文件代表网页的主要内容。当这些文件加载缓慢时，它们会影响网页的**最大内容绘制（LCP）**。LCP 决定了视觉上重要的 Web 内容渲染的速度。
+
+### 网络请求
+
+从网络服务器请求的远程资源（如库、脚本、包和 API）被认为是资源阻塞。这会影响 Web 应用的 INP 分数。**交互到下次绘制（INP）**也是一个 CWV 指标。它表示在请求期间用户交互后完全渲染 Web 内容所需的时间。
+
+### 内存使用
+
+大型应用需要更多资源，这会影响 Web 应用的性能。为了在构建时实现优化的内存使用，需要启用延迟加载、最小化使用的资源大小、消除冗余代码、启用缓存，并使用 Chrome DevTools 等工具分析内存问题。
+
+### URL 重定向
+
+URL 重定向意味着从一个网页访问另一个网页。这些网页的 URL 模式彼此不同。当这些模式不匹配时，浏览器会出现错误，导致用户查看意外的网页。当网页更新了功能或在表单提交后，URL 重定向很有用。当 URL 重定向未有效实施时，可能导致加载时间变慢和网页搜索引擎排名低。
+
+让我们根据上述因素实施最佳实践以及如何优化性能。
+
+## 1. 使用内置的 Next.js `Image` 组件显示图片
+
+Next.js 有一个内置的 `Image` 组件和属性，使控制图片渲染方式变得更容易。以下是每个属性的用途说明：
+
+### 必需属性
+
+- `src`（必需）：图片的来源。图片可以本地存储在仓库中，也可以远程存储在网络服务器上。
+- `alt`（必需）：alt 属性提供了图片的文本信息替代。它可以被屏幕阅读器辅助技术大声朗读，有助于实现可访问的 Web 应用。如果图片不为用户界面添加重要信息，alt 可以设置为空值。
+- `width`（远程图片必需）：这决定了图片显示的宽度。
+- `height`（远程图片必需）：这决定了图片的长度。
+
+### 可选属性
+
+以下是 Next.js `Image` 组件的一些非必需属性。
+
+- `priority`：当图片具有 priority 属性时，浏览器将在显示图片之前预加载图片，使其加载更快。这提高了 Web 应用的 LCP 分数。
+- `fill`：fill 属性表示父元素决定图片的宽度和高度。
+- `sizes`：此 sizes 指定用户设备不同断点处图片的宽度和高度。
+- `loader`：返回图片 URL 字符串的函数。它接受 src、width 和 quality 作为参数。
+- `placeholder`：占位符在图片完全渲染之前填充图片的空白空间。
+- `loading`：接受 `{lazy}` 值以指定延迟加载。
+- `style`：增强图片的视觉吸引力。不包括其他接受的 Image 属性作为其属性。
+- `onLoad`、`onError`：事件处理程序。
+
+在这里，让我们控制如何渲染不同的 Next.js 图片。
+
+### 在 Next.js 中渲染本地图片
+
+```tsx
+/* [!code filename:components/local-image.tsx] */
+import Image from 'next/image'
+import roseFlower from '../public/roseImage.png'
+
+export function FlowerImage() {
+  return (
+    <main>
+      <div style={{ width: "600px", height: "600px" }}>
+        <Image
+          src={roseFlower}
+          alt="Rose Flower"
+          style={{ objectFit: "contain" }}
+          fill
+          priority
+        />
+      </div>
+    </main>
+  )
+}
+```
+
+在上面的 `local-image.tsx` 文件中，我们没有在 `Image` 组件内指定 `height` 和 `width`，因为 `roseFlower` 是本地图片。Next.js 会自动计算本地存储图片的 `width` 和 `height`。使用 `priority` 属性时，`roseFlower` 在加载时会被优先处理。
+
+但是，`roseflower` 的 `width` 和 `height` 由其父元素使用 `fill` 属性决定。
+
+### 渲染远程图片
+
+必须指定从外部源渲染的图片的 `width` 和 `height`。这让我们在图片渲染之前更好地控制图片的空间。
+
+```tsx
+/* [!code filename:components/remote-image.tsx] */
+import Image from 'next/image'
+
+export function MonalisaImage() {
+  return (
+    <Image
+      src="https://s3.amazonaws.com/my-bucket/monalisa.webp"
+      alt="Monalisa"
+      height={600}
+      width={600}
+    />
+  )
+}
+```
+
+从外部源渲染的图片可能会影响 Web 应用的安全性。为了确保 Web 应用仅从指定的 URL 渲染图片，我们需要在 next.config.js 文件中包含 `remotePatterns`。`remotePatterns` 接受包含 `protocol`、`hostname`、`port` 和 `pathname` 的对象。
+
+让我们配置 `next.config.ts` 文件，使其仅从 `https://s3.amazonaws.com/my-bucket/**` URL 路径渲染图片，并在末尾有不同数量的路径段或子域：
+
+```ts
+/* [!code filename:next.config.ts] */
+import type { NextConfig } from 'next'
+
+const nextConfig: NextConfig = {
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 's3.amazonaws.com',
+        port: '',
+        pathname: '/my-bucket/**'
+      },
+    ],
+  },
+}
+
+export default nextConfig
+```
+
+要在 URL 开头指定路径段或子域，请在 URL 路径的开始处放置 `**`。例如，`hostname: '**.amazonaws.com'` 意味着 s3 可以被另一个子域或路径段替换。
+
+对于单个路径段或子域，使用 `*` 而不是 `**`。
+
+### 使用 Next.js loader 函数渲染图片
+
+`loader` 函数在生成图片的动态 URL 时接受 `src`、`width` 和 `quality` 作为参数。它仅适用于客户端组件。你可以对本地图片或远程图片使用 loader。以下是如何使用 `loader` 的示例：
+
+```tsx
+/* [!code filename:components/image-loader.tsx] */
+'use client'
+
+import Image from 'next/image'
+
+function loader({ src, width, quality }) {
+  return `https://example.com/${src}?w=${width}q=${quality}`
+}
+
+export function ImageLoader() {
+  return (
+    <Image
+      loader={loader}
+      src='/roseImage.png'
+      alt="Rose Image"
+      width={600}
+      height={600}
+      quality={80}
+    />
+  )
+}
+```
+
+### 为图片添加 `placeholder`
+
+占位符解决了网络连接缓慢的图片渲染问题。
+
+在 `gallery-image.tsx` 文件中，图片在完全渲染之前以模糊效果加载：
+
+```tsx
+/* [!code filename:components/gallery-image.tsx] */
+import Image from 'next/image'
+import roseFlower from '@/public/rose.png'
+
+export function GalleryImage() {
+  return (
+    <Image
+      src={roseFlower}
+      alt="Rose Image"
+      placeholder="blur"
+      loading="lazy"
+    />
+  )
+}
+```
+
+在上面的代码中，`loading='lazy'` 启用延迟图片渲染。Next.js 延迟加载图片对于非 LCP 的图片很有用。图片 `placeholder` 也可以设置为 `empty` 或 `data:image/...`。
+
+#### 使用单独的图片作为 `placeholder`
+
+当 `placeholder` 设置为 `data:image/...` 时，`src` 图片会在 `placeholder` 图片之后加载，这是一种 URI 转换为 `base64` 的图片数据类型。当 `placeholder` 图片具有与 `src` 图片混合的主导颜色时，这很有用。它使用户停留在网页上，而无需等待 `src` 图片加载。
+
+```js
+placeholder='data:image/<jpeg|png|...>;base64,<data-uri>'
+```
+
+例如：
+
+```tsx
+/* [!code filename:components/placeholder-image.tsx] */
+import Image from 'next/image'
+import roseFlower from '@/public/rose.png'
+
+export function PlaceholderImage() {
+  return (
+    <Image
+      src={roseFlower}
+      alt="Rose Image"
+      placeholder="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/wcAAwAB/1vq1+sAAAAASUVORK5CYII="
+      loading="lazy"
+    />
+  )
+}
+```
+
+#### 设置单独图片的 `placeholder` 具有模糊效果
+
+要对具有图片数据类型的 `placeholder` 进行模糊处理，请使用 `blurDataURL` 属性和 `placeholder` 属性。
+
+```js
+placeholder='blur'
+blurDataURL='data:image/jpeg;base64,<data-uri>'
+```
+
+例如：
+
+```tsx
+/* [!code filename:components/blur-image.tsx] */
+import Image from 'next/image'
+import roseFlower from '@/public/rose.png'
+
+export function BlurImage() {
+  return (
+    <Image
+      src={roseFlower}
+      alt="Rose Image"
+      placeholder="blur"
+      blurDataURL="data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/wcAAwAB/1vq1+sAAAAASUVORK5CYII="
+      loading="lazy"
+    />
+  )
+}
+```
+
+> 或者，你可以使用 [plaiceholder](https://plaiceholder.co/docs/nextjs) 自动生成占位符。
+
+#### 使用 `sizes` 属性在不同视口中显示图片
+
+在下面的示例中，使用媒体查询，玫瑰图片根据用户的屏幕大小以不同大小渲染。
+
+```tsx
+/* [!code filename:components/sizes-image.tsx] */
+import Image from 'next/image'
+
+export function SizesImage() {
+  return (
+    <Image
+      src='/rose.png'
+      alt="Rose Image"
+      sizes= "(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+    />
+  )
+}
+```
+
+## 2. 使用 `<video>` 和 `<iframe/>` 增强视频播放器
+
+你可以通过两种方式渲染视频播放器：使用 `<video>` HTML 标签播放本地存储的视频，或使用 `<iframe/>` HTML 标签播放从网络服务器请求的远程视频。
+
+### 使用 `<video>` 渲染本地视频
+
+`<video>` 接受 width 和 height 属性来指定视频播放器占用的空间。要指示视频文件的来源，请在 `<source />` 标签内使用 src 属性。
+
+`<video>` 标签内的 control 属性启用键盘导航和屏幕阅读器可访问性功能。
+
+`<track />` 标签有助于为视频播放器提供替代信息，如字幕、副标题、描述、章节或元数据，这些信息通过 kind 属性指定。要指定轨道文件的来源，请使用 src 属性。
+
+`<video>...</video>` 标签内的文本信息是后备内容。它使用户保持参与网页。
+
+```tsx
+/* [!code filename:components/local-video.tsx] */
+export function LocalVideo() {
+  return (
+    <video width="600" height="500" controls preload="none">
+      <source src="/flower.mp4" type="video/mp4" />
+      <track 
+        src="/flower.vtt"
+        kind="subtitles"
+        srcLang="en"
+        label="English"
+      />
+      This video is not supported by your browser.
+    </video>
+  )
+}
+```
+
+### 使用 `<iframe/>` 和 React `Suspense` 渲染远程视频
+
+在 Next.js 中，远程视频首先在服务器上生成。要渲染远程视频播放器，请使用 `<iframe />` HTML 标签。
+
+下面的 `local-video.tsx` 文件中的视频播放器在无边框的情况下渲染。`title` 属性使屏幕阅读器能够将视频播放器与其提供的信息关联起来。
+
+```tsx
+/* [!code filename:components/remote-video.tsx] */
+export function RemoteVideo() {
+  return (
+    <iframe
+      width="600"
+      height="600"
+      src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+      frameBorder="0"
+      loading="lazy"
+      title="Remote Video"
+      allowfullscreen
+    />
+  )
+}
+```
+
+当视频加载时，它在文件的 JavaScript 同样加载或获取之前是不可交互的。这个过程称为 Hydration（水合）。当用户需要与视频交互时，这会导致响应时间缓慢，导致 Web 应用的 INP 分数较差。React `Suspense` 通过为视频提供后备内容来解决水合问题，从而改善用户体验。
+
+让我们更好地理解如何使用 `Suspense`。
+
+`Suspense` 是一个 React 组件。它使你能够在视频完全渲染之前加载一个替代布局，视频会通过 `fallback` 属性替换它。
+
+让我们创建一个后备组件：
+
+```tsx
+/* [!code filename:components/video-fallback.tsx] */
+export function VideoFallback() {
+  return (
+    <div>Loading...</div>
+  )
+}
+```
+
+将 `<iframe/>` 标签包装在 React `<Suspense>...</Suspense>` 组件内。
+
+```tsx
+/* [!code filename:components/video-suspense.tsx] */
+import { Suspense } from 'react'
+import { VideoFallback } from './video-fallback'
+
+export function VideoSuspense() {
+  return (
+    <Suspense fallback={<VideoFallback />}>
+      <iframe
+        {/* ... */}
+      />
+    </Suspense>
+  )
+}
+```
+
+## 3. 消除外部字体下载
+
+从网络服务器加载的字体需要很长时间才能渲染。Next.js 自行托管 Google 字体和本地字体，而不从外部源渲染字体。
+
+Next.js 字体是使用包含不同属性的对象调用的函数：
+
+- `src`（本地字体必需）：本地字体文件存储的路径。
+- `declarations`（仅本地字体）：描述生成的字体面。
+- `subsets`（仅 Google 字体）：字符串数组。对预加载字体子集很有用。
+- `axes`（仅 Google 字体）：指定可变字体的轴。
+- `weight`：表示 font-weight。
+- `style`：表示 font-style。可以设置为 italic、oblique 或 normal。
+- `display`：可能的字符串值为 auto、block、swap、fallback 或 optional。
+- `preload`：指定是否预加载字体。设置为 true 或 false。
+- `fallback`：字符串数组。在加载错误时替换导入的字体。要为后备设置样式，请对其应用的元素使用 CSS 类选择器。
+- `adjustFontFallback`：减少字体后备对累积布局偏移（CLS）的影响。设置为 true 或 false。
+- `variable`：声明的 CSS 变量名的字符串值。
+
+### 使用本地字体
+
+本地字体是下载的字体。在项目的根目录中，可以将本地字体文件保存在 `./styles/fonts/` 文件夹中。
+
+要使用本地字体，请从 `next/font/local` 导入 `localFont`：
+
+```tsx
+/* [!code filename:app/layout.tsx] */
+import localFont from 'next/font/local'
+
+const myFont = localFont({
+  src: './fonts/my-font.woff2',
+  style: 'italic',
+  display: 'swap',
+  fallback: ['arial'],
+  variable: '--font-my-font',
+})
+
+export default function RootLayout({ children }) {
+  return(
+    <html lang="en" className={myFont.variable} >
+      <body>{children}</body>
+    </html>
+  )
+}
+```
+
+### 使用 Google 字体
+
+Google 字体分为不同类型。使用非可变字体时，必须指定其 `weight`。
+
+要使用 Google 字体，请从 `next/font/google` 导入字体类型：
+
+```tsx
+/* [!code filename:app/layout.tsx] */
+import { Geist } from 'next/font/google'
+
+export const geist = Geist({
+  subsets: ['latin'],
+  variable: '--font-sans',
+})
+
+export default function RootLayout({ children }) {
+  return(
+    <html lang="en" className={geist.variable} >
+      <body>{children}</body>
+    </html>
+  )
+}
+```
+
+### 渲染和重用多个字体
+
+要以可重用的方式使用多个字体，请在单个字体文件中调用字体作为 `export const`：
+
+```ts
+/* [!code filename:lib/fonts.ts] */
+import { Geist, Geist_Mono } from 'next/font/google'
+
+export const geist = Geist({
+  subsets: ['latin'],
+  variable: '--font-sans',
+})
+
+export const geistMono = Geist_Mono({
+  subsets: ['latin'],
+  variable: '--font-mono',
+})
+```
+
+接下来，在你想要应用的文件中渲染字体。
+
+在下面的示例中，字体仅在 `collection/page.tsx` 文件中渲染：
+
+```tsx
+/* [!code filename:app/collection/page.tsx] */
+import { geist } from '@/lib/fonts'
+
+export default function Page() {
+  return <div className={geist.className}>Collection</div>
+}
+```
+
+## 4. 使用 `metadata` 提升搜索引擎排名
+
+元数据提供有关 Web 应用中数据的附加信息。这些数据包括文档、文件、图片、音频、视频和网页。当 Web 应用具有丰富的元数据信息时，它在搜索引擎上比其他 Web 应用具有更高的优先级和相关性。
+
+在 Next.js 中，元数据分为静态或动态。动态元数据提供绑定到变化的信息，例如当前路由参数、外部数据或父段中的 `metadata`。
+
+你可以通过配置或特殊文件添加元数据：
+
+### 通过配置添加元数据
+
+你可以使用 Next.js 内置的 `metadata` 对象导出静态元数据，同时可以使用内置的 `generateMetadata()` 函数导出具有变化值的动态生成的元数据。`metadata` 对象和 `generateMetadata()` 函数在 `layout.tsx` 或 `page.tsx` 文件中导出，只能用于服务器组件。
+
+- **使用 metadata 对象添加静态元数据**
+
+```tsx
+/* [!code filename:app/page.tsx] */
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: '...',
+  description: '...',
+}
+
+export default function Page() {
+  return <div>Page</div>
+}
+```
+
+- **使用 `generateMetadata()` 函数添加动态元数据**
+
+`generateMetadata()` 函数接受 props 对象和 parent 作为参数。props 对象包括 `params` 和 `searchParams`。`params` 包含从根段到调用 `generateMetadata()` 的段的动态路由参数。`searchParams` 包含当前 URL 的搜索参数。`parent` 参数是来自父路由段的已解析元数据的 promise。
+
+下面是一个示例：
+
+```tsx
+/* [!code filename:app/articles/[slug]/page.tsx] */
+import type { Metadata } from 'next'
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>
+}) {
+  const { slug } = await params
+  const article = await getArticle(slug)
+
+  return {
+    title: article.title,
+    description: article.description,
+    openGraph: {
+      title: article.title,
+      description: article.description,
+      // ...
+    },
+  }
+}
+
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ slug: string }>
+}) {
+  const { slug } = await params
+
+  const article = await getArticle(slug)
+
+  return (
+    <div>
+      <h1>{article.title}</h1>
+      <p>{article.description}</p>
+    </div>
+  )
+}
+```
+
+## 5. 使用 `Script` 组件加载脚本
+
+Next.js 有一个内置的 `Script` 组件，让我们能够控制如何为特定文件夹或应用根布局渲染脚本。为了优化性能，在需要它们的特定文件夹的布局中渲染脚本。
+
+脚本也可以在 `Page` 文件中加载。
+
+在 `Script` 中指定 `id` 属性对优化很有用。
+
+### 加载内联脚本
+
+内联脚本直接写在 Script 组件中。内联脚本需要 `id` 属性。内联脚本可以通过两种方式编写：
+
+- **使用花括号：**
+
+```tsx
+/* [!code filename:app/page.tsx] */
+import Script from 'next/script'
+
+export default function Page() {
+  return (
+    <div>
+      <h1>Inline Script</h1>
+      <section>...</section>
+      <Script id="inline-script">
+        { 
+          document.getElementbyId=('inline-script').classList.remove('hidden') 
+        }
+      </Script>
+    </div>
+  )
+}
+```
+
+- **使用 `dangerouslyStyleInnerHTML` 属性：**
+
+```tsx
+/* [!code filename:app/page.tsx] */
+import Script from 'next/script'
+
+export default function Page() {
+  return (
+    <div>
+      <h1>Inline Script</h1>
+      <section>...</section>
+      <Script 
+        id="inline-script"
+        dangerouslySetInnerHTML={{
+          __html: "document.getElementById('inline-script').classList.remove('hidden')",
+        }}
+      />
+    </div>
+  )
+}
+```
+
+### 加载外部脚本
+
+外部脚本使用必需的 src 属性加载以指定 URL。
+
+```tsx
+/* [!code filename:app/page.tsx] */
+import Script from 'next/script'
+
+export default function Page() {
+  return (
+    <div>
+      <h1>External Script</h1>
+      <Script src="https://example.com/script.js" />
+    </div>
+  )
+}
+```
+
+### 使用 `strategy` 属性指定脚本应如何加载
+
+尽管 `Script` 在 Web 应用中只加载一次，但你可以使用以下加载策略控制其加载方式：
+
+- `beforeInteractive`：脚本将在 Next.js 代码加载之前和页面水合发生之前加载。
+- `afterInteractive`：脚本将在页面水合发生后立即加载。
+- `lazyOnLoad`：脚本在浏览器中加载完所有其他代码后以延迟方式加载。
+
+**worker**：脚本将在 Web Worker 中加载。
+
+在这里，在页面水合发生之前渲染脚本：
+
+```tsx
+<Script
+  src="https://example.com/script.js"
+  strategy="beforeInteractive" 
+/>
+```
+
+### 为脚本添加事件处理程序
+
+要控制网页如何响应某些事件，你可以使用以下事件处理程序，这些处理程序只能在客户端组件中使用：
+
+- `onLoad`：脚本完成加载后立即响应。
+- `onReady`：此函数在脚本完成加载且组件完全显示后响应。
+- `onError`：脚本加载发生错误时响应。
+
+```tsx
+/* [!code filename:app/page.tsx] */
+'use client'
+
+import Script from 'next/script'
+
+export default function Page() {
+  return (
+    <div>
+      <h1>External Script</h1>
+      <Script
+        src="https://example.com/script.js"
+        onLoad={() => {
+          console.log('Script loaded')
+        }}
+        onReady={() => {
+          console.log('Script ready')
+        }}
+        onError={() => {
+          console.log('Script error')
+        }}
+      />
+    </div>
+  )
+}
+```
+
+## 6. 实现 URL 重定向
+
+根据不同的用例，使用 Next.js 内置函数和钩子实现 URL 重定向。
+
+### 在变更或事件后重定向用户
+
+变更涉及将数据更新到网络服务器。使用 `redirect` 或 `permanentRedirect` 在服务器组件、操作或路由处理程序中启用 URL 重定向。
+
+使用 `redirect` 函数：
+
+```ts
+/* [!code filename:app/action.ts] */
+'use server'
+
+import { redirect } from 'next/navigation'
+import { revalidatePath } from 'next/cache'
+
+export async function updateArticle(id: string) {
+  try {
+    // ...
+  } catch (error) {
+    // ...
+  }
+
+  revalidatePath('/articles')
+  redirect(`/articles/${id}`)
+}
+```
+
+如上例所示，`revalidatePath` 将更新缓存的 articles 页面。一旦用户 `updateArticle` 服务器操作被调用，URL 模式将从 `../articles` 更改为 `../articles/id`。
+
+如果你想替换 URL 路径，请使用：
+
+```ts
+redirect(`/articles/${id}`, 'replace')
+```
+
+### 使用 `permanentRedirect` 函数
+
+要将用户重定向到永久更改的 URL，请使用 `permanentRedirect`：
+
+```ts
+/* [!code filename:app/action.ts] */
+'use server'
+
+import { permanentRedirect } from 'next/navigation'
+import { revalidateTag } from 'next/cache'
+
+export async function updateArticle(id: string) {
+  try {
+    // ...
+  } catch (error) {
+    // ...
+  }
+}
+
+revalidateTag('articles')
+permanentRedirect(`/articles/${id}`)
+```
+
+## 7. 使用 `@next/bundle-analyzer` 打包和分析包
+
+为了最小化内存使用，你可以使用打包器打包 Web 应用中使用的包。打包器自动将 Web 应用中编写的所有代码合并为单个文件，有助于解决依赖关系和延迟问题。某些资源依赖于其他资源，如远程库、组件和框架，这管理起来很复杂。延迟是用户设备与请求的网络服务器之间的时间距离的度量。
+
+Next.js 有一个内置插件 `@next/bundle-analyzer`，可以识别和报告依赖关系问题。
+
+### 安装 `@next/bundle-analyzer` 插件：
+
+```bash
+npm i @next/bundle-analyzer
+
+# 或
+
+yarn add @next/bundle-analyzer
+
+# 或
+
+pnpm add @next/bundle-analyzer
+```
+
+### 使用 `@next/bundle-analyzer` 插件：
+
+```ts
+/* [!code filename:next.config.ts] */
+import type { NextConfig } from 'next'
+import bundleAnalyzer from '@next/bundle-analyzer'
+
+const nextConfig: NextConfig = {
+  // ...
+}
+
+const withBundleAnalyzer = bundleAnalyzer({
+  enabled: process.env.ANALYZE === 'true',
+})
+
+export default withBundleAnalyzer(nextConfig)
+```
+
+### 分析打包文件
+
+```bash
+ANALYZE=true npm run build
+
+# 或
+
+ANALYZE=true yarn build
+
+# 或
+
+ANALYZE=true pnpm build
+```
+
+## 8. 实现 Next.js 延迟加载策略
+
+延迟加载是一种性能策略，通过渲染轻量级网页来减少页面加载时间，直到用户主动导航到某些组件。它对愉快的滚动体验很有用。到目前为止，在本文中，你已经为图片和视频实现了 Next.js 延迟加载。
+
+服务器组件具有启用自动渲染延迟的功能。要在服务器组件中启用手动延迟加载，请实现 Streaming。
+
+客户端组件不能自动延迟。你必须使用 `dynamic` 导入或 `Suspense` 来在客户端组件中实现 Next.js 延迟加载。
+
+在本节中，你将仅延迟加载客户端组件：
+
+### 使用 Next.js Dynamic 导入
+
+dynamic 是一个回调函数，返回我们要延迟加载的组件作为导入。要在客户端组件中禁用预渲染，请将 ssr 选项设置为 false。要在 dynamic 导入中启用自定义加载，请将 loading 选项设置为首选的 UI。
+
+```tsx
+/* [!code filename:components/lazy-loading.tsx] */
+import dynamic from 'next/dynamic'
+
+const LazyLoading = dynamic(() => import('./lazy-loading'), {
+  ssr: false,
+  loading: () => <div>Loading...</div>,
+})
+```
+
+### 使用 Suspense
+
+Suspense 是一个 React 组件，允许我们异步加载组件。它对于延迟加载客户端组件很有用。
+
+```tsx
+/* [!code filename:app/page.tsx] */
+import { Suspense } from 'react'
+
+export default function Page() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <LazyLoading />
+    </Suspense>
+  )
+}
+```
+
+## 在 Next.js 中测量 Web 性能
+
+在 Next.js 中，你可以始终使用以下方法跟踪生产环境中的性能问题：
+
+- `reportWebVitals` hook：监控核心 Web 指标（CWV）并手动发送观察报告。
+- `Vercel 内置的可观测性`工具：通过称为 instrumentation 的过程与其他可观测性工具（如 OpenTelemetry、Datadog）集成。
+- `Google Lighthouse`：Lighthouse 根据每个网页的 URL 测量不同 CWV 指标的分数并提供报告，同时提供修复性能问题的建议方法。
+
+## 总结
+
+在本文中，你了解了不同资源如何影响 Web 应用的用户体验。你还实现了优化图片、视频、字体、元数据、URL 重定向、脚本和包的技术。你还为客户端组件和其他资源实现了 Next.js 延迟加载策略。
+
+优化使你的 Next.js Web 应用能够高性能、轻量级且令人愉悦。你还了解了不同的性能指标以及测量 Web 应用性能的可能方法。
