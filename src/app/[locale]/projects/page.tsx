@@ -1,20 +1,22 @@
 import { LinkIcon } from 'lucide-react'
 import Image from 'next/image'
-import Link from 'next/link'
+import { getTranslations } from 'next-intl/server'
 import { Layout } from '@/components/layout'
+import { Link } from '@/i18n/navigation'
 import { projects } from '@/lib/constants'
 
-export const metadata = {
-  title: 'Projects',
-  description: 'Things I’ve made trying to put my dent in the universe.',
+export async function generateMetadata() {
+  const t = await getTranslations('projects')
+  return {
+    title: t('title'),
+    description: t('description'),
+  }
 }
 
-export default function Page() {
+export default async function Page() {
+  const t = await getTranslations('projects')
   return (
-    <Layout
-      title="Projects"
-      intro="Things I’ve made trying to put my dent in the universe."
-    >
+    <Layout title={t('title')} intro={t('description')}>
       <ul className="grid grid-cols-1 gap-x-12 gap-y-16 sm:grid-cols-2 lg:grid-cols-3">
         {projects.map((project) => (
           <li

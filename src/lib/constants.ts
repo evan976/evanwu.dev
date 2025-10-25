@@ -5,7 +5,7 @@ export const resume = [
   {
     company: 'HackQuest',
     url: 'https://hackquest.io',
-    title: 'Frontend Developer',
+    title: 'frontend_developer',
     logo: logoHackQuest,
     start: '2024-05',
     end: new Date(),
@@ -13,7 +13,7 @@ export const resume = [
   {
     company: 'SeaMaid Tech',
     url: 'https://haiyaogame.com',
-    title: 'Frontend Developer',
+    title: 'frontend_developer',
     logo: logoSeaMaid,
     start: '2021-12',
     end: '2024-04',

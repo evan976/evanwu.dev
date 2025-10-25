@@ -3,6 +3,7 @@
 import * as React from 'react'
 import { sendGAEvent } from '@next/third-parties/google'
 import { MailIcon } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { subscribe } from '@/actions/subscription'
 import { Button } from '@/components/button'
 import { cn } from '@/lib/utils'
@@ -13,6 +14,7 @@ const initialState = {
 }
 
 export function SubscribeForm() {
+  const t = useTranslations('subscribe')
   const [email, setEmail] = React.useState('')
   const [formState, formAction, pending] = React.useActionState(
     subscribe,
@@ -26,10 +28,10 @@ export function SubscribeForm() {
     >
       <h2 className="flex items-center text-sm font-semibold text-zinc-900 dark:text-zinc-100">
         <MailIcon className="size-5 flex-none text-zinc-400 dark:text-zinc-500" />
-        <span className="ml-3">Stay up to date</span>
+        <span className="ml-3">{t('title')}</span>
       </h2>
       <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-        Get notified when I publish something new, and unsubscribe at any time.
+        {t('description')}
       </p>
       <div className="mt-6 flex">
         <input
@@ -38,8 +40,8 @@ export function SubscribeForm() {
           required
           type="email"
           name="email"
-          placeholder="Email address"
-          aria-label="Email address"
+          placeholder={t('email')}
+          aria-label={t('email')}
           className="min-w-0 flex-auto h-9 text-sm appearance-none rounded-md border border-zinc-900/10 bg-white px-3 py-2 shadow-md shadow-zinc-800/5 placeholder:text-zinc-400 focus:border-teal-500 focus:outline-hidden focus:ring-3 focus:ring-teal-500/10 dark:border-zinc-700 dark:bg-zinc-700/15 dark:text-zinc-200 dark:placeholder:text-zinc-500 dark:focus:border-teal-400 dark:focus:ring-teal-400/10 sm:text-sm transition-all duration-200"
         />
         <Button
@@ -53,7 +55,7 @@ export function SubscribeForm() {
             })
           }
         >
-          {pending ? 'Subscribing...' : 'Subscribe'}
+          {pending ? t('subscribing') : t('subscribe')}
         </Button>
       </div>
       {formState.message && (

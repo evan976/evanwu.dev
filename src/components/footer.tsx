@@ -1,9 +1,12 @@
 import { RssIcon } from 'lucide-react'
-import Link from 'next/link'
+import { useTranslations } from 'next-intl'
+import { ChangeLanguage } from '@/components/change-language'
 import { Container } from '@/components/container'
 import { ModeToggle } from '@/components/mode-toggle'
+import { Link } from '@/i18n/navigation'
 
 export function Footer() {
+  const t = useTranslations('footer')
   return (
     <footer className="mt-16 sm:mt-24">
       <Container.Outer>
@@ -12,7 +15,7 @@ export function Footer() {
             <div className="flex flex-col items-center justify-between gap-6 sm:flex-row">
               <div className="flex gap-4 text-sm font-medium text-zinc-800 dark:text-zinc-200">
                 <Link
-                  href="/rss.xml"
+                  href="/rss"
                   target="_blank"
                   rel="noopener"
                   aria-label="RSS Feed"
@@ -21,12 +24,13 @@ export function Footer() {
                 </Link>
               </div>
               <div className="flex items-center gap-6">
+                <ChangeLanguage />
                 <ModeToggle />
                 <p
                   className="text-sm text-zinc-500 dark:text-zinc-400"
                   suppressHydrationWarning
                 >
-                  &copy; {new Date().getFullYear()} Evan. All rights reserved.
+                  {t('copyright', { year: new Date().getFullYear() })}
                 </p>
               </div>
             </div>

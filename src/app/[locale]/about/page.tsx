@@ -1,14 +1,19 @@
 import Image from 'next/image'
-import Link from 'next/link'
+import { getTranslations } from 'next-intl/server'
 import { Container } from '@/components/container'
 import { GithubIcon, LinkedInIcon, XIcon } from '@/components/icons'
+import { Link } from '@/i18n/navigation'
 
-export const metadata = {
-  title: 'About',
-  description: 'I’m Evan. I live in Chengdu, China, where I build the future.',
+export async function generateMetadata() {
+  const t = await getTranslations('about')
+  return {
+    title: t('title'),
+    description: t('description'),
+  }
 }
 
-export default function Page() {
+export default async function Page() {
+  const t = await getTranslations('about')
   return (
     <Container className="mt-16 sm:mt-32">
       <div className="grid grid-cols-1 gap-y-16 lg:grid-cols-2 lg:grid-rows-[auto_1fr] lg:gap-y-12">
@@ -28,40 +33,14 @@ export default function Page() {
           </div>
         </div>
         <div className="lg:order-first lg:row-span-2">
-          <h1 className="text-4xl font-bold tracking-tight text-zinc-800 sm:text-5xl dark:text-zinc-100">
-            I’m Evan. I live in Chengdu, China, where I build the future.
+          <h1 className="text-4xl font-bold tracking-tight leading-tight text-zinc-800 sm:text-5xl dark:text-zinc-100">
+            {t('description')}
           </h1>
           <div className="mt-6 space-y-7 text-base text-zinc-600 dark:text-zinc-400">
-            <p>
-              I’ve always been fascinated by how things work. As a kid, I spent
-              countless hours taking apart old appliances around the
-              house—radios, fans, even my dad’s cassette player—just to see what
-              was inside and how it all fit together.
-            </p>
-
-            <p>
-              At school, I was one of those students who always topped the
-              class. But things changed in high school—I fell in love, and my
-              grades fell with me. By the time I graduated, I found myself
-              studying a major I didn’t really care about, feeling a little lost
-              about what I truly wanted to do.
-            </p>
-
-            <p>
-              That changed when I discovered programming. It started with a
-              simple curiosity, but soon I realized I had both a deep interest
-              and a bit of a knack for it. During my junior year, I made the
-              decision to switch paths entirely. I spent nights and weekends
-              teaching myself computer science, writing small programs, and
-              building things just for fun.
-            </p>
-
-            <p>
-              After graduation, all that effort paid off—I landed a solid offer
-              in the tech industry, and I’ve been growing in this field ever
-              since. Looking back, every misstep and detour somehow led me here,
-              to a career I genuinely love.
-            </p>
+            <p>{t('content.childhood')}</p>
+            <p>{t('content.school')}</p>
+            <p>{t('content.programming')}</p>
+            <p>{t('content.graduation')}</p>
           </div>
         </div>
         <div className="lg:pl-20">
@@ -77,7 +56,7 @@ export default function Page() {
                   aria-hidden="true"
                   className="size-6 flex-none fill-zinc-500 transition group-hover:fill-teal-500"
                 />
-                <span className="ml-4">Follow on X</span>
+                <span className="ml-4">{t('follow_on_x')}</span>
               </Link>
             </li>
             <li className="flex mt-4">
@@ -91,7 +70,7 @@ export default function Page() {
                   aria-hidden="true"
                   className="size-6 flex-none fill-zinc-500 transition group-hover:fill-teal-500"
                 />
-                <span className="ml-4">Follow on Github</span>
+                <span className="ml-4">{t('follow_on_github')}</span>
               </Link>
             </li>
             <li className="flex mt-4">
@@ -105,7 +84,7 @@ export default function Page() {
                   aria-hidden="true"
                   className="size-6 flex-none fill-zinc-500 transition group-hover:fill-teal-500"
                 />
-                <span className="ml-4">Follow on LinkedIn</span>
+                <span className="ml-4">{t('follow_on_linkedin')}</span>
               </Link>
             </li>
             <li className="mt-8 border-t border-zinc-100 pt-8 dark:border-zinc-700/40 flex">

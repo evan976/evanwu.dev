@@ -1,11 +1,15 @@
 import * as React from 'react'
 import type { Metadata } from 'next'
-import { format } from 'date-fns'
 import Image from 'next/image'
-import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import {
+  getFormatter,
+  getTranslations,
+  setRequestLocale,
+} from 'next-intl/server'
 import { baseUrl } from '@/app/sitemap'
 import { ArrowLeftIcon } from '@/components/icons'
+import { Link } from '@/i18n/navigation'
 import { getArticleBySlug, getArticleSlugs } from '@/lib/article'
 
 export const dynamicParams = false
@@ -66,12 +70,12 @@ export async function generateMetadata({
 
 export default async function Page({
   params,
-}: {
-  params: Promise<{ slug: string }>
-}) {
-  const { slug } = await params
+}: PageProps<'/[locale]/articles/[slug]'>) {
+  const { slug, locale } = await params
 
   const article = await getArticleBySlug(slug)
+  const t = await getTranslations('articles')
+  const formatter = await getFormatter()
 
   if (!article) {
     notFound()
@@ -79,6 +83,8 @@ export default async function Page({
 
   const { title, description, publishedAt, readingTime, image } =
     article.metadata
+
+  setRequestLocale(locale)
 
   return (
     <section>
@@ -122,16 +128,23 @@ export default async function Page({
                       </h1>
                       <div className="order-first flex items-center gap-4 text-sm">
                         <time
-                          dateTime={publishedAt}
+                          suppressHydrationWarning
+                          dateTime={publishedAt.toLocaleString()}
                           className="text-zinc-400 dark:text-zinc-500 flex items-center"
                         >
                           <span className="h-4 w-0.5 rounded-full bg-zinc-200 dark:bg-zinc-500" />
                           <span className="ml-3">
-                            {format(new Date(publishedAt), 'MMMM d, yyyy')}
+                            {formatter.dateTime(new Date(publishedAt), {
+                              month: 'short',
+                              day: 'numeric',
+                              year: 'numeric',
+                            })}
                           </span>
                         </time>
                         <span className="text-zinc-400 dark:text-zinc-500">
-                          {readingTime?.text}
+                          {t('reading_time', {
+                            minutes: Math.ceil(readingTime?.minutes || 0),
+                          })}
                         </span>
                       </div>
                     </header>

@@ -1,6 +1,86 @@
 {
+  "common": {
+    "read_more": "Read more",
+    "coming_soon": "Coming soon"
+  },
+  "navigation": {
+    "menu": "Menu",
+    "about": "About",
+    "articles": "Articles",
+    "photography": "Photography",
+    "projects": "Projects",
+    "uses": "Uses"
+  },
+  "footer": {
+    "copyright": "© {year} Evan. All rights reserved."
+  },
+  "subscribe": {
+    "title": "Stay up to date",
+    "description": "Get notified when I publish something new, and unsubscribe at any time.",
+    "email": "Email address",
+    "subscribe": "Subscribe",
+    "subscribing": "Subscribing...",
+    "success": "You have been subscribed",
+    "error": "Failed to subscribe"
+  },
+  "work_experience": {
+    "title": "Work Experience",
+    "company": "Company",
+    "role": "Role",
+    "date": "Date",
+    "present": "Present",
+    "more": "More in LinkedIn",
+    "frontend_developer": "Frontend Developer"
+  },
   "home": {
+    "title": "Frontend <developer>developer, </developer><designer>designer,</designer> and <open_source>open source</open_source> enthusiast",
+    "description": "I’m Evan, a frontend developer based in Chengdu, China. I like to build products that help people live better lives, I wish to make the world a better place.",
+    "read_article": "Read article"
+  },
+  "articles": {
+    "title": "Articles",
+    "description": "All of my long-form thoughts on programming, open source, infrastructure, and more, collected in chronological order.",
+    "reading_time": "{minutes} min read"
+  },
+  "projects": {
+    "title": "Projects",
+    "description": "Things I’ve made trying to put my dent in the universe."
+  },
+  "photography": {
+    "title": "Photography",
+    "description": "Although I am not a photographer, I like to record every beautiful moment."
+  },
+  "uses": {
+    "title": "Uses",
+    "description": "Software I use, gadgets I love, and other things I recommend.",
+    "workstation": "Workstation",
+    "development": "Development",
+    "design": "Design"
+  },
+  "about": {
+    "title": "About",
+    "description": "I’m Evan. I live in Chengdu, China, where I build the future.",
+    "follow_on_x": "Follow on X",
+    "follow_on_github": "Follow on GitHub",
+    "follow_on_linkedin": "Follow on LinkedIn",
+    "content": {
+      "childhood": "I’ve always been fascinated by how things work. As a kid, I spent countless hours taking apart old appliances around the house—radios, fans, even my dad’s cassette player—just to see what was inside and how it all fit together.",
+      "school": "At school, I was one of those students who always topped the class. But things changed in high school—I fell in love, and my grades fell with me. By the time I graduated, I found myself studying a major I didn’t really care about, feeling a little lost about what I truly wanted to do.",
+      "programming": "That changed when I discovered programming. It started with a simple curiosity, but soon I realized I had both a deep interest and a bit of a knack for it. During my junior year, I made the decision to switch paths entirely. I spent nights and weekends teaching myself computer science, writing small programs, and building things just for fun.",
+      "graduation": "After graduation, all that effort paid off—I landed a solid offer in the tech industry, and I’ve been growing in this field ever since. Looking back, every misstep and detour somehow led me here, to a career I genuinely love."
+    }
+  },
+  "not_found": {
+    "description": "Ooops! Page not found.",
+    "go_back_home": "Go back home"
+  },
+  "error": {
+    "title": "Something went wrong!",
+    "description": "Please try again later.",
+    "try_again": "Try again"
+  },
+  "metadata": {
     "title": "Frontend developer, designer, and open source enthusiast",
-    "description": "I’m Evan, a frontend developer based in Chengdu, China. I like to build products that help people live better lives, I wish to make the world a better place."
+    "description": "I build user interfaces."
   }
 }

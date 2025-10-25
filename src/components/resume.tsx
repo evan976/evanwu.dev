@@ -1,0 +1,93 @@
+'use client'
+
+import { format, isToday } from 'date-fns'
+import { ArrowRight, Briefcase } from 'lucide-react'
+import Image from 'next/image'
+import { useFormatter, useTranslations } from 'next-intl'
+import { Button } from '@/components/button'
+import { Link } from '@/i18n/navigation'
+import { resume } from '@/lib/constants'
+
+export function Resume() {
+  const t = useTranslations('work_experience')
+  const formatter = useFormatter()
+  return (
+    <div className="rounded-2xl border border-zinc-100 p-6 dark:border-zinc-700/40">
+      <h2 className="flex items-center text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+        <Briefcase className="size-5 flex-none text-zinc-400 dark:text-zinc-500" />
+        <span className="ml-3">{t('title')}</span>
+      </h2>
+      <ol className="mt-6 space-y-4">
+        {resume.map((role, roleIndex) => (
+          <li key={roleIndex} className="flex gap-4">
+            <div className="relative mt-1 flex h-10 w-10 flex-none items-center justify-center rounded-full shadow-md shadow-zinc-800/5 ring-1 ring-zinc-900/5 dark:border dark:border-zinc-700/50 dark:bg-zinc-800 dark:ring-0">
+              <Image
+                src={role.logo}
+                alt={role.company}
+                className="size-7 rounded-full"
+                unoptimized
+              />
+            </div>
+            <dl className="flex flex-auto flex-wrap gap-x-2">
+              <dt className="sr-only">{t('company')}</dt>
+              <dd className="w-full flex-none text-sm font-medium text-zinc-900 dark:text-zinc-100">
+                <Link
+                  href={role.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:underline"
+                >
+                  {role.company}
+                </Link>
+              </dd>
+              <dt className="sr-only">{t('role')}</dt>
+              <dd className="text-xs text-zinc-500 dark:text-zinc-400">
+                {t(role.title)}
+              </dd>
+              <dt className="sr-only">{t('date')}</dt>
+              <dd
+                role="tooltip"
+                className="ml-auto text-xs text-zinc-500 dark:text-zinc-500"
+                aria-label={`${format(new Date(role.start), 'MMMM yyyy')} until ${isToday(new Date(role.end)) ? 'Present' : format(new Date(role.end), 'MMMM yyyy')}`}
+              >
+                <time
+                  suppressHydrationWarning
+                  dateTime={role.start.toLocaleString()}
+                >
+                  {formatter.dateTime(new Date(role.start), {
+                    month: 'short',
+                    year: 'numeric',
+                  })}
+                </time>
+                <span aria-hidden="true" className="mx-1">
+                  -
+                </span>
+                <time
+                  suppressHydrationWarning
+                  dateTime={role.end.toLocaleString()}
+                >
+                  {isToday(new Date(role.end))
+                    ? t('present')
+                    : formatter.dateTime(new Date(role.end), {
+                        month: 'short',
+                        year: 'numeric',
+                      })}
+                </time>
+              </dd>
+            </dl>
+          </li>
+        ))}
+      </ol>
+      <Button
+        href="https://www.linkedin.com/in/evan976"
+        target="_blank"
+        rel="noopener noreferrer"
+        variant="secondary"
+        className="group mt-6 w-full"
+      >
+        {t('more')}
+        <ArrowRight className="size-3.5 text-zinc-400 group-hover:translate-x-0.5 transition-all duration-200" />
+      </Button>
+    </div>
+  )
+}

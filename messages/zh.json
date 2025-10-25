@@ -1,0 +1,86 @@
+{
+  "common": {
+    "read_more": "阅读更多",
+    "coming_soon": "即将推出"
+  },
+  "navigation": {
+    "menu": "导航",
+    "about": "关于",
+    "articles": "文章",
+    "photography": "照片墙",
+    "projects": "项目",
+    "uses": "设备清单"
+  },
+  "footer": {
+    "copyright": "© {year} Evan. 保留所有权利。"
+  },
+  "subscribe": {
+    "title": "保持更新",
+    "description": "当我发布新内容时，您将收到通知，随时可以取消订阅。",
+    "email": "邮箱地址",
+    "subscribe": "订阅",
+    "subscribing": "正在订阅...",
+    "success": "订阅成功",
+    "error": "订阅失败"
+  },
+  "work_experience": {
+    "title": "工作经历",
+    "company": "公司",
+    "role": "角色",
+    "date": "日期",
+    "present": "至今",
+    "more": "在领英上查看更多",
+    "frontend_developer": "前端工程师"
+  },
+  "home": {
+    "title": "前端<developer>开发者,</developer> <designer>设计师,</designer> 和<open_source>开源</open_source>爱好者",
+    "description": "我是 Evan，一个来自成都的前端开发者。我喜欢构建帮助人们过上更好生活的产品，我希望世界变得更好。",
+    "read_article": "阅读文章"
+  },
+  "articles": {
+    "title": "文章",
+    "description": "所有关于编程、开源、基础设施等的长期思考，按时间顺序排列。",
+    "reading_time": "阅读需约 {minutes} 分钟"
+  },
+  "projects": {
+    "title": "项目",
+    "description": "我尝试在宇宙中留下我的印记。"
+  },
+  "photography": {
+    "title": "摄影",
+    "description": "虽然我不是摄影师，但我喜欢记录每一个美丽的瞬间。"
+  },
+  "uses": {
+    "title": "设备清单",
+    "description": "我使用的软件、硬件和其他推荐的东西。",
+    "workstation": "工作台",
+    "development": "开发工具",
+    "design": "设计工具"
+  },
+  "about": {
+    "title": "关于",
+    "description": "我是 Evan，我居住在成都，在这里构建未来。",
+    "follow_on_x": "在推特上关注我",
+    "follow_on_github": "在 GitHub 上关注我",
+    "follow_on_linkedin": "在领英上关注我",
+    "content": {
+      "childhood": "我从小就对事物的工作原理充满好奇。小时候，我经常拆解家中的旧电器，从收音机、风扇到我爸的卡带播放器，只是为了看看里面有什么，以及它们是如何运作的。",
+      "school": "在学校，我一直是班上的佼佼者。但在高中时，我的生活发生了变化 - 我恋爱了，成绩也随之下降。当我毕业时，我发现自己正在学习一个我并不真正感兴趣的专业，对自己的未来感到迷茫。",
+      "programming": "这一切在我发现编程时发生了变化。起初，我只是出于好奇，但很快我就意识到我对编程有着浓厚的兴趣，并且有一定的天赋。在我大三那年，我做出了一个重大的决定 - 完全改变我的职业道路。我利用课余时间自学计算机科学，编写程序，甚至只是为了好玩而构建各种项目。",
+      "graduation": "毕业后，所有的努力都得到了回报 - 我获得了一份在科技行业的稳定工作，并一直在这个领域不断成长。回首过去，每一个错误的决定和弯路都引导我走到了这里，一个我真正热爱的职业。"
+    }
+  },
+  "not_found": {
+    "description": "Ooops! 页面不存在。",
+    "go_back_home": "返回首页"
+  },
+  "error": {
+    "title": "出错了！",
+    "description": "请稍后再试。",
+    "try_again": "重试"
+  },
+  "metadata": {
+    "title": "前端开发者, 设计师, 和开源爱好者",
+    "description": "我构建用户界面。"
+  }
+}
