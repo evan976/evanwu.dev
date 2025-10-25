@@ -109,7 +109,7 @@ Images rendered from external sources can affect the security of a web app. To e
 
 Let us configure our `next.config.ts` file to render images from `https://s3.amazonaws.com/my-bucket/**` URL paths only, with different possible number of path segments or subdomains at the end:
 
-```tsx
+```ts
 /* [!code filename:next.config.ts] */
 import type { NextConfig } from 'next'
 
@@ -426,7 +426,7 @@ export default function RootLayout({ children }) {
 
 To use multiple fonts in a reusable manner, call the fonts in a single fonts file as an `export const`:
 
-```tsx
+```ts
 /* [!code filename:lib/fonts.ts] */
 import { Geist, Geist_Mono } from 'next/font/google'
 

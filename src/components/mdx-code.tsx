@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import { codeToHtml } from 'shiki'
 import { CopyButton } from './copy-button'
 
@@ -22,7 +23,17 @@ export async function MDXCode({
   return (
     <div className="rounded-xl relative not-prose my-6 border overflow-hidden border-zinc-200 dark:border-white/10">
       {filename && (
-        <div className="py-2 px-4 flex items-center justify-between bg-zinc-50 dark:bg-zinc-800 border-b border-zinc-200 dark:border-white/10">
+        <div className="py-2 px-4 flex items-center gap-x-2 bg-zinc-50 dark:bg-zinc-800 border-b border-zinc-200 dark:border-white/10">
+          {source.lang && (
+            <Image
+              src={`/languages/${source.lang}.svg`}
+              alt={source.lang}
+              width={14}
+              height={14}
+              aria-hidden="true"
+              className="shrink-0 opacity-70"
+            />
+          )}
           <span className="text-sm/5 text-zinc-500 font-mono dark:text-white/50">
             {filename}
           </span>
@@ -31,7 +42,7 @@ export async function MDXCode({
       <CopyButton value={source.code} className="absolute top-3 right-4" />
       <div
         className="*:flex *:*:max-w-none *:*:shrink-0 *:*:grow *:overflow-auto *:p-4 *:text-sm/relaxed
-          **:[.line]:isolate **:[.line]:not-last:min-h-[1lh] [&_code]:font-mono"
+          **:[.line]:isolate **:[.line]:not-last:min-h-lh [&_code]:font-mono"
         dangerouslySetInnerHTML={{ __html: html }}
       />
     </div>
