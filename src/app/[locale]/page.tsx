@@ -1,56 +1,66 @@
 import * as React from 'react'
-import type { Metadata } from 'next'
-import { format, isToday } from 'date-fns'
-import { ArrowRight, Briefcase, ChevronRight } from 'lucide-react'
+import { ChevronRight } from 'lucide-react'
 import * as motion from 'motion/react-client'
 import Image from 'next/image'
-import Link from 'next/link'
+import { getFormatter, getTranslations } from 'next-intl/server'
 import { AuroraText } from '@/components/aurora-text'
-import { Button } from '@/components/button'
 import { Container } from '@/components/container'
 import { Highlighter } from '@/components/highlighter'
+import { Resume } from '@/components/resume'
 import { SocialLink } from '@/components/social-link'
 import { SubscribeForm } from '@/components/subscribe-form'
+import { Link } from '@/i18n/navigation'
 import { getArticles } from '@/lib/article'
-import { links, resume } from '@/lib/constants'
+import { links } from '@/lib/constants'
 import beach from '@/public/beach.jpeg'
 import fall from '@/public/fall.jpg'
 import mountain from '@/public/mountain.jpg'
 import sea from '@/public/sea.jpeg'
 import snow from '@/public/snow.jpg'
 
-export const metadata: Metadata = {
-  title: 'Frontend developer, designer, and open source enthusiast',
-  description:
-    'I’m Evan, a frontend developer based in Chengdu, China. I like to build products that help people live better lives, I wish to make the world a better place.',
+export async function generateMetadata() {
+  const t = await getTranslations()
+  return {
+    title: t('metadata.title'),
+    description: t('home.description'),
+  }
 }
 
 export default async function Page() {
   const articles = await getArticles()
+  const t = await getTranslations()
+  const formatter = await getFormatter()
   return (
     <React.Fragment>
       <Container className="mt-9">
         <div className="max-w-2xl text-lg">
-          <h1 className="text-4xl font-bold tracking-tight text-zinc-800 dark:text-zinc-100 sm:text-5xl">
-            <span>Frontend</span>{' '}
-            <Highlighter action="underline" color="#38bdf8">
-              <AuroraText>developer,</AuroraText>
-            </Highlighter>{' '}
-            <Highlighter action="underline" color="#FF9800">
-              <AuroraText colors={['#f0b100', '#ff2056', '#e12afb', '#ff6900']}>
-                designer,
-              </AuroraText>
-            </Highlighter>{' '}
-            <span>and</span>{' '}
-            <AuroraText colors={['#2b7fff', '#7ccf00', '#00b8db', '#00a6f4']}>
-              open source
-            </AuroraText>{' '}
-            <span>enthusiast</span>
+          <h1 className="text-4xl font-black tracking-tight text-balance leading-tight text-zinc-800 dark:text-zinc-100 sm:text-5xl">
+            {t.rich('home.title', {
+              developer: (chunks) => (
+                <Highlighter action="underline" color="#38bdf8">
+                  <AuroraText>{chunks}</AuroraText>
+                </Highlighter>
+              ),
+              designer: (chunks) => (
+                <Highlighter action="underline" color="#FF9800">
+                  <AuroraText
+                    colors={['#f0b100', '#ff2056', '#e12afb', '#ff6900']}
+                  >
+                    {chunks}
+                  </AuroraText>
+                </Highlighter>
+              ),
+              open_source: (chunks) => (
+                <AuroraText
+                  colors={['#2b7fff', '#7ccf00', '#00b8db', '#00a6f4']}
+                >
+                  {chunks}
+                </AuroraText>
+              ),
+            })}
           </h1>
-          <p className="mt-6 text-base text-zinc-600 dark:text-zinc-400">
-            I’m Evan, a frontend developer based in Chengdu, China. I like to
-            build products that help people live better lives, I wish to make
-            the world a better place.
+          <p className="mt-6 text-base text-zinc-600 dark:text-zinc-400 text-balance">
+            {t('home.description')}
           </p>
           <div className="mt-6 flex gap-6">
             {links.map((link) => (
@@ -86,7 +96,7 @@ export default async function Page() {
                     >
                       <span className="h-4 w-0.5 rounded-full bg-zinc-200 dark:bg-zinc-500" />
                     </span>
-                    {format(new Date(article.publishedAt), 'MMMM d, yyyy')}
+                    {formatter.relativeTime(new Date(article.publishedAt))}
                   </time>
                   <p
                     title={article.description}
@@ -98,8 +108,8 @@ export default async function Page() {
                     aria-hidden="true"
                     className="relative z-10 mt-4 flex items-center text-sm font-medium text-teal-500"
                   >
-                    Read article
-                    <ChevronRight className="ml-1 mt-0.5 size-3" />
+                    {t('common.read_more')}
+                    <ChevronRight className="ml-1 mt-0.5 size-3 group-hover:translate-x-0.5 transition-all duration-200" />
                   </div>
                 </article>
               ))}
@@ -155,76 +165,6 @@ function Photos() {
           </div>
         </motion.div>
       ))}
-    </div>
-  )
-}
-
-function Resume() {
-  return (
-    <div className="rounded-2xl border border-zinc-100 p-6 dark:border-zinc-700/40">
-      <h2 className="flex items-center text-sm font-semibold text-zinc-900 dark:text-zinc-100">
-        <Briefcase className="size-5 flex-none text-zinc-400 dark:text-zinc-500" />
-        <span className="ml-3">Work Experience</span>
-      </h2>
-      <ol className="mt-6 space-y-4">
-        {resume.map((role, roleIndex) => (
-          <li key={roleIndex} className="flex gap-4">
-            <div className="relative mt-1 flex h-10 w-10 flex-none items-center justify-center rounded-full shadow-md shadow-zinc-800/5 ring-1 ring-zinc-900/5 dark:border dark:border-zinc-700/50 dark:bg-zinc-800 dark:ring-0">
-              <Image
-                src={role.logo}
-                alt={role.company}
-                className="size-7 rounded-full"
-                unoptimized
-              />
-            </div>
-            <dl className="flex flex-auto flex-wrap gap-x-2">
-              <dt className="sr-only">Company</dt>
-              <dd className="w-full flex-none text-sm font-medium text-zinc-900 dark:text-zinc-100">
-                <Link
-                  href={role.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:underline"
-                >
-                  {role.company}
-                </Link>
-              </dd>
-              <dt className="sr-only">Role</dt>
-              <dd className="text-xs text-zinc-500 dark:text-zinc-400">
-                {role.title}
-              </dd>
-              <dt className="sr-only">Date</dt>
-              <dd
-                role="tooltip"
-                className="ml-auto text-xs text-zinc-500 dark:text-zinc-500"
-                aria-label={`${format(new Date(role.start), 'MMMM yyyy')} until ${isToday(new Date(role.end)) ? 'Present' : format(new Date(role.end), 'MMMM yyyy')}`}
-              >
-                <time dateTime={role.start}>
-                  {format(new Date(role.start), 'MMM yyyy')}
-                </time>
-                <span aria-hidden="true" className="mx-1">
-                  -
-                </span>
-                <time dateTime={role.end.toLocaleString()}>
-                  {isToday(new Date(role.end))
-                    ? 'Present'
-                    : format(new Date(role.end), 'MMM yyyy')}
-                </time>
-              </dd>
-            </dl>
-          </li>
-        ))}
-      </ol>
-      <Button
-        href="https://www.linkedin.com/in/evan976"
-        target="_blank"
-        rel="noopener noreferrer"
-        variant="secondary"
-        className="group mt-6 w-full"
-      >
-        More in LinkedIn
-        <ArrowRight className="size-3.5 text-zinc-400 group-hover:translate-x-0.5 transition-all duration-200" />
-      </Button>
     </div>
   )
 }

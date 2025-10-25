@@ -20,5 +20,6 @@
   "[typescriptreact]": {
     "editor.defaultFormatter": "biomejs.biome"
   },
-  "css.lint.unknownProperties": "ignore"
+  "css.lint.unknownProperties": "ignore",
+  "i18n-ally.localesPaths": ["messages", "src/i18n"]
 }

@@ -12,15 +12,15 @@ import {
 import { ChevronDownIcon, XIcon } from 'lucide-react'
 import { motion, useScroll, useTransform } from 'motion/react'
 import Image from 'next/image'
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { Container } from '@/components/container'
+import { Link, usePathname } from '@/i18n/navigation'
 import { cn } from '@/lib/utils'
 import avatarImage from '@/public/avatar.png'
 
 export function Header() {
   const pathname = usePathname()
-  const isHomePage = pathname === '/'
+  const isHomePage = /^(\/|(\/[a-z]{2,4})?\/?)$/.test(pathname)
   const headerRef = React.useRef<HTMLDivElement>(null)
   const { scrollY } = useScroll()
 
@@ -114,7 +114,7 @@ function NavItem({
   children: React.ReactNode
 }) {
   const pathname = usePathname()
-  const isActive = pathname === href
+  const isActive = pathname.includes(href)
 
   return (
     <li>
@@ -137,14 +137,15 @@ function NavItem({
 }
 
 function DesktopNavigation(props: React.HTMLAttributes<HTMLDetailsElement>) {
+  const t = useTranslations('navigation')
   return (
     <nav {...props}>
       <ul className="flex rounded-full bg-white/90 px-3 text-sm font-medium text-zinc-800 shadow-lg shadow-zinc-800/5 ring-1 ring-zinc-900/5 backdrop-blur dark:bg-zinc-800/90 dark:text-zinc-200 dark:ring-white/10">
-        <NavItem href="/about">About</NavItem>
-        <NavItem href="/articles">Articles</NavItem>
-        <NavItem href="/projects">Projects</NavItem>
-        <NavItem href="/photography">Photography</NavItem>
-        <NavItem href="/uses">Uses</NavItem>
+        <NavItem href="/about">{t('about')}</NavItem>
+        <NavItem href="/articles">{t('articles')}</NavItem>
+        <NavItem href="/projects">{t('projects')}</NavItem>
+        <NavItem href="/photography">{t('photography')}</NavItem>
+        <NavItem href="/uses">{t('uses')}</NavItem>
       </ul>
     </nav>
   )
@@ -171,10 +172,11 @@ function MobileNavItem({
 }
 
 function MobileNavigation(props: React.ComponentProps<typeof Popover>) {
+  const t = useTranslations('navigation')
   return (
     <Popover {...props}>
       <PopoverButton className="group flex items-center rounded-full bg-white/90 px-4 py-2.5 text-sm font-medium text-zinc-800 shadow-lg shadow-zinc-800/5 ring-1 ring-zinc-900/5 backdrop-blur dark:bg-zinc-800/90 dark:text-zinc-200 dark:ring-white/10 dark:hover:ring-white/20 outline-hidden">
-        Menu
+        {t('menu')}
         <ChevronDownIcon className="ml-3 h-auto w-3 text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-700 dark:group-hover:text-zinc-400" />
       </PopoverButton>
       <Transition>
@@ -210,16 +212,18 @@ function MobileNavigation(props: React.ComponentProps<typeof Popover>) {
                 <XIcon className="size-5 text-zinc-500 dark:text-zinc-400" />
               </PopoverButton>
               <h2 className="text-sm font-medium text-zinc-600 dark:text-zinc-400">
-                Navigation
+                {t('menu')}
               </h2>
             </div>
             <nav className="mt-6">
               <ul className="-my-2 divide-y divide-zinc-100 text-base text-zinc-800 dark:divide-zinc-100/5 dark:text-zinc-300">
-                <MobileNavItem href="/about">About</MobileNavItem>
-                <MobileNavItem href="/articles">Articles</MobileNavItem>
-                <MobileNavItem href="/projects">Projects</MobileNavItem>
-                <MobileNavItem href="/photography">Photography</MobileNavItem>
-                <MobileNavItem href="/uses">Uses</MobileNavItem>
+                <MobileNavItem href="/about">{t('about')}</MobileNavItem>
+                <MobileNavItem href="/articles">{t('articles')}</MobileNavItem>
+                <MobileNavItem href="/projects">{t('projects')}</MobileNavItem>
+                <MobileNavItem href="/photography">
+                  {t('photography')}
+                </MobileNavItem>
+                <MobileNavItem href="/uses">{t('uses')}</MobileNavItem>
               </ul>
             </nav>
           </PopoverPanel>

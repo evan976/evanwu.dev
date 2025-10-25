@@ -1,6 +1,6 @@
 {
   "name": "evanwu.dev",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "private": true,
   "packageManager": "pnpm@10.19.0",
   "scripts": {
@@ -26,6 +26,7 @@
     "lucide-react": "^0.546.0",
     "motion": "^12.23.24",
     "next": "16.0.0",
+    "next-intl": "^4.4.0",
     "next-themes": "0.4.6",
     "open-graph-scraper-lite": "2.1.0",
     "postcss": "8.5.6",

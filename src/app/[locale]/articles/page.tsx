@@ -1,31 +1,30 @@
-import { format } from 'date-fns'
 import { ChevronRightIcon } from 'lucide-react'
-import Link from 'next/link'
+import { getFormatter, getTranslations } from 'next-intl/server'
 import { Layout } from '@/components/layout'
+import { Link } from '@/i18n/navigation'
 import { getArticles } from '@/lib/article'
 
 export async function generateMetadata() {
+  const t = await getTranslations('articles')
   return {
-    title: 'Articles',
-    description:
-      'All of my long-form thoughts on programming, open source, infrastructure, and more, collected in chronological order.',
+    title: t('title'),
+    description: t('description'),
   }
 }
 
 export default async function Page() {
   const articles = await getArticles()
+  const t = await getTranslations()
+  const formatter = await getFormatter()
   return (
-    <Layout
-      title="Articles"
-      intro="All of my long-form thoughts on programming, open source, infrastructure, and more, collected in chronological order."
-    >
+    <Layout title={t('articles.title')} intro={t('articles.description')}>
       <div className="mt-16 sm:mt-20">
         <div className="md:border-l md:border-zinc-100 md:pl-6 md:dark:border-zinc-700/40">
           <div className="flex max-w-3xl flex-col space-y-16">
             {articles.map((article) => (
               <article
                 key={article.slug}
-                className="md:grid md:grid-cols-4 md:items-baseline"
+                className="group/article md:grid md:grid-cols-4 md:items-baseline"
               >
                 <div className="md:col-span-3 group relative flex flex-col items-start">
                   <h2 className="text-base font-semibold tracking-tight text-zinc-800 dark:text-zinc-100">
@@ -36,7 +35,8 @@ export default async function Page() {
                     </Link>
                   </h2>
                   <time
-                    dateTime={article.publishedAt}
+                    dateTime={article.publishedAt.toLocaleString()}
+                    suppressHydrationWarning
                     className="md:hidden relative z-10 order-first mb-3 flex items-center text-sm text-zinc-400 dark:text-zinc-500 pl-3.5"
                   >
                     <span
@@ -45,24 +45,36 @@ export default async function Page() {
                     >
                       <span className="h-4 w-0.5 rounded-full bg-zinc-200 dark:bg-zinc-500" />
                     </span>
-                    {format(new Date(article.publishedAt), 'MMMM d, yyyy')}
+                    {formatter.dateTime(new Date(article.publishedAt), {
+                      month: 'short',
+                      day: 'numeric',
+                      year: 'numeric',
+                    })}
                   </time>
-                  <p className="relative z-10 mt-2 text-sm text-zinc-600 dark:text-zinc-400">
+                  <p
+                    className="relative z-10 mt-2 text-sm text-zinc-600 dark:text-zinc-400 line-clamp-2"
+                    title={article.description}
+                  >
                     {article.description}
                   </p>
                   <div className="relative z-10 mt-4 flex items-center text-sm font-medium text-teal-500">
-                    Read article
+                    {t('common.read_more')}
                     <ChevronRightIcon
                       aria-hidden="true"
-                      className="ml-1 mt-0.5 size-3"
+                      className="ml-1 mt-0.5 size-3 group-hover/article:translate-x-0.5 transition-all duration-200"
                     />
                   </div>
                 </div>
                 <time
-                  dateTime={article.publishedAt}
+                  suppressHydrationWarning
+                  dateTime={article.publishedAt.toLocaleString()}
                   className="mt-1 max-md:hidden relative z-10 order-first mb-3 flex items-center text-sm text-zinc-400 dark:text-zinc-500"
                 >
-                  {format(new Date(article.publishedAt), 'MMMM d, yyyy')}
+                  {formatter.dateTime(new Date(article.publishedAt), {
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric',
+                  })}
                 </time>
               </article>
             ))}

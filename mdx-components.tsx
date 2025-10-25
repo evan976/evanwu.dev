@@ -1,7 +1,7 @@
 import * as React from 'react'
 import type { MDXComponents } from 'mdx/types'
-import Link from 'next/link'
 import { MDXCode } from '@/components/mdx-code'
+import { Link } from '@/i18n/navigation'
 
 function getTextContent(node: React.ReactNode): string {
   if (typeof node === 'string' || typeof node === 'number') {

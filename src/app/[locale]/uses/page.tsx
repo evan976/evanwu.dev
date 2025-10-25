@@ -1,22 +1,24 @@
+import { getTranslations } from 'next-intl/server'
 import { Layout } from '@/components/layout'
 
-export const metadata = {
-  title: 'Uses',
-  description: 'Software I use, gadgets I love, and other things I recommend.',
+export async function generateMetadata() {
+  const t = await getTranslations('uses')
+  return {
+    title: t('title'),
+    description: t('description'),
+  }
 }
 
-export default function Page() {
+export default async function Page() {
+  const t = await getTranslations('uses')
   return (
-    <Layout
-      title="Uses"
-      intro="Software I use, gadgets I love, and other things I recommend."
-    >
+    <Layout title={t('title')} intro={t('description')}>
       <div className="mt-16 sm:mt-20">
         <div className="space-y-20">
           <section className="md:border-l md:border-zinc-100 md:pl-6 md:dark:border-zinc-700/40">
             <div className="grid max-w-3xl grid-cols-1 items-baseline gap-y-8 md:grid-cols-4">
               <h2 className="text-sm font-semibold text-zinc-800 dark:text-zinc-100">
-                Workstation
+                {t('workstation')}
               </h2>
               <div className="md:col-span-3">
                 <ul className="space-y-16">
@@ -67,7 +69,7 @@ export default function Page() {
           <section className="md:border-l md:border-zinc-100 md:pl-6 md:dark:border-zinc-700/40">
             <div className="grid max-w-3xl grid-cols-1 items-baseline gap-y-8 md:grid-cols-4">
               <h2 className="text-sm font-semibold text-zinc-800 dark:text-zinc-100">
-                Development
+                {t('development')}
               </h2>
               <div className="md:col-span-3">
                 <ul className="space-y-16">
@@ -108,7 +110,7 @@ export default function Page() {
           <section className="md:border-l md:border-zinc-100 md:pl-6 md:dark:border-zinc-700/40">
             <div className="grid max-w-3xl grid-cols-1 items-baseline gap-y-8 md:grid-cols-4">
               <h2 className="text-sm font-semibold text-zinc-800 dark:text-zinc-100">
-                Design
+                {t('design')}
               </h2>
               <div className="md:col-span-3">
                 <ul className="space-y-16">
