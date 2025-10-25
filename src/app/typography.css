@@ -84,7 +84,8 @@
   font-size: var(--text-base);
   line-height: 1.75;
 
-  *:where(:not(.not-prose, .not-prose *))+*:where(:not(.not-prose, .not-prose *)) {
+  *:where(:not(.not-prose, .not-prose *))
+    + *:where(:not(.not-prose, .not-prose *)) {
     margin-block-start: calc(var(--spacing) * 4);
   }
 
@@ -116,7 +117,7 @@
     margin-block-start: calc(var(--spacing) * 8);
   }
 
-  h2+h3:where(:not(.not-prose, .not-prose *)) {
+  h2 + h3:where(:not(.not-prose, .not-prose *)) {
     margin-block-start: calc(var(--spacing) * 4);
   }
 
@@ -145,7 +146,7 @@
     padding-inline-start: calc(var(--spacing) * 3);
   }
 
-  ul li+li:where(:not(.not-prose, .not-prose *)) {
+  ul li + li:where(:not(.not-prose, .not-prose *)) {
     margin-block-start: calc(var(--spacing) * 4);
   }
 
@@ -170,7 +171,7 @@
     padding-inline-start: calc(var(--spacing) * 3);
   }
 
-  ol li+li:where(:not(.not-prose, .not-prose *)) {
+  ol li + li:where(:not(.not-prose, .not-prose *)) {
     margin-block-start: calc(var(--spacing) * 4);
   }
 
@@ -191,7 +192,8 @@
     padding-inline-start: calc(var(--spacing) * 3);
   }
 
-  ul.contains-task-list li:has(input:checked):where(:not(.not-prose, .not-prose *)) {
+  ul.contains-task-list
+    li:has(input:checked):where(:not(.not-prose, .not-prose *)) {
     text-decoration: line-through;
     color: var(--prose-task-list-checkbox-checked-bg);
   }
@@ -270,7 +272,7 @@
     border: 1px solid var(--prose-pre-border);
   }
 
-  pre code *+*:where(:not(.not-prose, .not-prose *)) {
+  pre code * + *:where(:not(.not-prose, .not-prose *)) {
     margin-block-start: 0;
   }
 
@@ -367,7 +369,7 @@
     border-color: var(--prose-hr);
     margin-block: --spacing(16);
 
-    &+h2 {
+    & + h2 {
       margin-top: --spacing(16);
     }
   }
