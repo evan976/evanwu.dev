@@ -47,7 +47,7 @@ export default async function Page() {
             <p className="relative z-10 mt-2 text-sm text-zinc-600 dark:text-zinc-400 line-clamp-2">
               {project.description}
             </p>
-            <p className="relative z-10 mt-6 flex items-center text-sm font-medium text-zinc-400 transition group-hover:text-teal-500 dark:text-zinc-200">
+            <p className="relative z-10 mt-6 flex items-center text-sm font-medium text-zinc-400 transition group-hover:text-violet-500 dark:text-zinc-200">
               <LinkIcon className="size-3.5" />
               <span className="ml-2">{new URL(project.url).hostname}</span>
             </p>

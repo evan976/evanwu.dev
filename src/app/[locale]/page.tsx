@@ -107,7 +107,7 @@ export default async function Page({ params }: PageProps<'/[locale]'>) {
                   </p>
                   <div
                     aria-hidden="true"
-                    className="relative z-10 mt-4 flex items-center text-sm font-medium text-teal-500"
+                    className="relative z-10 mt-4 flex items-center text-sm font-medium text-violet-500"
                   >
                     {t('common.read_more')}
                     <ChevronRight className="ml-1 mt-0.5 size-3 group-hover:translate-x-0.5 transition-all duration-200" />

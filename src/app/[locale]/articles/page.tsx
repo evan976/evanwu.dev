@@ -60,7 +60,7 @@ export default async function Page({
                   >
                     {article.description}
                   </p>
-                  <div className="relative z-10 mt-4 flex items-center text-sm font-medium text-teal-500">
+                  <div className="relative z-10 mt-4 flex items-center text-sm font-medium text-violet-500">
                     {t('common.read_more')}
                     <ChevronRightIcon
                       aria-hidden="true"

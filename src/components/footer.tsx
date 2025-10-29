@@ -20,7 +20,7 @@ export function Footer() {
                   rel="noopener"
                   aria-label="RSS Feed"
                 >
-                  <RssIcon className="size-4 text-zinc-500 dark:text-zinc-400 transition hover:text-teal-500 dark:hover:text-teal-400" />
+                  <RssIcon className="size-4 text-zinc-500 dark:text-zinc-400 transition hover:text-violet-500 dark:hover:text-violet-400" />
                 </Link>
               </div>
               <div className="flex items-center gap-6">

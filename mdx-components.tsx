@@ -69,7 +69,13 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     h4: createHeading(4),
     h5: createHeading(5),
     h6: createHeading(6),
-    a: (props) => <Link {...props} />,
+    a: (props) => {
+      if (props.href?.startsWith('http')) {
+        return <a {...props} target="_blank" rel="noopener noreferrer" />
+      }
+
+      return <Link {...props} />
+    },
     code: ({ children, ...props }) => {
       if (typeof children !== 'string') {
         return <code {...props}>{children}</code>

@@ -1,10 +1,10 @@
 .prose {
   --prose-body: var(--color-zinc-600);
   --prose-headings: var(--color-zinc-900);
-  --prose-links: var(--color-teal-700);
-  --prose-links-hover: var(--color-teal-600);
-  --prose-underline: --alpha(var(--color-teal-950) / 20%);
-  --prose-underline-hover: var(--color-teal-500);
+  --prose-links: var(--color-violet-500);
+  --prose-links-hover: var(--color-violet-600);
+  --prose-underline: --alpha(var(--color-violet-950) / 20%);
+  --prose-underline-hover: var(--color-violet-500);
   --prose-bold: var(--color-zinc-900);
   --prose-counters: var(--color-zinc-900);
   --prose-bullets: var(--color-zinc-900);
@@ -12,8 +12,9 @@
   --prose-quote-borders: var(--color-zinc-200);
   --prose-quote-bg: var(--color-zinc-50);
   --prose-captions: var(--color-zinc-400);
-  --prose-code: var(--color-red-600);
+  --prose-code: var(--color-violet-600);
   --prose-code-bg: var(--color-zinc-100);
+  --prose-code-border: var(--color-zinc-200);
   --prose-pre-code: var(--color-zinc-800);
   --prose-pre-bg: var(--color-zinc-100);
   --prose-pre-border: transparent;
@@ -27,10 +28,10 @@
   &:where(.dark, .dark *) {
     --prose-body: var(--color-zinc-400);
     --prose-headings: var(--color-zinc-200);
-    --prose-links: var(--color-teal-400);
-    --prose-links-hover: var(--color-teal-400);
-    --prose-underline: --alpha(var(--color-teal-400) / 30%);
-    --prose-underline-hover: var(--color-teal-400);
+    --prose-links: var(--color-violet-400);
+    --prose-links-hover: var(--color-violet-500);
+    --prose-underline: --alpha(var(--color-violet-400) / 30%);
+    --prose-underline-hover: var(--color-violet-400);
     --prose-bold: var(--color-zinc-200);
     --prose-counters: var(--color-zinc-200);
     --prose-bullets: var(--color-zinc-200);
@@ -38,8 +39,9 @@
     --prose-quote-borders: --alpha(var(--color-white) / 10%);
     --prose-quote-bg: var(--color-zinc-800);
     --prose-captions: var(--color-zinc-500);
-    --prose-code: var(--color-red-400);
+    --prose-code: var(--color-violet-400);
     --prose-code-bg: var(--color-zinc-800);
+    --prose-code-border: var(--color-zinc-700);
     --prose-pre-code: var(--color-zinc-100);
     --prose-pre-bg: --alpha(var(--color-black) / 40%);
     --prose-pre-border: --alpha(var(--color-zinc-200) / 10%);
@@ -55,10 +57,10 @@
     &:where(.system, .system *) {
       --prose-body: var(--color-zinc-400);
       --prose-headings: var(--color-zinc-200);
-      --prose-links: var(--color-teal-400);
-      --prose-links-hover: var(--color-teal-400);
-      --prose-underline: --alpha(var(--color-teal-400) / 30%);
-      --prose-underline-hover: var(--color-teal-400);
+      --prose-links: var(--color-violet-400);
+      --prose-links-hover: var(--color-violet-500);
+      --prose-underline: --alpha(var(--color-violet-400) / 30%);
+      --prose-underline-hover: var(--color-violet-400);
       --prose-bold: var(--color-zinc-200);
       --prose-counters: var(--color-zinc-200);
       --prose-bullets: var(--color-zinc-200);
@@ -66,8 +68,9 @@
       --prose-quote-borders: --alpha(var(--color-white) / 10%);
       --prose-quote-bg: var(--color-zinc-800);
       --prose-captions: var(--color-zinc-500);
-      --prose-code: var(--color-red-400);
+      --prose-code: var(--color-violet-400);
       --prose-code-bg: var(--color-zinc-800);
+      --prose-code-border: var(--color-zinc-700);
       --prose-pre-code: var(--color-zinc-100);
       --prose-pre-bg: --alpha(var(--color-black) / 40%);
       --prose-pre-border: --alpha(var(--color-zinc-200) / 10%);
@@ -84,8 +87,7 @@
   font-size: var(--text-base);
   line-height: 1.75;
 
-  *:where(:not(.not-prose, .not-prose *))
-    + *:where(:not(.not-prose, .not-prose *)) {
+  *:where(:not(.not-prose, .not-prose *))+*:where(:not(.not-prose, .not-prose *)) {
     margin-block-start: calc(var(--spacing) * 4);
   }
 
@@ -117,7 +119,7 @@
     margin-block-start: calc(var(--spacing) * 8);
   }
 
-  h2 + h3:where(:not(.not-prose, .not-prose *)) {
+  h2+h3:where(:not(.not-prose, .not-prose *)) {
     margin-block-start: calc(var(--spacing) * 4);
   }
 
@@ -146,7 +148,7 @@
     padding-inline-start: calc(var(--spacing) * 3);
   }
 
-  ul li + li:where(:not(.not-prose, .not-prose *)) {
+  ul li+li:where(:not(.not-prose, .not-prose *)) {
     margin-block-start: calc(var(--spacing) * 4);
   }
 
@@ -171,7 +173,7 @@
     padding-inline-start: calc(var(--spacing) * 3);
   }
 
-  ol li + li:where(:not(.not-prose, .not-prose *)) {
+  ol li+li:where(:not(.not-prose, .not-prose *)) {
     margin-block-start: calc(var(--spacing) * 4);
   }
 
@@ -192,8 +194,7 @@
     padding-inline-start: calc(var(--spacing) * 3);
   }
 
-  ul.contains-task-list
-    li:has(input:checked):where(:not(.not-prose, .not-prose *)) {
+  ul.contains-task-list li:has(input:checked):where(:not(.not-prose, .not-prose *)) {
     text-decoration: line-through;
     color: var(--prose-task-list-checkbox-checked-bg);
   }
@@ -227,15 +228,11 @@
 
   a:not(:where(:is(h2, h3, h4) *)):where(:not(.not-prose, .not-prose *)) {
     color: var(--prose-links);
-    font-weight: var(--font-weight-semibold);
+    font-weight: var(--font-weight-medium);
     text-decoration: underline;
     text-underline-offset: 3px;
     text-decoration-color: var(--prose-underline);
     text-decoration-thickness: 1px;
-
-    & code {
-      font-weight: var(--font-weight-semibold);
-    }
   }
 
   a:hover:where(:not(.not-prose, .not-prose *)) {
@@ -251,11 +248,12 @@
   code:where(:not(.not-prose, .not-prose *)) {
     font-variant-ligatures: none;
     font-family: var(--font-mono);
-    font-weight: var(--font-weight-medium);
+    font-size: var(--text-sm);
     color: var(--prose-code);
     padding-inline: 0.3em;
     border-radius: 0.2em;
     background-color: var(--prose-code-bg);
+    border: 1px solid var(--prose-code-border);
   }
 
   :where(h2, h3, h4) code:where(:not(.not-prose, .not-prose *)) {
@@ -272,7 +270,7 @@
     border: 1px solid var(--prose-pre-border);
   }
 
-  pre code * + *:where(:not(.not-prose, .not-prose *)) {
+  pre code *+*:where(:not(.not-prose, .not-prose *)) {
     margin-block-start: 0;
   }
 
@@ -369,7 +367,7 @@
     border-color: var(--prose-hr);
     margin-block: --spacing(16);
 
-    & + h2 {
+    &+h2 {
       margin-top: --spacing(16);
     }
   }

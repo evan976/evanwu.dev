@@ -50,11 +50,11 @@ export default async function Page() {
                 target="_blank"
                 rel="noopener noreferrer"
                 href="https://x.com/evan1297"
-                className="group flex items-center text-sm font-medium text-zinc-800 transition hover:text-teal-500 dark:text-zinc-200 dark:hover:text-teal-500"
+                className="group flex items-center text-sm font-medium text-zinc-800 transition hover:text-violet-500 dark:text-zinc-200 dark:hover:text-violet-500"
               >
                 <XIcon
                   aria-hidden="true"
-                  className="size-6 flex-none fill-zinc-500 transition group-hover:fill-teal-500"
+                  className="size-6 flex-none fill-zinc-500 transition group-hover:fill-violet-500"
                 />
                 <span className="ml-4">{t('follow_on_x')}</span>
               </Link>
@@ -64,11 +64,11 @@ export default async function Page() {
                 target="_blank"
                 rel="noopener noreferrer"
                 href="https://github.com/evan976"
-                className="group flex items-center text-sm font-medium text-zinc-800 transition hover:text-teal-500 dark:text-zinc-200 dark:hover:text-teal-500"
+                className="group flex items-center text-sm font-medium text-zinc-800 transition hover:text-violet-500 dark:text-zinc-200 dark:hover:text-violet-500"
               >
                 <GithubIcon
                   aria-hidden="true"
-                  className="size-6 flex-none fill-zinc-500 transition group-hover:fill-teal-500"
+                  className="size-6 flex-none fill-zinc-500 transition group-hover:fill-violet-500"
                 />
                 <span className="ml-4">{t('follow_on_github')}</span>
               </Link>
@@ -78,11 +78,11 @@ export default async function Page() {
                 target="_blank"
                 rel="noopener noreferrer"
                 href="https://www.linkedin.com/in/evan976"
-                className="group flex items-center text-sm font-medium text-zinc-800 transition hover:text-teal-500 dark:text-zinc-200 dark:hover:text-teal-500"
+                className="group flex items-center text-sm font-medium text-zinc-800 transition hover:text-violet-500 dark:text-zinc-200 dark:hover:text-violet-500"
               >
                 <LinkedInIcon
                   aria-hidden="true"
-                  className="size-6 flex-none fill-zinc-500 transition group-hover:fill-teal-500"
+                  className="size-6 flex-none fill-zinc-500 transition group-hover:fill-violet-500"
                 />
                 <span className="ml-4">{t('follow_on_linkedin')}</span>
               </Link>
@@ -90,12 +90,12 @@ export default async function Page() {
             <li className="mt-8 border-t border-zinc-100 pt-8 dark:border-zinc-700/40 flex">
               <Link
                 href="mailto:jihua.evan@icloud.com"
-                className="group flex items-center text-sm font-medium text-zinc-800 transition hover:text-teal-500 dark:text-zinc-200 dark:hover:text-teal-500"
+                className="group flex items-center text-sm font-medium text-zinc-800 transition hover:text-violet-500 dark:text-zinc-200 dark:hover:text-violet-500"
               >
                 <svg
                   viewBox="0 0 24 24"
                   aria-hidden="true"
-                  className="size-6 flex-none fill-zinc-500 transition group-hover:fill-teal-500"
+                  className="size-6 flex-none fill-zinc-500 transition group-hover:fill-violet-500"
                 >
                   <path
                     fillRule="evenodd"
