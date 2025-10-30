@@ -15,10 +15,10 @@ export default function GlobalError({
   return (
     <html lang="en">
       <body className="flex h-screen flex-col items-center justify-center">
-        <h2 className="text-4xl font-bold text-zinc-800 dark:text-zinc-100">
+        <h2 className="text-4xl font-bold text-neutral-800 dark:text-neutral-100">
           {t('title')}
         </h2>
-        <pre className="mt-4 p-4 bg-zinc-100 dark:bg-zinc-800 rounded-md overflow-x-auto">
+        <pre className="mt-4 p-4 bg-neutral-100 dark:bg-neutral-800 rounded-md overflow-x-auto">
           {error.message}
         </pre>
         <Button

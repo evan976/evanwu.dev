@@ -10,6 +10,7 @@ import { ThemeProvider } from 'next-themes'
 import { baseUrl } from '@/app/sitemap'
 import { Footer } from '@/components/footer'
 import { Header } from '@/components/header'
+import { TooltipProvider } from '@/components/tooltip'
 import { routing } from '@/i18n/routing'
 import { geist, geistMono } from '@/lib/fonts'
 import { cn } from '@/lib/utils'
@@ -108,7 +109,7 @@ export default async function RootLayout({
     <html lang={locale} dir="ltr" suppressHydrationWarning>
       <body
         className={cn(
-          'flex bg-zinc-50 dark:bg-black font-sans h-full antialiased',
+          'flex bg-neutral-50 dark:bg-black font-sans h-full antialiased',
           geist.variable,
           geistMono.variable,
         )}
@@ -120,18 +121,20 @@ export default async function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <div className="flex w-full">
-              <div className="fixed inset-0 flex justify-center sm:px-8">
-                <div className="flex w-full max-w-7xl lg:px-8">
-                  <div className="w-full bg-white ring-1 ring-zinc-100 dark:bg-zinc-900 dark:ring-zinc-300/20" />
+            <TooltipProvider>
+              <div className="flex w-full">
+                <div className="fixed inset-0 flex justify-center sm:px-8">
+                  <div className="flex w-full max-w-7xl lg:px-8">
+                    <div className="w-full bg-white ring-1 ring-neutral-100 dark:bg-neutral-900 dark:ring-neutral-300/20" />
+                  </div>
+                </div>
+                <div className="relative flex w-full flex-col">
+                  <Header />
+                  <main className="flex-auto">{children}</main>
+                  <Footer />
                 </div>
               </div>
-              <div className="relative flex w-full flex-col">
-                <Header />
-                <main className="flex-auto">{children}</main>
-                <Footer />
-              </div>
-            </div>
+            </TooltipProvider>
           </ThemeProvider>
         </NextIntlClientProvider>
       </body>

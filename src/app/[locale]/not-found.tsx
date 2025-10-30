@@ -17,7 +17,7 @@ export default function NotFound() {
             <div className="xl:relative">
               <div className="mx-auto max-w-2xl">
                 <ComicText fontSize={isMobile ? 6 : 12}>404</ComicText>
-                <p className="mt-8 text-base text-center text-balance text-zinc-600 dark:text-zinc-400">
+                <p className="mt-8 text-base text-center text-balance text-neutral-600 dark:text-neutral-400">
                   {t('description')}
                 </p>
                 <div className="mt-12 flex justify-center">

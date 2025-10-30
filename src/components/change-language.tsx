@@ -29,7 +29,7 @@ export function ChangeLanguage() {
       type="button"
       aria-label="Change language"
       disabled={isPending}
-      className="text-sm text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-300 uppercase"
+      className="text-sm text-neutral-500 hover:text-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-300 uppercase"
       onClick={() => onSelectChange(locale === 'en' ? 'zh' : 'en')}
     >
       {locale}

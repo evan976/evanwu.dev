@@ -4,7 +4,8 @@
     "coming_soon": "即将推出"
   },
   "navigation": {
-    "menu": "导航",
+    "menu": "菜单",
+    "navigation": "导航",
     "about": "关于",
     "articles": "文章",
     "photography": "照片墙",
@@ -40,7 +41,11 @@
   "articles": {
     "title": "文章",
     "description": "所有关于编程、开源、基础设施等的长期思考，按时间顺序排列。",
-    "reading_time": "阅读需约 {minutes} 分钟"
+    "reading_time": "阅读需约 {minutes} 分钟",
+    "back_to_articles": "返回文章列表",
+    "previous_article": "上一篇文章",
+    "scroll_to_top": "回到顶部",
+    "next_article": "下一篇文章"
   },
   "projects": {
     "title": "项目",

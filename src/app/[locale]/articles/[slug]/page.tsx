@@ -8,9 +8,14 @@ import {
   setRequestLocale,
 } from 'next-intl/server'
 import { baseUrl } from '@/app/sitemap'
+import { ArticleWidget } from '@/components/article-widget'
 import { ArrowLeftIcon } from '@/components/icons'
 import { Link } from '@/i18n/navigation'
-import { getArticleBySlug, getArticleSlugs } from '@/lib/article'
+import {
+  getArticleBySlug,
+  getArticleSlugs,
+  getPreviousOrNextArticleSlug,
+} from '@/lib/article'
 
 export const dynamicParams = false
 
@@ -84,6 +89,7 @@ export default async function Page({
   const { slug, locale } = await params
 
   const article = await getArticleBySlug(slug, locale)
+  const adjacent = await getPreviousOrNextArticleSlug(slug, locale)
   const t = await getTranslations('articles')
   const formatter = await getFormatter()
 
@@ -109,12 +115,8 @@ export default async function Page({
             datePublished: publishedAt,
             dateModified: publishedAt,
             description,
-            image: `/api/og?path=/articles/${slug}`,
+            image: image || `/api/og?path=/articles/${slug}`,
             url: `/articles/${slug}`,
-            author: {
-              '@type': 'Person',
-              name: 'Evan',
-            },
           }),
         }}
       />
@@ -127,22 +129,22 @@ export default async function Page({
                   <Link
                     href="/articles"
                     aria-label="Go back to articles"
-                    className="group mb-8 flex h-10 w-10 items-center justify-center rounded-full bg-white ring-1 shadow-md shadow-zinc-800/5 ring-zinc-900/5 transition lg:absolute lg:-left-5 lg:-mt-2 lg:mb-0 xl:-top-1.5 xl:left-0 xl:mt-0 dark:border dark:border-zinc-700/50 dark:bg-zinc-800 dark:ring-0 dark:ring-white/10 dark:hover:border-zinc-700 dark:hover:ring-white/20"
+                    className="group mb-8 flex h-10 w-10 items-center justify-center rounded-full bg-white ring-1 shadow-md shadow-neutral-800/5 ring-neutral-900/5 transition lg:absolute lg:-left-5 lg:-mt-2 lg:mb-0 xl:-top-1.5 xl:left-0 xl:mt-0 dark:border dark:border-neutral-700/50 dark:bg-neutral-800 dark:ring-0 dark:ring-white/10 dark:hover:border-neutral-700 dark:hover:ring-white/20"
                   >
                     <ArrowLeftIcon className="size-4" />
                   </Link>
                   <article>
                     <header className="flex flex-col">
-                      <h1 className="mt-6 text-3xl font-bold tracking-tight text-zinc-800 sm:text-4xl dark:text-zinc-100">
+                      <h1 className="mt-6 text-3xl font-bold tracking-tight text-neutral-800 sm:text-4xl dark:text-neutral-100">
                         {title}
                       </h1>
                       <div className="order-first flex items-center gap-4 text-sm">
                         <time
                           suppressHydrationWarning
                           dateTime={publishedAt.toLocaleString()}
-                          className="text-zinc-400 dark:text-zinc-500 flex items-center"
+                          className="text-neutral-400 dark:text-neutral-500 flex items-center"
                         >
-                          <span className="h-4 w-0.5 rounded-full bg-zinc-200 dark:bg-zinc-500" />
+                          <span className="h-4 w-0.5 rounded-full bg-neutral-200 dark:bg-neutral-500" />
                           <span className="ml-3">
                             {formatter.dateTime(new Date(publishedAt), {
                               month: 'short',
@@ -151,7 +153,7 @@ export default async function Page({
                             })}
                           </span>
                         </time>
-                        <span className="text-zinc-400 dark:text-zinc-500">
+                        <span className="text-neutral-400 dark:text-neutral-500">
                           {t('reading_time', {
                             minutes: Math.ceil(readingTime?.minutes || 0),
                           })}
@@ -159,7 +161,7 @@ export default async function Page({
                       </div>
                     </header>
                     {image && (
-                      <div className="mt-8 w-full p-1 rounded-xl overflow-hidden bg-white ring-1 ring-zinc-900/10 dark:bg-zinc-800/50 dark:ring-white/10">
+                      <div className="mt-8 w-full p-1 rounded-xl overflow-hidden bg-white ring-1 ring-neutral-900/10 dark:bg-neutral-800/50 dark:ring-white/10">
                         <Image
                           src={image}
                           alt={title}
@@ -183,6 +185,7 @@ export default async function Page({
           </div>
         </div>
       </div>
+      <ArticleWidget previous={adjacent.previous} next={adjacent.next} />
     </section>
   )
 }

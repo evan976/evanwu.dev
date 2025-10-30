@@ -20,10 +20,10 @@ export async function MDXCode({
   })
 
   return (
-    <div className="rounded-xl relative not-prose my-6 border overflow-hidden border-zinc-200 dark:border-white/10">
+    <div className="rounded-xl relative not-prose my-6 border overflow-hidden border-neutral-200 dark:border-white/10">
       {filename && (
-        <div className="py-2 px-4 flex items-center gap-x-2 bg-zinc-50 dark:bg-zinc-800 border-b border-zinc-200 dark:border-white/10">
-          <span className="text-sm/5 text-zinc-500 font-mono dark:text-white/50">
+        <div className="py-2 px-4 flex items-center gap-x-2 bg-neutral-50 dark:bg-neutral-800 border-b border-neutral-200 dark:border-white/10">
+          <span className="text-sm/5 text-neutral-500 font-mono dark:text-white/50">
             {filename}
           </span>
         </div>

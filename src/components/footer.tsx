@@ -10,24 +10,24 @@ export function Footer() {
   return (
     <footer className="mt-16 sm:mt-24">
       <Container.Outer>
-        <div className="border-t border-zinc-100 pt-10 pb-16 dark:border-zinc-700/40">
+        <div className="border-t border-neutral-100 pt-10 pb-16 dark:border-neutral-700/40">
           <Container.Inner>
             <div className="flex flex-col items-center justify-between gap-6 sm:flex-row">
-              <div className="flex gap-4 text-sm font-medium text-zinc-800 dark:text-zinc-200">
+              <div className="flex gap-4 text-sm font-medium text-neutral-800 dark:text-neutral-200">
                 <Link
                   href="/rss"
                   target="_blank"
                   rel="noopener"
                   aria-label="RSS Feed"
                 >
-                  <RssIcon className="size-4 text-zinc-500 dark:text-zinc-400 transition hover:text-violet-500 dark:hover:text-violet-400" />
+                  <RssIcon className="size-4 text-neutral-500 dark:text-neutral-400 transition hover:text-violet-500 dark:hover:text-violet-400" />
                 </Link>
               </div>
               <div className="flex items-center gap-6">
                 <ChangeLanguage />
                 <ModeToggle />
                 <p
-                  className="text-sm text-zinc-500 dark:text-zinc-400"
+                  className="text-sm text-neutral-500 dark:text-neutral-400"
                   suppressHydrationWarning
                 >
                   {t('copyright', { year: new Date().getFullYear() })}

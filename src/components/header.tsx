@@ -1,20 +1,14 @@
 'use client'
 
 import * as React from 'react'
-import {
-  Popover,
-  PopoverBackdrop,
-  PopoverButton,
-  PopoverPanel,
-  Transition,
-  TransitionChild,
-} from '@headlessui/react'
+import * as Dialog from '@radix-ui/react-dialog'
 import { ChevronDownIcon, XIcon } from 'lucide-react'
 import { motion, useScroll, useTransform } from 'motion/react'
 import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import { Container } from '@/components/container'
 import { Link, usePathname } from '@/i18n/navigation'
+import { navigation } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 import avatarImage from '@/public/avatar.png'
 
@@ -57,7 +51,7 @@ export function Header() {
             <div className="relative flex gap-4">
               {!isHomePage && (
                 <div className="absolute left-0 top-0">
-                  <div className="h-10 w-10 rounded-full bg-white/90 p-0.5 shadow-lg shadow-zinc-800/5 ring-1 ring-zinc-900/5 backdrop-blur dark:bg-zinc-800/90 dark:ring-white/10">
+                  <div className="h-10 w-10 rounded-full bg-white/90 p-0.5 shadow-lg shadow-neutral-800/5 ring-1 ring-neutral-900/5 backdrop-blur dark:bg-neutral-800/90 dark:ring-white/10">
                     <Avatar />
                   </div>
                 </div>
@@ -98,7 +92,7 @@ function Avatar({
         alt="Avatar"
         sizes={large ? '4rem' : '2.25rem'}
         className={cn(
-          'rounded-full bg-zinc-100 object-cover dark:bg-zinc-800',
+          'rounded-full bg-neutral-100 object-cover dark:bg-neutral-800',
           large ? 'h-16 w-16' : 'h-9 w-9',
         )}
       />
@@ -136,99 +130,79 @@ function NavItem({
   )
 }
 
-function DesktopNavigation(props: React.HTMLAttributes<HTMLDetailsElement>) {
+function DesktopNavigation(props: React.ComponentProps<'nav'>) {
   const t = useTranslations('navigation')
   return (
     <nav {...props}>
-      <ul className="flex rounded-full bg-white/90 px-3 text-sm font-medium text-zinc-800 shadow-lg shadow-zinc-800/5 ring-1 ring-zinc-900/5 backdrop-blur dark:bg-zinc-800/90 dark:text-zinc-200 dark:ring-white/10">
-        <NavItem href="/about">{t('about')}</NavItem>
-        <NavItem href="/articles">{t('articles')}</NavItem>
-        <NavItem href="/projects">{t('projects')}</NavItem>
-        <NavItem href="/photography">{t('photography')}</NavItem>
-        <NavItem href="/uses">{t('uses')}</NavItem>
+      <ul className="flex rounded-full bg-white/90 px-3 text-sm font-medium text-neutral-800 shadow-lg shadow-neutral-800/5 ring-1 ring-neutral-900/5 backdrop-blur dark:bg-neutral-800/90 dark:text-neutral-200 dark:ring-white/10">
+        {navigation.map(({ name, href }) => (
+          <NavItem key={name} href={href}>
+            {t(name)}
+          </NavItem>
+        ))}
       </ul>
     </nav>
   )
 }
 
-function MobileNavItem({
-  href,
-  children,
-}: {
-  href: string
-  children: React.ReactNode
-}) {
-  return (
-    <li>
-      <PopoverButton
-        as={Link}
-        href={href}
-        className="block outline-hidden py-2.5"
-      >
-        {children}
-      </PopoverButton>
-    </li>
-  )
-}
-
-function MobileNavigation(props: React.ComponentProps<typeof Popover>) {
+function MobileNavigation({
+  className,
+  ...props
+}: React.ComponentProps<typeof Dialog.Trigger>) {
   const t = useTranslations('navigation')
+  const [open, onOpenChange] = React.useState(false)
   return (
-    <Popover {...props}>
-      <PopoverButton className="group flex items-center rounded-full bg-white/90 px-4 py-2.5 text-sm font-medium text-zinc-800 shadow-lg shadow-zinc-800/5 ring-1 ring-zinc-900/5 backdrop-blur dark:bg-zinc-800/90 dark:text-zinc-200 dark:ring-white/10 dark:hover:ring-white/20 outline-hidden">
-        {t('menu')}
-        <ChevronDownIcon className="ml-3 h-auto w-3 text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-700 dark:group-hover:text-zinc-400" />
-      </PopoverButton>
-      <Transition>
-        <TransitionChild
-          as={React.Fragment}
-          enter="duration-150 ease-out"
-          enterFrom="opacity-0"
-          enterTo="opacity-100"
-          leave="duration-150 ease-in"
-          leaveFrom="opacity-100"
-          leaveTo="opacity-0"
+    <Dialog.Root open={open} onOpenChange={onOpenChange}>
+      <Dialog.Trigger asChild>
+        <button
+          type="button"
+          className={cn(
+            'group flex items-center rounded-full bg-white/90 px-4 py-2.5 text-sm font-medium text-neutral-800 shadow-lg shadow-neutral-800/5 ring-1 ring-neutral-900/5 backdrop-blur dark:bg-neutral-800/90 dark:text-neutral-200 dark:ring-white/10 dark:hover:ring-white/20',
+            className,
+          )}
+          {...props}
         >
-          <PopoverBackdrop className="fixed inset-0 z-50 bg-zinc-800/40 backdrop-blur-sm dark:bg-black/80" />
-        </TransitionChild>
-        <TransitionChild
-          as={React.Fragment}
-          enter="duration-150 ease-out"
-          enterFrom="opacity-0 scale-95"
-          enterTo="opacity-100 scale-100"
-          leave="duration-150 ease-in"
-          leaveFrom="opacity-100 scale-100"
-          leaveTo="opacity-0 scale-95"
-        >
-          <PopoverPanel
-            focus
-            className="fixed inset-x-4 top-8 z-50 origin-top rounded-2xl bg-white p-8 ring-1 ring-zinc-900/5 dark:bg-zinc-900 dark:ring-zinc-800"
-          >
-            <div className="flex flex-row-reverse items-center justify-between">
-              <PopoverButton
-                aria-label="Close menu"
-                className="-m-1 p-1 outline-hidden"
-              >
-                <XIcon className="size-5 text-zinc-500 dark:text-zinc-400" />
-              </PopoverButton>
-              <h2 className="text-sm font-medium text-zinc-600 dark:text-zinc-400">
-                {t('menu')}
-              </h2>
+          {t('menu')}
+          <ChevronDownIcon className="ml-3 h-auto w-3 text-neutral-500 dark:text-neutral-400 group-hover:text-neutral-700 dark:group-hover:text-neutral-400" />
+        </button>
+      </Dialog.Trigger>
+      <Dialog.Portal>
+        <Dialog.Overlay className="fixed inset-0 z-100 bg-neutral-800/40 backdrop-blur-sm dark:bg-black/80 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
+        <Dialog.Content className="fixed z-100 gap-4 transition ease-in-out data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:duration-300 data-[state=open]:duration-300 inset-x-0 top-0 data-[state=closed]:slide-out-to-top data-[state=open]:slide-in-from-top p-4">
+          <div className="bg-white rounded-2xl p-6 shadow-lg ring-1 ring-neutral-900/5 dark:bg-neutral-900 dark:ring-neutral-800">
+            <div className="flex items-center justify-between">
+              <Dialog.Title asChild>
+                <h2 className="text-sm font-medium text-neutral-600 dark:text-neutral-400">
+                  {t('navigation')}
+                </h2>
+              </Dialog.Title>
+              <Dialog.Description className="sr-only">
+                {t('navigation')}
+              </Dialog.Description>
+              <Dialog.Close asChild>
+                <button type="button">
+                  <XIcon className="size-5 text-neutral-500 dark:text-neutral-400" />
+                </button>
+              </Dialog.Close>
             </div>
-            <nav className="mt-6">
-              <ul className="-my-2 divide-y divide-zinc-100 text-base text-zinc-800 dark:divide-zinc-100/5 dark:text-zinc-300">
-                <MobileNavItem href="/about">{t('about')}</MobileNavItem>
-                <MobileNavItem href="/articles">{t('articles')}</MobileNavItem>
-                <MobileNavItem href="/projects">{t('projects')}</MobileNavItem>
-                <MobileNavItem href="/photography">
-                  {t('photography')}
-                </MobileNavItem>
-                <MobileNavItem href="/uses">{t('uses')}</MobileNavItem>
+            <nav className="mt-4">
+              <ul className="-my-2 divide-y divide-neutral-100 text-base text-neutral-800 dark:divide-neutral-100/5 dark:text-neutral-300">
+                {navigation.map(({ name, href }) => (
+                  <li key={name}>
+                    <Link
+                      href={href}
+                      className="block outline-hidden py-2.5"
+                      onClick={() => onOpenChange(false)}
+                    >
+                      {t(name)}
+                    </Link>
+                  </li>
+                ))}
               </ul>
             </nav>
-          </PopoverPanel>
-        </TransitionChild>
-      </Transition>
-    </Popover>
+          </div>
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
   )
 }
