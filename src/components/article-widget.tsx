@@ -62,7 +62,7 @@ export function ArticleWidget({
     <>
       <motion.div
         id="scroll-indicator"
-        className="fixed top-0 left-0 right-0 h-1 rounded-full bg-indigo-500"
+        className="fixed top-0 left-0 right-0 h-1 rounded-full bg-violet-500"
         style={{ scaleX, originX: 0 }}
       />
       <motion.div

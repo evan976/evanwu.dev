@@ -46,7 +46,6 @@
   }
 
   :where(.dark) {
-
     .shiki,
     .shiki span {
       background-color: var(--color-neutral-800) !important;
