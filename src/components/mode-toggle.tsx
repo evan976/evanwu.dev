@@ -37,7 +37,7 @@ export function ModeToggle() {
     <div
       role="group"
       aria-label="Theme"
-      className="flex gap-x-1.5 rounded-full bg-white p-1 ring-1 ring-zinc-600/10 light:ring-inset dark:bg-zinc-950/30 dark:ring-zinc-50/5 not-dark:ring-inset"
+      className="flex gap-x-1.5 rounded-full bg-white p-1 ring-1 ring-neutral-600/10 light:ring-inset dark:bg-neutral-950/30 dark:ring-neutral-50/5 not-dark:ring-inset"
     >
       {themes.map(({ label, icon: Icon, value }) => (
         <button
@@ -47,9 +47,9 @@ export function ModeToggle() {
           aria-label={label}
           aria-checked={theme === value}
           className={cn(
-            'size-5 text-zinc-500 hover:text-zinc-800 inline-flex items-center justify-center rounded-full outline-none transition-colors dark:hover:text-zinc-300',
+            'size-5 text-neutral-500 hover:text-neutral-800 inline-flex items-center justify-center rounded-full outline-none transition-colors dark:hover:text-neutral-300',
             {
-              'ring-1 bg-zinc-100 ring-zinc-900/10 dark:bg-zinc-800 dark:text-zinc-300 dark:ring-white/20 text-zinc-800 shadow-[0_1px_5px_-4px_rgba(19,19,22,0.4),0_2px_5px_rgba(34,42,53,0.06)]':
+              'ring-1 bg-neutral-100 ring-neutral-900/10 dark:bg-neutral-800 dark:text-neutral-300 dark:ring-white/20 text-neutral-800 shadow-[0_1px_5px_-4px_rgba(19,19,22,0.4),0_2px_5px_rgba(34,42,53,0.06)]':
                 theme === value,
             },
           )}

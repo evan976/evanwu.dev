@@ -24,13 +24,13 @@ export function SubscribeForm() {
   return (
     <form
       action={formAction}
-      className="rounded-2xl border border-zinc-100 p-6 dark:border-zinc-700/40"
+      className="rounded-2xl border border-neutral-100 p-6 dark:border-neutral-700/40"
     >
-      <h2 className="flex items-center text-sm font-semibold text-zinc-900 dark:text-zinc-100">
-        <MailIcon className="size-5 flex-none text-zinc-400 dark:text-zinc-500" />
+      <h2 className="flex items-center text-sm font-semibold text-neutral-900 dark:text-neutral-100">
+        <MailIcon className="size-5 flex-none text-neutral-400 dark:text-neutral-500" />
         <span className="ml-3">{t('title')}</span>
       </h2>
-      <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
+      <p className="mt-2 text-sm text-neutral-600 dark:text-neutral-400">
         {t('description')}
       </p>
       <div className="mt-6 flex">
@@ -42,7 +42,7 @@ export function SubscribeForm() {
           name="email"
           placeholder={t('email')}
           aria-label={t('email')}
-          className="min-w-0 flex-auto h-9 text-sm appearance-none rounded-md border border-zinc-900/10 bg-white px-3 py-2 shadow-md shadow-zinc-800/5 placeholder:text-zinc-400 focus:border-violet-500 focus:outline-hidden focus:ring-3 focus:ring-violet-500/10 dark:border-zinc-700 dark:bg-zinc-700/15 dark:text-zinc-200 dark:placeholder:text-zinc-500 dark:focus:border-violet-400 dark:focus:ring-violet-400/10 sm:text-sm transition-all duration-200"
+          className="min-w-0 flex-auto h-9 text-sm appearance-none rounded-md border border-neutral-900/10 bg-white px-3 py-2 shadow-md shadow-neutral-800/5 placeholder:text-neutral-400 focus:border-violet-500 focus:outline-hidden focus:ring-3 focus:ring-violet-500/10 dark:border-neutral-700 dark:bg-neutral-700/15 dark:text-neutral-200 dark:placeholder:text-neutral-500 dark:focus:border-violet-400 dark:focus:ring-violet-400/10 sm:text-sm transition-all duration-200"
         />
         <Button
           type="submit"

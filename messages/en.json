@@ -5,6 +5,7 @@
   },
   "navigation": {
     "menu": "Menu",
+    "navigation": "Navigation",
     "about": "About",
     "articles": "Articles",
     "photography": "Photography",
@@ -39,8 +40,13 @@
   },
   "articles": {
     "title": "Articles",
+
     "description": "All of my long-form thoughts on programming, open source, infrastructure, and more, collected in chronological order.",
-    "reading_time": "{minutes} min read"
+    "reading_time": "{minutes} min read",
+    "back_to_articles": "Back to articles",
+    "previous_article": "Previous article",
+    "scroll_to_top": "Scroll to top",
+    "next_article": "Next article"
   },
   "projects": {
     "title": "Projects",

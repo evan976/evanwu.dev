@@ -35,7 +35,7 @@ export default async function Page({ params }: PageProps<'/[locale]'>) {
     <React.Fragment>
       <Container className="mt-9">
         <div className="max-w-2xl text-lg">
-          <h1 className="text-4xl font-black tracking-tight text-balance leading-tight text-zinc-800 dark:text-zinc-100 sm:text-5xl">
+          <h1 className="text-4xl font-black tracking-tight text-balance leading-tight text-neutral-800 dark:text-neutral-100 sm:text-5xl">
             {t.rich('home.title', {
               developer: (chunks) => (
                 <Highlighter action="underline" color="#38bdf8">
@@ -60,7 +60,7 @@ export default async function Page({ params }: PageProps<'/[locale]'>) {
               ),
             })}
           </h1>
-          <p className="mt-6 text-base text-zinc-600 dark:text-zinc-400 text-balance">
+          <p className="mt-6 text-base text-neutral-600 dark:text-neutral-400 text-balance">
             {t('home.description')}
           </p>
           <div className="mt-6 flex gap-6">
@@ -80,8 +80,8 @@ export default async function Page({ params }: PageProps<'/[locale]'>) {
                   key={article.slug}
                   className="group relative flex flex-col items-start"
                 >
-                  <h2 className="text-base font-semibold tracking-tight text-zinc-800 dark:text-zinc-100">
-                    <div className="absolute -inset-x-4 -inset-y-6 z-0 scale-95 bg-zinc-50 opacity-0 transition group-hover:scale-100 group-hover:opacity-100 sm:-inset-x-6 sm:rounded-xl dark:bg-zinc-800/50" />
+                  <h2 className="text-base font-semibold tracking-tight text-neutral-800 dark:text-neutral-100">
+                    <div className="absolute -inset-x-4 -inset-y-6 z-0 scale-95 bg-neutral-50 opacity-0 transition group-hover:scale-100 group-hover:opacity-100 sm:-inset-x-6 sm:rounded-xl dark:bg-neutral-800/50" />
                     <Link href={`/articles/${article.slug}`}>
                       <span className="absolute -inset-x-4 -inset-y-6 z-20 sm:-inset-x-6 sm:rounded-2xl" />
                       <span className="relative z-10">{article.title}</span>
@@ -89,19 +89,19 @@ export default async function Page({ params }: PageProps<'/[locale]'>) {
                   </h2>
                   <time
                     dateTime={article.publishedAt}
-                    className="relative z-10 order-first mb-3 flex items-center text-sm text-zinc-400 dark:text-zinc-500 pl-3.5"
+                    className="relative z-10 order-first mb-3 flex items-center text-sm text-neutral-400 dark:text-neutral-500 pl-3.5"
                   >
                     <span
                       aria-hidden="true"
                       className="absolute inset-y-0 left-0 flex items-center"
                     >
-                      <span className="h-4 w-0.5 rounded-full bg-zinc-200 dark:bg-zinc-500" />
+                      <span className="h-4 w-0.5 rounded-full bg-neutral-200 dark:bg-neutral-500" />
                     </span>
                     {formatter.relativeTime(new Date(article.publishedAt))}
                   </time>
                   <p
                     title={article.description}
-                    className="relative z-10 mt-2 text-sm text-zinc-600 dark:text-zinc-400 line-clamp-2"
+                    className="relative z-10 mt-2 text-sm text-neutral-600 dark:text-neutral-400 line-clamp-2"
                   >
                     {article.description}
                   </p>
@@ -141,7 +141,7 @@ function Photos() {
         <motion.div
           key={imageIndex}
           tabIndex={0}
-          className="aspect-9/10 cursor-pointer w-44 select-none p-1 flex-none bg-white sm:w-72 sm:rounded-2xl rounded-xl ring-2 ring-black/5 dark:ring-white/5 dark:bg-zinc-800 shrink-0 overflow-hidden"
+          className="aspect-9/10 cursor-pointer w-44 select-none p-1 flex-none bg-white sm:w-72 sm:rounded-2xl rounded-xl ring-2 ring-black/5 dark:ring-white/5 dark:bg-neutral-800 shrink-0 overflow-hidden"
           initial={{
             scale: 1.0,
             transform: `rotate(${rotations[imageIndex % rotations.length]})`,

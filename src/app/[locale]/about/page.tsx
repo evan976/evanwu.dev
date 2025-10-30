@@ -27,16 +27,16 @@ export default async function Page() {
                 width={800}
                 height={800}
                 sizes="(min-width: 1024px) 32rem, 20rem"
-                className="aspect-square rotate-3 rounded-2xl bg-zinc-100 object-cover dark:bg-zinc-800"
+                className="aspect-square rotate-3 rounded-2xl bg-neutral-100 object-cover dark:bg-neutral-800"
               />
             </div>
           </div>
         </div>
         <div className="lg:order-first lg:row-span-2">
-          <h1 className="text-4xl font-bold tracking-tight leading-tight text-zinc-800 sm:text-5xl dark:text-zinc-100">
+          <h1 className="text-4xl font-bold tracking-tight leading-tight text-neutral-800 sm:text-5xl dark:text-neutral-100">
             {t('description')}
           </h1>
-          <div className="mt-6 space-y-7 text-base text-zinc-600 dark:text-zinc-400">
+          <div className="mt-6 space-y-7 text-base text-neutral-600 dark:text-neutral-400">
             <p>{t('content.childhood')}</p>
             <p>{t('content.school')}</p>
             <p>{t('content.programming')}</p>
@@ -50,11 +50,11 @@ export default async function Page() {
                 target="_blank"
                 rel="noopener noreferrer"
                 href="https://x.com/evan1297"
-                className="group flex items-center text-sm font-medium text-zinc-800 transition hover:text-violet-500 dark:text-zinc-200 dark:hover:text-violet-500"
+                className="group flex items-center text-sm font-medium text-neutral-800 transition hover:text-violet-500 dark:text-neutral-200 dark:hover:text-violet-500"
               >
                 <XIcon
                   aria-hidden="true"
-                  className="size-6 flex-none fill-zinc-500 transition group-hover:fill-violet-500"
+                  className="size-6 flex-none fill-neutral-500 transition group-hover:fill-violet-500"
                 />
                 <span className="ml-4">{t('follow_on_x')}</span>
               </Link>
@@ -64,11 +64,11 @@ export default async function Page() {
                 target="_blank"
                 rel="noopener noreferrer"
                 href="https://github.com/evan976"
-                className="group flex items-center text-sm font-medium text-zinc-800 transition hover:text-violet-500 dark:text-zinc-200 dark:hover:text-violet-500"
+                className="group flex items-center text-sm font-medium text-neutral-800 transition hover:text-violet-500 dark:text-neutral-200 dark:hover:text-violet-500"
               >
                 <GithubIcon
                   aria-hidden="true"
-                  className="size-6 flex-none fill-zinc-500 transition group-hover:fill-violet-500"
+                  className="size-6 flex-none fill-neutral-500 transition group-hover:fill-violet-500"
                 />
                 <span className="ml-4">{t('follow_on_github')}</span>
               </Link>
@@ -78,24 +78,24 @@ export default async function Page() {
                 target="_blank"
                 rel="noopener noreferrer"
                 href="https://www.linkedin.com/in/evan976"
-                className="group flex items-center text-sm font-medium text-zinc-800 transition hover:text-violet-500 dark:text-zinc-200 dark:hover:text-violet-500"
+                className="group flex items-center text-sm font-medium text-neutral-800 transition hover:text-violet-500 dark:text-neutral-200 dark:hover:text-violet-500"
               >
                 <LinkedInIcon
                   aria-hidden="true"
-                  className="size-6 flex-none fill-zinc-500 transition group-hover:fill-violet-500"
+                  className="size-6 flex-none fill-neutral-500 transition group-hover:fill-violet-500"
                 />
                 <span className="ml-4">{t('follow_on_linkedin')}</span>
               </Link>
             </li>
-            <li className="mt-8 border-t border-zinc-100 pt-8 dark:border-zinc-700/40 flex">
+            <li className="mt-8 border-t border-neutral-100 pt-8 dark:border-neutral-700/40 flex">
               <Link
                 href="mailto:jihua.evan@icloud.com"
-                className="group flex items-center text-sm font-medium text-zinc-800 transition hover:text-violet-500 dark:text-zinc-200 dark:hover:text-violet-500"
+                className="group flex items-center text-sm font-medium text-neutral-800 transition hover:text-violet-500 dark:text-neutral-200 dark:hover:text-violet-500"
               >
                 <svg
                   viewBox="0 0 24 24"
                   aria-hidden="true"
-                  className="size-6 flex-none fill-zinc-500 transition group-hover:fill-violet-500"
+                  className="size-6 flex-none fill-neutral-500 transition group-hover:fill-violet-500"
                 >
                   <path
                     fillRule="evenodd"

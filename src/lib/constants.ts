@@ -62,3 +62,26 @@ export const projects = [
       'The website you are currently on. Built with Next.js, Tailwind CSS, and Framer Motion.',
   },
 ] as const
+
+export const navigation = [
+  {
+    name: 'about',
+    href: '/about',
+  },
+  {
+    name: 'articles',
+    href: '/articles',
+  },
+  {
+    name: 'projects',
+    href: '/projects',
+  },
+  {
+    name: 'photography',
+    href: '/photography',
+  },
+  {
+    name: 'uses',
+    href: '/uses',
+  },
+] as const

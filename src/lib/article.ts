@@ -1,3 +1,4 @@
+import 'server-only'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import type * as React from 'react'
@@ -87,4 +88,26 @@ export async function getArticles(locale: string) {
     (a, b) =>
       new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime(),
   )
+}
+
+export async function getPreviousOrNextArticleSlug(
+  slug: string,
+  locale: string,
+) {
+  const articles = await getArticles(locale)
+  const index = articles.findIndex((article) => article.slug === slug)
+
+  if (index === -1) {
+    return {
+      previous: undefined,
+      next: undefined,
+    }
+  }
+  const previous = index > 0 ? articles[index - 1].slug : undefined
+  const next =
+    index < articles.length - 1 ? articles[index + 1].slug : undefined
+  return {
+    previous,
+    next,
+  }
 }

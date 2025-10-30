@@ -24,7 +24,7 @@ export default async function Page() {
             className="group relative flex flex-col items-start"
             title={project.description}
           >
-            <div className="relative z-10 flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-md ring-1 shadow-zinc-800/5 ring-zinc-900/5 dark:border dark:border-zinc-700/50 dark:bg-zinc-800 dark:ring-0">
+            <div className="relative z-10 flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-md ring-1 shadow-neutral-800/5 ring-neutral-900/5 dark:border dark:border-neutral-700/50 dark:bg-neutral-800 dark:ring-0">
               <Image
                 src={project.logo}
                 alt={project.name}
@@ -33,8 +33,8 @@ export default async function Page() {
                 height={32}
               />
             </div>
-            <h2 className="mt-6 text-base font-semibold text-zinc-800 dark:text-zinc-100">
-              <div className="absolute -inset-x-4 -inset-y-6 z-0 scale-95 bg-zinc-50 opacity-0 transition group-hover:scale-100 group-hover:opacity-100 sm:-inset-x-6 sm:rounded-2xl dark:bg-zinc-800/50" />
+            <h2 className="mt-6 text-base font-semibold text-neutral-800 dark:text-neutral-100">
+              <div className="absolute -inset-x-4 -inset-y-6 z-0 scale-95 bg-neutral-50 opacity-0 transition group-hover:scale-100 group-hover:opacity-100 sm:-inset-x-6 sm:rounded-2xl dark:bg-neutral-800/50" />
               <Link
                 href={project.url}
                 target="_blank"
@@ -44,10 +44,10 @@ export default async function Page() {
                 <span className="relative z-10">{project.name}</span>
               </Link>
             </h2>
-            <p className="relative z-10 mt-2 text-sm text-zinc-600 dark:text-zinc-400 line-clamp-2">
+            <p className="relative z-10 mt-2 text-sm text-neutral-600 dark:text-neutral-400 line-clamp-2">
               {project.description}
             </p>
-            <p className="relative z-10 mt-6 flex items-center text-sm font-medium text-zinc-400 transition group-hover:text-violet-500 dark:text-zinc-200">
+            <p className="relative z-10 mt-6 flex items-center text-sm font-medium text-neutral-400 transition group-hover:text-violet-500 dark:text-neutral-200">
               <LinkIcon className="size-3.5" />
               <span className="ml-2">{new URL(project.url).hostname}</span>
             </p>
