@@ -2,7 +2,7 @@ import RSS from 'rss'
 import { baseUrl } from '@/app/sitemap'
 import { getArticles } from './article'
 
-export async function generateRSS() {
+export async function generateRSS(locale: string) {
   const siteUrl =
     process.env.NODE_ENV === 'production' ? baseUrl : 'http://localhost:3000'
 
@@ -17,7 +17,7 @@ export async function generateRSS() {
 
   const feed = new RSS(feedOptions)
 
-  const articles = await getArticles()
+  const articles = await getArticles(locale)
 
   articles.forEach((article) => {
     feed.item({
