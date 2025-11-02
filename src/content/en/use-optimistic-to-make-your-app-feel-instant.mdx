@@ -1,0 +1,189 @@
+export const title = 'useOptimistic to Make Your App Feel Instant'
+export const description = 'useOptimistic is a React hook that allows you to make your app feel instant.'
+export const publishedAt = '2025-07-20'
+export const image = '/articles/use-optimistic.webp'
+
+When you click a button in your app, how long does it take for the UI to respond? If you're waiting for a network request to finish before showing the result, your users might be left staring at a spinner, wondering if anything happened at all.
+
+That's where **optimistic UI** comes in. The idea is simple: assume the best, update the UI immediately, and let the server catch up. If something goes wrong, you can always roll back. But most of the time, things go right—and your app feels lightning fast.
+
+React 19 introduced a new hook, [`useOptimistic`](https://react.dev/reference/react/useOptimistic), that makes this pattern easier than ever.
+
+## What is `useOptimistic`?
+
+`useOptimistic` is a React Hook that lets you show a different state while an async action is underway. It's perfect for things like instantly adding a new item to a list when the user submits a form allowing them to quickly add another item or even change the list item before it's even actually saved. You can also give users feedback that their action is being processed and even updating the UI to show individual parts of progress. For example: "reserving your seat" => "creating calendar event" => "sending invitations" => "done".
+
+## Examples
+
+### Optimistically Toggling a Like Button
+
+Let's try another example: a "Like" button. When a user clicks it, you want the count to update right away.
+
+```tsx
+import * as React from 'react'
+
+function LikeButton({
+  initialCount,
+  sendLike,
+}: {
+  initialCount: number
+  sendLike: () => Promise<void>
+}) {
+  const [isPending, startTransition] = React.useTransition()
+  const [count, setCount] = React.useState(initialCount)
+
+  // The update function adds the optimistic delta to the count
+  const [optimisticCount, addOptimisticLike] = React.useOptimistic(
+    count,
+    (current, delta) => current + delta,
+  )
+
+  function handleLike() {
+    // Optimistically increment the count
+    addOptimisticLike(1)
+
+    // Actually send to the server using the provided async function
+    startTransition(async () => {
+      await sendLike()
+      setCount((c) => c + 1)
+    })
+  }
+
+  return <button onClick={handleLike} disabled={isPending}>👍 {optimisticCount}</button>
+}
+```
+
+The user sees the like count go up immediately, even if the network is slow.
+
+### Adding Comments
+
+Suppose you have a comment section. When a user submits a new comment, you want it to appear instantly—even before the server responds.
+
+Here's how you might do it with `useOptimistic`:
+
+```tsx
+import * as React from 'react'
+
+type Comment = {
+  id: number
+  text: string
+}
+
+function CommentSection({
+  initialComments,
+  sendComment,
+}: {
+  initialComments: Comment[]
+  sendComment: (text: string) => Promise<Comment>
+}) {
+  const [comments, setComments] = React.useState(initialComments)
+  const [isPending, startTransition] = React.useTransition()
+
+  // The update function merges the optimistic comment into the list
+  const [optimisticComments, addOptimisticComment] = React.useOptimistic(
+    comments,
+    (currentComments, newComment) => [
+      { ...newComment, optimistic: true },
+      ...currentComments,
+    ],
+  )
+
+  async function handleAddComment(text: string) {
+    // Show the comment immediately
+    addOptimisticComment({ id: Date.now(), text })
+
+    // Actually send to the server using the provided async function
+    startTransition(async () => {
+      const savedComment = await sendComment(text)
+      setComments((prev) => [{ ...savedComment }, ...prev])
+    })
+  }
+
+  return (
+    <fieldset disabled={isPending}>
+      <form
+        action={async (formData) => {
+          handleAddComment(formData.get('text'))
+        }}
+      >
+        <input name="text" placeholder="Write a comment..." />
+        <button type="submit">Add</button>
+      </form>
+      <ul>
+        {optimisticComments.map((comment) => (
+          <li
+            key={comment.id}
+            className={comment.optimistic ? 'text-neutral-500' : ''}
+          >
+            {comment.text}
+          </li>
+        ))}
+      </ul>
+    </fieldset>
+  )
+}
+```
+
+Notice how the new comment appears instantly, with a grayed out text, even before the server responds. If there was an error, then the comment will go away at the end of the transition (you can show an error message if you want). If there was no error, then the optimistic comment is still gone at the end of the transition, but the newly created comment will be in the list of regular comments (and will no longer be grayed out).
+
+### Booking a Flight
+
+Suppose you want to let users book a flight, and you want to show progress through multiple steps—like "reserving seat", "processing payment", and "sending confirmation"—with optimistic UI updates for both the booking state and the progress message. You can accept all async logic and step messages as props, making the component flexible and focused on UI state.
+
+```tsx
+import * as React from 'react'
+import { reserveSeat, processPayment, sendConfirmation } from './api'
+
+function BookFlight() {
+  const [message, setMessage] = React.useOptimistic('Ready to book')
+
+  async function handleBooking(formData: FormData) {
+    setMessage('Reserving seat...')
+    await reserveSeat(formData.get('flight'))
+
+    setMessage('Processing payment...')
+    await processPayment(formData.get('passenger'))
+
+    setMessage('Sending confirmation...')
+    const bookingId = await sendConfirmation(
+      formData.get('passenger'),
+      formData.get('flight'),
+    )
+
+    setMessage('Booking complete! Redirecting...')
+    // In a real app, you'd use your routing library here
+    console.log(`Redirecting to /booking/${bookingId}`)
+  }
+
+  return (
+    <form action={handleBooking}>
+      <input name="passenger" placeholder="Passenger Name" required />
+      <input name="flight" placeholder="Flight Number" required />
+      <button type="submit">Book Flight</button>
+      <div className="mt-2">
+        <strong>Status:</strong> {message}
+      </div>
+    </form>
+  )
+}
+```
+
+This pattern lets you keep all business logic outside the component, while still providing a rich, step-by-step optimistic UI experience for your users.
+
+## Why Not Just Use `useState`?
+
+You might wonder: why not just update state directly and hope for the best? The difference is that `useOptimistic` is designed to work seamlessly with React's concurrent rendering and transitions. It keeps your UI in sync with the "real" state, and automatically falls back if the action fails or completes.
+
+Additionally, calling `setState` in a transition does not trigger a re-render due to the nature of React transitions.
+
+## Tips for Using `useOptimistic`
+
+- **Keep your update function pure.** It should only compute the next optimistic state, not cause side effects.
+- **Handle errors gracefully.** If the server rejects the action, you may want to show an error or roll back the optimistic update.
+- **Use with transitions.** Pairing `useOptimistic` with `startTransition` ensures your UI stays responsive, even during async work.
+
+## Conclusion
+
+Optimistic UI is one of those little touches that can make your app feel magical. With `useOptimistic`, React gives you a simple, powerful tool to make your interfaces feel instant—even when the network isn't.
+
+So next time you're building a form, a like button, or anything that talks to a server, give `useOptimistic` a try. Your users will thank you.

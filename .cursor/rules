@@ -1,0 +1,33 @@
+---
+description: The rules for the Next.js project.
+globs: **/*.js,**/*.jsx,**/*.ts,**/*.tsx
+alwaysApply: false
+---
+
+# Next.js Project Rules
+
+- Using the App Router architecture, use the `page.tsx` file in the routing directory.
+
+- Client components must be explicitly marked with `'use client'` at the top of the file.
+
+- Use kebab-case for directory names (e.g., `components/auth-form`), and PascalCase for component files.
+
+- Prefer named exports over default exports, use `export function Button() { ... }` instead of `export default function Button() { ... }`.
+
+- Minimize `'use client'` directives.
+
+- Keep most components React Server Components (RSC).
+
+- Use client-side components only when interactivity is required, and wrap them with `Suspense` with a fallback UI.
+
+- Create small client-side component wrappers for interactive elements.
+
+- Avoid unnecessary `useState` and `useEffect` as much as possible.
+
+- Use server components for data fetching.
+
+# Translation Rules
+
+- Use plain and easy-to-understand language.
+
+- Don't be too formal.

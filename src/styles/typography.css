@@ -8,7 +8,7 @@
   --prose-bold: var(--color-neutral-900);
   --prose-counters: var(--color-neutral-900);
   --prose-bullets: var(--color-neutral-900);
-  --prose-hr: var(--color-neutral-100);
+  --prose-hr: var(--color-neutral-200);
   --prose-quote-borders: var(--color-neutral-200);
   --prose-quote-bg: var(--color-neutral-50);
   --prose-captions: var(--color-neutral-400);
@@ -35,7 +35,7 @@
     --prose-bold: var(--color-neutral-200);
     --prose-counters: var(--color-neutral-200);
     --prose-bullets: var(--color-neutral-200);
-    --prose-hr: --alpha(var(--color-neutral-700) / 40%);
+    --prose-hr: var(--color-neutral-800);
     --prose-quote-borders: --alpha(var(--color-white) / 10%);
     --prose-quote-bg: var(--color-neutral-800);
     --prose-captions: var(--color-neutral-500);
@@ -64,7 +64,7 @@
       --prose-bold: var(--color-neutral-200);
       --prose-counters: var(--color-neutral-200);
       --prose-bullets: var(--color-neutral-200);
-      --prose-hr: --alpha(var(--color-neutral-700) / 40%);
+      --prose-hr: var(--color-neutral-800);
       --prose-quote-borders: --alpha(var(--color-white) / 10%);
       --prose-quote-bg: var(--color-neutral-800);
       --prose-captions: var(--color-neutral-500);
@@ -99,17 +99,6 @@
     color: var(--prose-headings);
     font-weight: var(--font-weight-semibold);
     margin-block-start: calc(var(--spacing) * 10);
-  }
-
-  h2:has(+ h3):where(:not(.not-prose, .not-prose *)) {
-    font-size: var(--text-xs);
-    line-height: 2;
-    font-weight: var(--font-weight-medium);
-    font-family: var(--font-mono);
-    font-variant-ligatures: none;
-    letter-spacing: 0.1em;
-    color: var(--prose-captions);
-    text-transform: uppercase;
   }
 
   h3:where(:not(.not-prose, .not-prose *)) {
@@ -391,6 +380,26 @@
       font-style: italic;
       color: color-mix(in oklab, var(--prose-body) 75%, transparent);
     }
+  }
+
+  img:where(:not(.not-prose, .not-prose *)) {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin-block-start: calc(var(--spacing) * 4);
+    margin-block-end: calc(var(--spacing) * 4);
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--prose-quote-borders);
+    box-shadow: var(--shadow-xs);
+  }
+
+  video:where(:not(.not-prose, .not-prose *)) {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin-block-start: calc(var(--spacing) * 4);
+    margin-block-end: calc(var(--spacing) * 4);
+    border-radius: var(--radius-xl);
   }
 
   :first-child:where(:not(.not-prose, .not-prose *)) {

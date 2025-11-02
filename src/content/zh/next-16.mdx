@@ -1,0 +1,264 @@
+export const title = 'Next 16: Next.js 新特性'
+export const description = 'Next 16 是 Next.js 的最新版本，带来了许多新功能和改进。'
+export const publishedAt = '2025-10-31'
+export const image = '/articles/next-16.png'
+
+## 新功能和改进
+
+### 缓存组件
+
+缓存组件是一套新功能，旨在使 Next.js 中的缓存更加明确和灵活。它们围绕新的 `"use cache"` 指令，可用于缓存页面、组件和函数，并利用编译器在使用它的任何地方自动生成缓存键。
+
+与 App Router 早期版本中的隐式缓存不同，使用缓存组件的缓存完全是可选的。任何页面、布局或 API 路由中的所有动态代码默认在请求时执行，使 Next.js 开箱即用的体验更符合开发者对全栈应用框架的期望。
+
+缓存组件也完善了部分预渲染（PPR）的故事，该功能最初于 2023 年引入。在 PPR 之前，Next.js 必须选择是静态还是动态渲染每个 URL；没有中间选择。PPR 消除了这种二分法，让开发者可以选择将其静态页面的部分内容转换为动态渲染（通过 Suspense），而不牺牲完全静态页面的快速初始加载。
+
+您可以在 `next.config.ts` 文件中启用缓存组件：
+
+```ts
+/* [!code filename:next.config.ts] */
+import type { NextConfig } from 'next'
+
+const nextConfig: NextConfig = {
+  cacheComponents: true,
+  // ...
+}
+ 
+export default nextConfig
+```
+
+### Next.js Devtools MCP
+
+Next.js 16 引入了 **Next.js DevTools MCP**，这是一个模型上下文协议集成，用于 AI 辅助调试，为您的应用提供上下文洞察。
+
+Next.js DevTools MCP 为 AI 代理提供：
+
+- **Next.js 知识**：路由、缓存和渲染行为
+- **统一日志**：浏览器和服务器日志，无需切换上下文
+- **自动错误访问**：详细的堆栈跟踪，无需手动复制
+- **页面感知**：对活动路由的上下文理解
+
+这使 AI 代理能够在开发工作流程中直接诊断问题、解释行为并提出修复建议。
+
+### `proxy.ts`（原为 `middleware.ts`）
+
+`proxy.ts` 取代了 `middleware.ts`，使应用的网络边界更加明确。`proxy.ts` 在 Node.js 运行时上运行。
+
+- **需要做什么**：将 `middleware.ts` → `proxy.ts` 重命名，并将导出的函数重命名为 `proxy`。逻辑保持不变。
+- **为什么**：更清晰的命名和单一、可预测的请求拦截运行时。
+
+```ts
+/* [!code filename:proxy.ts] */
+import { NextRequest, NextResponse } from 'next/server'
+
+export default function proxy(request: NextRequest) {
+  // ...
+  return NextResponse.redirect(new URL('/home', request.url))
+}
+```
+
+### 日志改进
+
+在 Next.js 16 中，开发请求日志已扩展，显示时间花费在哪里。
+
+- Compile：路由和编译
+- Render：运行代码和 React 渲染
+
+![日志改进](/articles/next-16-development-log.png)
+
+构建过程也已扩展，显示时间花费在哪里。构建过程中的每个步骤现在都显示完成所需的时间。
+
+```bash
+▲ Next.js 16 (Turbopack)
+ 
+ ✓ Compiled successfully in 615ms
+ ✓ Finished TypeScript in 1114ms
+ ✓ Collecting page data in 208ms
+ ✓ Generating static pages in 239ms
+ ✓ Finalizing page optimization in 5ms
+```
+
+<hr />
+
+以下功能之前在 beta 版本中已宣布：
+
+## 开发体验
+
+### Turbopack（稳定版）
+
+Turbopack 在开发和生产构建方面已达到稳定状态，现在是所有新 Next.js 项目的默认打包工具。自今年夏天早些时候的 beta 发布以来，采用率迅速提升：超过 50% 的开发会话和 20% 的 Next.js 15.3+ 生产构建已经在 Turbopack 上运行。
+
+使用 Turbopack，您可以期待：
+
+- 生产构建速度提升 2-5 倍
+- Fast Refresh 速度提升高达 10 倍
+
+我们将 Turbopack 设为默认值，以便将这些性能提升带给每个 Next.js 开发者，无需配置。对于具有自定义 webpack 设置的应用，您可以通过运行以下命令继续使用 webpack：
+
+```bash
+next dev --webpack
+next build --webpack
+```
+
+### Turbopack 文件系统缓存（beta）
+
+Turbopack 现在在开发中支持文件系统缓存，在运行之间将编译器工件存储在磁盘上，以便在重启时显著加快编译时间，特别是在大型项目中。
+
+在配置中启用文件系统缓存：
+
+```ts
+/* [!code filename:next.config.ts] */
+import type { NextConfig } from 'next'
+
+const nextConfig: NextConfig = {
+  experimental: {
+    turbopackFileSystemCacheForDev: true,
+  },
+}
+
+export default nextConfig
+```
+
+### 简化的 create-next-app
+
+`create-next-app` 已重新设计，具有简化的设置流程、更新的项目结构和改进的默认值。新模板默认包括 App Router、TypeScript 优先配置、Tailwind CSS 和 ESLint。
+
+### 构建适配器 API（alpha）
+
+遵循 [构建适配器 RFC](https://github.com/vercel/next.js/discussions/77740)，我们与社区和部署平台合作，交付了构建适配器 API 的第一个 alpha 版本。
+
+构建适配器允许您创建自定义适配器，这些适配器可以钩入构建过程，使部署平台和自定义构建集成能够修改 Next.js 配置或处理构建输出。
+
+```ts
+/* [!code filename:next.config.ts] */
+import type { NextConfig } from 'next'
+
+const nextConfig: NextConfig = {
+  experimental: {
+    adapterPath: require.resolve('./my-adapter.js'),
+  },
+}
+
+export default nextConfig
+```
+
+### React 编译器支持（稳定版）
+
+在 React 编译器 1.0 发布之后，Next.js 16 中内置的 React 编译器支持现已稳定。React 编译器自动记忆组件，无需手动代码更改即可减少不必要的重新渲染。
+
+`reactCompiler` 配置选项已从 `experimental` 提升为稳定版。默认情况下未启用，因为我们继续收集不同应用类型的构建性能数据。启用此选项时，开发和构建期间的编译时间可能会更高，因为 React 编译器依赖于 Babel。
+
+```ts
+/* [!code filename:next.config.ts] */
+import type { NextConfig } from 'next'
+
+const nextConfig: NextConfig = {
+  reactCompiler: true,
+}
+
+export default nextConfig
+```
+
+安装最新版本的 React 编译器插件：
+
+```bash
+npm install babel-plugin-react-compiler@latest
+```
+
+## 核心功能和架构
+
+### 增强的路由和导航
+
+Next.js 16 包括对路由和导航系统的全面改革，使页面转换更加精简和快速。
+
+**布局去重**：在预取具有共享布局的多个 URL 时，布局只下载一次，而不是为每个 Link 单独下载。例如，一个有 50 个产品链接的页面现在只下载共享布局一次，而不是 50 次，大大减少了网络传输大小。
+
+**增量预取**：Next.js 只预取缓存中尚不存在的部分，而不是整个页面。预取缓存现在：
+
+- 当链接离开视口时取消请求
+- 在悬停或重新进入视口时优先预取链接
+- 当链接数据失效时重新预取链接
+- 与即将推出的功能（如缓存组件）无缝协作
+
+**权衡**：您可能会看到更多单独的预取请求，但总传输大小要小得多。我们相信这对于几乎所有应用来说都是正确的权衡。如果增加的请求数量导致问题，请告诉我们。我们正在研究其他优化，以更高效地内联数据块。
+
+这些更改不需要代码修改，旨在提高所有应用的性能。
+
+### 改进的缓存 API
+
+Next.js 16 引入了改进的缓存 API，用于更明确地控制缓存行为。
+
+### `revalidateTag()`（已更新）
+
+`revalidateTag()` 现在需要将 `cacheLife` 配置文件作为第二个参数，以启用 stale-while-revalidate (SWR) 行为：
+
+```ts
+import { revalidateTag } from 'next/cache'
+ 
+// ✅ Use built-in cacheLife profile (we recommend 'max' for most cases)
+revalidateTag('blog-posts', 'max')
+ 
+// Or use other built-in profiles
+revalidateTag('news-feed', 'hours')
+revalidateTag('analytics', 'days')
+ 
+// Or use an inline object with a custom revalidation time
+revalidateTag('products', { revalidate: 3600 })
+ 
+// ⚠️ Deprecated - single argument form
+revalidateTag('blog-posts')
+```
+
+配置文件参数接受内置的 `cacheLife` 配置文件名称（如 `'max'`、`'hours'`、`'days'`）或在您的 `next.config` 中定义的自定义配置文件。您也可以传递内联的 `{ expire: number }` 对象。我们建议在大多数情况下使用 `'max'`，因为它为长寿命内容启用了后台重新验证。当用户请求标记的内容时，他们会立即收到缓存数据，而 Next.js 在后台重新验证。
+
+当您只想使带有 stale-while-revalidate 行为的正确标记的缓存条目失效时，请使用 `revalidateTag()`。这对于可以容忍最终一致性的静态内容来说是理想的。
+
+### `updateTag()`（新增）
+
+`updateTag()` 是一个新的仅限 Server Actions 的 API，提供**读写一致性**语义，在同一请求中过期并立即读取新数据：
+
+```ts
+'use server'
+ 
+import { updateTag } from 'next/cache'
+ 
+export async function updateUserProfile(userId: string, profile: Profile) {
+  await db.users.update(userId, profile)
+ 
+  // Expire cache and refresh immediately - user sees their changes right away
+  updateTag(`user-${userId}`)
+}
+```
+
+这确保了交互功能立即反映更改。非常适合表单、用户设置和任何用户期望立即看到其更新的工作流程。
+
+### `refresh()`（新增）
+
+`refresh()` 是一个新的仅限 Server Actions 的 API，用于刷新**仅未缓存的数据**。它完全不触碰缓存：
+
+```ts
+'use server'
+
+import { refresh } from 'next/cache'
+ 
+export async function markNotificationAsRead(notificationId: string) {
+  // Update the notification in the database
+  await db.notifications.markAsRead(notificationId)
+ 
+  // Refresh the notification count displayed in the header
+  // (which is fetched separately and not cached)
+  refresh()
+}
+```
+
+此 API 是对客户端 `router.refresh()` 的补充。当您需要在执行操作后刷新页面上其他位置显示的未缓存数据时使用它。您的缓存页面外壳和静态内容保持快速，而通知计数、实时指标或状态指示器等动态数据会刷新。
+
+### React 19.2 和 Canary 功能
+
+Next.js 16 中的 App Router 使用最新的 React Canary 版本，包括新发布的 React 19.2 功能和正在逐步稳定的其他功能。亮点包括：
+
+- **View Transitions**：在 Transition 或导航内对更新的元素进行动画处理
+- **useEffectEvent**：将 Effects 中的非响应式逻辑提取到可重用的 Effect Event 函数中
+- **Activity**：通过使用 display: none 隐藏 UI 来渲染"后台活动"，同时保持状态并清理 Effects
+
+在 [React 19.2: React 新特性](/zh/articles/react-19-2) 中了解更多信息。

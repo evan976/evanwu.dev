@@ -1,0 +1,189 @@
+export const title = '使用 useOptimistic 让你的应用感觉即时响应'
+export const description = 'useOptimistic 是一个 React Hook，可以让你快速响应用户操作，让应用感觉即时响应。'
+export const publishedAt = '2025-07-20'
+export const image = '/articles/use-optimistic.webp'
+
+当你在应用中点击一个按钮时，UI 需要多长时间才能响应？如果你在显示结果之前等待网络请求完成，你的用户可能会盯着加载动画，怀疑是否发生了什么。
+
+这就是**乐观 UI**的用武之地。这个想法很简单：假设最好的情况，立即更新 UI，让服务器跟上。如果出现问题，你总是可以回滚。但大多数时候，一切顺利——你的应用感觉飞快。
+
+React 19 引入了一个新的 Hook，[`useOptimistic`](https://react.dev/reference/react/useOptimistic)，使这种模式比以往任何时候都更容易。
+
+## 什么是 `useOptimistic`？
+
+`useOptimistic` 是一个 React Hook，让你在异步操作进行时显示不同的状态。它非常适合这样的场景：当用户提交表单时立即将新项目添加到列表中，让他们可以快速添加另一个项目，甚至在项目实际保存之前更改列表项。你还可以向用户反馈他们的操作正在处理中，甚至更新 UI 以显示各个部分的进度。例如："reserving your seat" => "creating calendar event" => "sending invitations" => "done"。
+
+## 示例
+
+### 乐观地切换点赞按钮
+
+让我们尝试另一个例子：一个"Like"按钮。当用户点击它时，你希望计数立即更新。
+
+```tsx
+import * as React from 'react'
+
+function LikeButton({
+  initialCount,
+  sendLike,
+}: {
+  initialCount: number
+  sendLike: () => Promise<void>
+}) {
+  const [isPending, startTransition] = React.useTransition()
+  const [count, setCount] = React.useState(initialCount)
+
+  // The update function adds the optimistic delta to the count
+  const [optimisticCount, addOptimisticLike] = React.useOptimistic(
+    count,
+    (current, delta) => current + delta,
+  )
+
+  function handleLike() {
+    // Optimistically increment the count
+    addOptimisticLike(1)
+
+    // Actually send to the server using the provided async function
+    startTransition(async () => {
+      await sendLike()
+      setCount((c) => c + 1)
+    })
+  }
+
+  return <button onClick={handleLike} disabled={isPending}>👍 {optimisticCount}</button>
+}
+```
+
+即使用户的网络很慢，用户也会看到点赞数立即增加。
+
+### 添加评论
+
+假设你有一个评论部分。当用户提交新评论时，你希望它立即出现——甚至在服务器响应之前。
+
+以下是使用 `useOptimistic` 的实现方式：
+
+```tsx
+import * as React from 'react'
+
+type Comment = {
+  id: number
+  text: string
+}
+
+function CommentSection({
+  initialComments,
+  sendComment,
+}: {
+  initialComments: Comment[]
+  sendComment: (text: string) => Promise<Comment>
+}) {
+  const [comments, setComments] = React.useState(initialComments)
+  const [isPending, startTransition] = React.useTransition()
+
+  // The update function merges the optimistic comment into the list
+  const [optimisticComments, addOptimisticComment] = React.useOptimistic(
+    comments,
+    (currentComments, newComment) => [
+      { ...newComment, optimistic: true },
+      ...currentComments,
+    ],
+  )
+
+  async function handleAddComment(text: string) {
+    // Show the comment immediately
+    addOptimisticComment({ id: Date.now(), text })
+
+    // Actually send to the server using the provided async function
+    startTransition(async () => {
+      const savedComment = await sendComment(text)
+      setComments((prev) => [{ ...savedComment }, ...prev])
+    })
+  }
+
+  return (
+    <fieldset disabled={isPending}>
+      <form
+        action={async (formData) => {
+          handleAddComment(formData.get('text'))
+        }}
+      >
+        <input name="text" placeholder="Write a comment..." />
+        <button type="submit">Add</button>
+      </form>
+      <ul>
+        {optimisticComments.map((comment) => (
+          <li
+            key={comment.id}
+            className={comment.optimistic ? 'text-neutral-500' : ''}
+          >
+            {comment.text}
+          </li>
+        ))}
+      </ul>
+    </fieldset>
+  )
+}
+```
+
+注意新评论如何立即出现，文本显示为灰色，甚至在服务器响应之前。如果出现错误，评论将在转换结束时消失（如果需要，你可以显示错误消息）。如果没有错误，乐观评论在转换结束时仍然会消失，但新创建的评论将出现在常规评论列表中（并且不再显示为灰色）。
+
+### 预订航班
+
+假设你想让用户预订航班，并且你想显示多个步骤的进度——比如"reserving seat"、"processing payment"和"sending confirmation"——同时对预订状态和进度消息进行乐观的 UI 更新。你可以将所有异步逻辑和步骤消息作为 props 接受，使组件灵活且专注于 UI 状态。
+
+```tsx
+import * as React from 'react'
+import { reserveSeat, processPayment, sendConfirmation } from './api'
+
+function BookFlight() {
+  const [message, setMessage] = React.useOptimistic('Ready to book')
+
+  async function handleBooking(formData: FormData) {
+    setMessage('Reserving seat...')
+    await reserveSeat(formData.get('flight'))
+
+    setMessage('Processing payment...')
+    await processPayment(formData.get('passenger'))
+
+    setMessage('Sending confirmation...')
+    const bookingId = await sendConfirmation(
+      formData.get('passenger'),
+      formData.get('flight'),
+    )
+
+    setMessage('Booking complete! Redirecting...')
+    // In a real app, you'd use your routing library here
+    console.log(`Redirecting to /booking/${bookingId}`)
+  }
+
+  return (
+    <form action={handleBooking}>
+      <input name="passenger" placeholder="Passenger Name" required />
+      <input name="flight" placeholder="Flight Number" required />
+      <button type="submit">Book Flight</button>
+      <div className="mt-2">
+        <strong>Status:</strong> {message}
+      </div>
+    </form>
+  )
+}
+```
+
+这种模式让你可以将所有业务逻辑保留在组件外部，同时仍然为用户提供丰富的、逐步的乐观 UI 体验。
+
+## 为什么不直接使用 `useState`？
+
+你可能想知道：为什么不直接更新状态并希望最好的结果？区别在于 `useOptimistic` 旨在与 React 的并发渲染和转换无缝协作。它使你的 UI 与"真实"状态保持同步，如果操作失败或完成，它会自动回退。
+
+此外，由于 React 转换的特性，在转换中调用 `setState` 不会触发重新渲染。
+
+## 使用 `useOptimistic` 的技巧
+
+- **保持更新函数纯函数。** 它应该只计算下一个乐观状态，不应该引起副作用。
+- **优雅地处理错误。** 如果服务器拒绝操作，你可能想要显示错误或回滚乐观更新。
+- **与 transition 一起使用。** 将 `useOptimistic` 与 `startTransition` 配对使用可以确保你的 UI 保持响应，即使在异步工作期间也是如此。
+
+## 结论
+
+乐观 UI 是那些可以让你的应用感觉神奇的小细节之一。通过 `useOptimistic`，React 为你提供了一个简单而强大的工具，让你的界面感觉即时响应——即使网络不理想。
+
+所以下次你在构建表单、点赞按钮或任何与服务器通信的东西时，试试 `useOptimistic`。你的用户会感谢你的。
