@@ -3,7 +3,13 @@
 import * as React from 'react'
 import * as Dialog from '@radix-ui/react-dialog'
 import { ChevronDownIcon, XIcon } from 'lucide-react'
-import { motion, useScroll, useTransform } from 'motion/react'
+import {
+  motion,
+  useMotionValueEvent,
+  useScroll,
+  useTransform,
+  type Variants,
+} from 'motion/react'
 import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import { Container } from '@/components/container'
@@ -130,10 +136,45 @@ function NavItem({
   )
 }
 
-function DesktopNavigation(props: React.ComponentProps<'nav'>) {
+const variants: Variants = {
+  hidden: {
+    opacity: 0,
+    y: -10,
+    scale: 0.95,
+    zIndex: 0,
+  },
+  visible: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    zIndex: 200,
+  },
+}
+
+function DesktopNavigation({
+  className,
+  ...props
+}: React.ComponentProps<typeof motion.nav>) {
   const t = useTranslations('navigation')
+  const [visible, setVisible] = React.useState(true)
+  const { scrollYProgress } = useScroll()
+
+  useMotionValueEvent(scrollYProgress, 'change', (latest) => {
+    setVisible(latest === 0 || latest >= 0.5)
+  })
+
   return (
-    <nav {...props}>
+    <motion.nav
+      {...props}
+      className={cn(className, 'fixed top-6 left-1/2 -translate-x-1/2')}
+      variants={variants}
+      animate={visible ? 'visible' : 'hidden'}
+      initial="visible"
+      transition={{
+        duration: 0.2,
+        ease: 'easeOut',
+      }}
+    >
       <ul className="flex rounded-full bg-white/90 px-3 text-sm font-medium text-neutral-800 shadow-lg shadow-neutral-800/5 ring-1 ring-neutral-900/5 backdrop-blur dark:bg-neutral-800/90 dark:text-neutral-200 dark:ring-white/10">
         {navigation.map(({ name, href }) => (
           <NavItem key={name} href={href}>
@@ -141,7 +182,7 @@ function DesktopNavigation(props: React.ComponentProps<'nav'>) {
           </NavItem>
         ))}
       </ul>
-    </nav>
+    </motion.nav>
   )
 }
 
