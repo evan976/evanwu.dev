@@ -1,1 +1,16 @@
-<svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.dev/svgjs" width="1000" height="1000"><g clip-path="url(#SvgjsClipPath1118)"><rect width="1000" height="1000" fill="#000000"></rect><g transform="matrix(0.87890625,0,0,0.87890625,50,50)"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.dev/svgjs" width="1024" height="1024"><svg t="1741531488686" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2785" width="1024" height="1024" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="M543.08408853 252.65493333l65.83182294 18.06791147-141.22097814 514.63964373-65.83182186-18.0679104 141.22097706-514.6396448zM316.8028448 284.4444448l47.87768853 48.65137707-187.05066666 184.0924448 186.70933333 178.74488853-47.21777813 49.3112896L79.6444448 517.87093333 316.8028448 284.4444448z m379.60817707 0l237.1584 233.42648853L696.0924448 745.2444448l-47.21777813-49.3112896 186.68657813-178.74488853L648.53333333 333.09582187 696.41102187 284.4444448z" fill="#ffffff" p-id="2786"></path></svg></svg></g></g><defs><clipPath id="SvgjsClipPath1118"><rect width="1000" height="1000" x="0" y="0" rx="150" ry="150"></rect></clipPath></defs></svg>
+<svg width="656" height="630" viewBox="0 0 656 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+<mask id="mask0_16_12" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="0" y="0" width="656" height="630">
+<path d="M557.6 0H98.4C44.0552 0 0 42.3091 0 94.5V535.5C0 587.691 44.0552 630 98.4 630H557.6C611.945 630 656 587.691 656 535.5V94.5C656 42.3091 611.945 0 557.6 0Z" fill="white"/>
+</mask>
+<g mask="url(#mask0_16_12)">
+<path d="M656 0H0V630H656V0Z" fill="#8E51FF"/>
+<g clip-path="url(#clip0_16_12)">
+<path d="M345.922 171.398L383.878 181.402L302.455 466.364L264.499 456.359L345.922 171.398ZM215.457 189L243.061 215.939L135.215 317.873L242.864 416.846L215.64 444.15L78.72 318.251L215.457 189ZM434.324 189L571.061 318.251L434.141 444.15L406.917 416.846L514.553 317.873L406.72 215.939L434.324 189Z" fill="white"/>
+</g>
+</g>
+<defs>
+<clipPath id="clip0_16_12">
+<rect width="590.4" height="567" fill="white" transform="translate(32.8 31.5)"/>
+</clipPath>
+</defs>
+</svg>
