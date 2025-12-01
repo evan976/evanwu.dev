@@ -10,8 +10,8 @@ import { Resume } from '@/components/resume'
 import { SocialLink } from '@/components/social-link'
 import { SubscribeForm } from '@/components/subscribe-form'
 import { Link } from '@/i18n/navigation'
-import { getArticles } from '@/lib/article'
 import { links } from '@/lib/constants'
+import { getArticles } from '@/lib/mdx'
 import beach from '@/public/beach.jpeg'
 import fall from '@/public/fall.jpg'
 import mountain from '@/public/mountain.jpg'
@@ -145,12 +145,10 @@ function Photos() {
           initial={{
             scale: 1.0,
             transform: `rotate(${rotations[imageIndex % rotations.length]})`,
-            zIndex: 1,
           }}
           whileHover={{
             scale: 1.1,
             transform: 'rotate(0deg)',
-            zIndex: 100,
           }}
         >
           <div className="relative size-full">

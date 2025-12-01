@@ -1,7 +1,6 @@
 import 'server-only'
 import fs from 'node:fs/promises'
 import path from 'node:path'
-import type * as React from 'react'
 import readingTime from 'reading-time'
 
 type Metadata = {
@@ -10,6 +9,24 @@ type Metadata = {
   publishedAt: string
   readingTime: ReturnType<typeof readingTime>
   image?: string
+}
+
+function parseFrontmatter(fileContent: string) {
+  const frontmatterRegex = /---\s*([\s\S]*?)\s*---/
+  const match = frontmatterRegex.exec(fileContent)
+  const frontMatterBlock = match![1]
+  const content = fileContent.replace(frontmatterRegex, '').trim()
+  const frontMatterLines = frontMatterBlock.trim().split('\n')
+  const metadata: Record<string, string> = {}
+
+  frontMatterLines.forEach((line) => {
+    const [key, ...valueArr] = line.split(': ')
+    let value = valueArr.join(': ').trim()
+    value = value.replace(/^['"](.*)['"]$/, '$1')
+    metadata[key.trim()] = value
+  })
+
+  return { metadata, content }
 }
 
 async function readMDXFile(filePath: string) {
@@ -21,8 +38,8 @@ export async function getArticleBySlug(
   slug: string,
   locale: string,
 ): Promise<null | {
-  Component: React.FC
   metadata: Metadata
+  content: string
 }> {
   try {
     if (
@@ -33,24 +50,19 @@ export async function getArticleBySlug(
       return null
     }
 
-    const module = await import(`../content/${locale}/${slug}.mdx`)
     const raw = await readMDXFile(
       path.join(process.cwd(), 'src', 'content', locale, `${slug}.mdx`),
     )
-
-    if (!module.default) {
-      return null
-    }
-
+    const { metadata, content } = parseFrontmatter(raw)
     return {
-      Component: module.default,
       metadata: {
-        title: module.title,
-        description: module.description,
-        publishedAt: module.publishedAt,
-        readingTime: readingTime(raw),
-        image: module.image,
+        title: metadata.title,
+        description: metadata.description,
+        publishedAt: metadata.publishedAt,
+        readingTime: readingTime(content),
+        image: metadata.image,
       },
+      content,
     }
   } catch (error) {
     console.error(error)

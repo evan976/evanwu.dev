@@ -2,7 +2,7 @@ import { ChevronRightIcon } from 'lucide-react'
 import { getFormatter, getTranslations } from 'next-intl/server'
 import { Layout } from '@/components/layout'
 import { Link } from '@/i18n/navigation'
-import { getArticles } from '@/lib/article'
+import { getArticles } from '@/lib/mdx'
 
 export async function generateMetadata() {
   const t = await getTranslations('articles')
@@ -19,6 +19,7 @@ export default async function Page({
   const articles = await getArticles(locale)
   const t = await getTranslations()
   const formatter = await getFormatter()
+
   return (
     <Layout title={t('articles.title')} intro={t('articles.description')}>
       <div className="mt-16 sm:mt-20">

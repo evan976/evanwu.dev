@@ -1,6 +1,6 @@
 import languine from 'languine.json'
 import { routing } from '@/i18n/routing'
-import { getArticles } from '@/lib/article'
+import { getArticles } from '@/lib/mdx'
 
 export const baseUrl = 'https://evanwu.dev'
 

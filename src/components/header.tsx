@@ -166,7 +166,7 @@ function DesktopNavigation({
   return (
     <motion.nav
       {...props}
-      className={cn(className, 'fixed top-6 left-1/2 -translate-x-1/2')}
+      className={cn(className, 'fixed z-100 top-6 left-1/2 -translate-x-1/2')}
       variants={variants}
       animate={visible ? 'visible' : 'hidden'}
       initial="visible"

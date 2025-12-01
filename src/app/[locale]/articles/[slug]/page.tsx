@@ -10,12 +10,13 @@ import {
 import { baseUrl } from '@/app/sitemap'
 import { ArticleWidget } from '@/components/article-widget'
 import { ArrowLeftIcon } from '@/components/icons'
+import { CustomMDX } from '@/components/mdx'
 import { Link } from '@/i18n/navigation'
 import {
   getArticleBySlug,
   getArticleSlugs,
   getPreviousOrNextArticleSlug,
-} from '@/lib/article'
+} from '@/lib/mdx'
 
 export const dynamicParams = false
 
@@ -175,7 +176,7 @@ export default async function Page({
                     )}
                     <div className="mt-8 prose">
                       <React.Suspense>
-                        <article.Component />
+                        <CustomMDX source={article.content} />
                       </React.Suspense>
                     </div>
                   </article>

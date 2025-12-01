@@ -1,6 +1,6 @@
 import RSS from 'rss'
 import { baseUrl } from '@/app/sitemap'
-import { getArticles } from './article'
+import { getArticles } from '@/lib/mdx'
 
 export async function generateRSS(locale: string) {
   const siteUrl =

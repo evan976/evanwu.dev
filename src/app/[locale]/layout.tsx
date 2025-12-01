@@ -109,7 +109,7 @@ export default async function RootLayout({
     <html lang={locale} dir="ltr" suppressHydrationWarning>
       <body
         className={cn(
-          'flex bg-neutral-50 dark:bg-black font-sans h-full antialiased',
+          'flex bg-neutral-50 dark:bg-black font-sans h-full overflow-x-clip antialiased',
           geist.variable,
           geistMono.variable,
         )}
