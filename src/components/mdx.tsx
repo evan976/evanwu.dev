@@ -1,6 +1,7 @@
 import * as React from 'react'
 import type { MDXComponents } from 'mdx/types'
 import { MDXRemote } from 'next-mdx-remote-client/rsc'
+import remarkGfm from 'remark-gfm'
 import { MDXCode } from '@/components/mdx-code'
 import { Link } from '@/i18n/navigation'
 
@@ -132,6 +133,11 @@ export function CustomMDX({
   return (
     <MDXRemote
       {...props}
+      options={{
+        mdxOptions: {
+          remarkPlugins: [remarkGfm],
+        },
+      }}
       components={{ ...defaultComponents, ...(components || {}) }}
     />
   )
