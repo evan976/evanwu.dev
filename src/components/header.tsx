@@ -16,7 +16,7 @@ import { Container } from '@/components/container'
 import { Link, usePathname } from '@/i18n/navigation'
 import { navigation } from '@/lib/constants'
 import { cn } from '@/lib/utils'
-import avatarImage from '@/public/avatar.png'
+import avatarImage from '@/public/avatars/avatar.png'
 
 export function Header() {
   const pathname = usePathname()

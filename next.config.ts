@@ -1,5 +1,4 @@
 import type { NextConfig } from 'next'
-import createMDX from '@next/mdx'
 import createNextIntlPlugin from 'next-intl/plugin'
 
 const nextConfig: NextConfig = {
@@ -8,28 +7,12 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  pageExtensions: ['js', 'jsx', 'ts', 'tsx', 'mdx'],
+  pageExtensions: ['js', 'jsx', 'ts', 'tsx'],
   outputFileTracingIncludes: {
     '/**/*': ['./src/content/*.mdx'],
   },
 }
 
-const withMDX = createMDX({
-  extension: /\.mdx?$/,
-  options: {
-    remarkPlugins: [
-      [
-        'remark-gfm',
-        {
-          strict: true,
-          throwOnError: true,
-        },
-      ],
-    ],
-    rehypePlugins: [],
-  },
-})
-
 const withNextIntl = createNextIntlPlugin()
 
-export default withMDX(withNextIntl(nextConfig))
+export default withNextIntl(nextConfig)

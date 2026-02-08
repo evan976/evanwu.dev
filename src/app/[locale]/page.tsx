@@ -12,11 +12,11 @@ import { SubscribeForm } from '@/components/subscribe-form'
 import { Link } from '@/i18n/navigation'
 import { links } from '@/lib/constants'
 import { getArticles } from '@/lib/mdx'
-import beach from '@/public/beach.jpeg'
-import fall from '@/public/fall.jpg'
-import mountain from '@/public/mountain.jpg'
-import sea from '@/public/sea.jpeg'
-import snow from '@/public/snow.jpg'
+import beach from '@/public/photos/beach.jpeg'
+import fall from '@/public/photos/fall.jpg'
+import mountain from '@/public/photos/mountain.jpg'
+import sea from '@/public/photos/sea.jpeg'
+import snow from '@/public/photos/snow.jpg'
 
 export async function generateMetadata() {
   const t = await getTranslations()

@@ -1,0 +1,442 @@
+---
+title: 'TanStack Start 上手体验：一小时与 Next.js 的对比'
+description: '基于真实上手过程，梳理 TanStack Start 的路由、Server Functions 与缓存心智模型，并与 Next.js 做具体优缺点对比。'
+publishedAt: '2026-02-08'
+image: '/articles/next-vs-tanstack.jpg'
+---
+
+## 为什么要尝试 TanStack Start（它到底是什么）
+
+TanStack Start 被定位为一个全栈框架，底层基于 **TanStack Router** 与 **Vite**，并内置完整文档级 SSR、流式渲染、Server Functions 以及 API/Server Routes。
+
+在开始之前先强调一个关键信息：TanStack Start 在 2025 年 9 月进入了 **v1 Release Candidate** 阶段，截至 2026 年初仍处于 RC。API 被认为是稳定且功能完整的，但还没有发布正式 1.0。React Server Components 支持计划在 1.0 之后作为非破坏性更新加入。
+
+## 一小时上手：项目结构与路由心智
+
+### 创建项目
+
+```bash
+npm create @tanstack/start@latest
+```
+
+### 路由文件
+
+TanStack Start 使用 **文件路由**，路由文件默认放在 `src/routes`，路由入口在 `src/router.tsx`。
+
+最小化的路由结构示例：
+
+```txt
+src/
+├── router.tsx
+└── routes/
+    ├── __root.tsx
+    ├── index.tsx
+    ├── about.tsx
+    └── posts/$postId.tsx
+```
+
+上手时最关键的命名规则：
+
+- `__root.tsx` 必须存在，是根路由骨架。
+- `$` 表示动态参数（如 `$postId`）。
+- 文件名里的 `.` 可以表达嵌套关系。
+- `_` 前缀用于无路径布局（如 `_auth.tsx` 包裹 `_auth/login.tsx` 和 `_auth/register.tsx`，但不在 URL 中增加路径段）。
+- 括号 `(group)` 创建仅用于组织的文件夹，不出现在 URL 中，类似 Next.js 的路由组。
+- `.` 前面加 `_` 可以跳出嵌套：`posts_.$postId.edit.tsx` 渲染 `/posts/:postId/edit`，但不被 posts 布局包裹。
+
+### 为什么这个路由模型"感觉不一样"
+
+TanStack Router 强调 **类型安全**，包括路由参数与搜索参数 API；同时内置数据加载（loader）与缓存能力。
+
+这直接影响你写代码的方式：
+
+- 先定义路由树与 loader，再考虑组件。
+- URL search params 更像"类型化状态"。
+- 命名更严格，但换来更强的推断与编辑器体验。
+
+## Route Loaders：类型安全的数据获取
+
+Loader 是你最先会用到的特性之一。它是同构的——SSR 时在服务端运行，客户端导航时在浏览器运行——返回类型会直接流入组件。
+
+```tsx
+import { createFileRoute } from '@tanstack/react-router'
+
+export const Route = createFileRoute('/posts/$postId')({
+  loader: async ({ params }) => {
+    // params.postId 被推断为 string
+    const post = await fetchPost(params.postId)
+    return { post }
+  },
+  component: PostPage,
+})
+
+function PostPage() {
+  // TypeScript 从 loader 推断出 { post: Post }
+  const { post } = Route.useLoaderData()
+  return <h1>{post.title}</h1>
+}
+```
+
+你也可以用 `beforeLoad` 做前置检查，比如鉴权：
+
+```tsx
+export const Route = createFileRoute('/dashboard')({
+  beforeLoad: async () => {
+    const session = await checkAuth()
+    if (!session) throw redirect({ to: '/login' })
+    return { user: session.user }
+  },
+  loader: async ({ context }) => {
+    // context.user 的类型来自 beforeLoad
+    return { data: await fetchDashboard(context.user.id) }
+  },
+})
+```
+
+执行模型：`beforeLoad` 从最外层到最内层路由**顺序执行**，而 `loader` 在兄弟路由之间**并行执行**。内置的 SWR 缓存意味着 loader 不会做不必要的重复请求。
+
+对比 Next.js：数据获取发生在异步 Server Components 或 `fetch` 调用中——没有专门的 loader 原语，获取层和组件之间的类型推断需要你自己管理。
+
+## 类型安全的搜索参数：最亮眼的特性
+
+这是我真正觉得"比以前好了一步"的特性。在 TanStack Router 中，搜索参数在路由层面做校验，在 `<Link>`、`useSearch`、`navigate` 中全部具备完整类型。
+
+```tsx
+import { z } from 'zod'
+import { zodValidator } from '@tanstack/zod-adapter'
+import { createFileRoute } from '@tanstack/react-router'
+
+const searchSchema = z.object({
+  query: z.string().optional(),
+  category: z.enum(['electronics', 'clothing', 'books']).optional(),
+  page: z.number().default(1),
+})
+
+export const Route = createFileRoute('/products')({
+  validateSearch: zodValidator(searchSchema),
+  component: ProductsPage,
+})
+```
+
+现在每个指向该路由的 `<Link>` 都会做搜索参数的类型检查：
+
+```tsx
+// TypeScript 会强制校验参数结构
+<Link to="/products" search={{ query: 'keyboard', page: 2 }}>
+  搜索
+</Link>
+```
+
+读取同样很干净：
+
+```tsx
+function ProductsPage() {
+  const { query, category, page } = Route.useSearch()
+  // 全部有类型。page 始终是 number（默认值：1）。
+}
+```
+
+你还可以让 loader 在搜索参数变化时自动重新获取：
+
+```tsx
+export const Route = createFileRoute('/products')({
+  validateSearch: zodValidator(searchSchema),
+  loaderDeps: ({ search }) => [search.page, search.category],
+  loader: async ({ deps: [page, category] }) => {
+    return fetchProducts({ page, category })
+  },
+})
+```
+
+在 Next.js 中，`useSearchParams()` 返回的是无类型的字符串。你可以自己加 Zod 校验，但这不是路由层内置的能力。在搜索参数驱动大量 UI 状态的大型应用中，差异尤为明显。
+
+## Server Functions：最实用的"第一眼亮点"
+
+Server Functions 允许你在客户端调用服务端逻辑，同时保持类型安全。
+
+```tsx
+import { createServerFn } from '@tanstack/react-start'
+
+export const getServerTime = createServerFn().handler(async () => {
+  return new Date().toISOString()
+})
+
+const time = await getServerTime()
+```
+
+它们也支持输入校验：
+
+```tsx
+const submitContact = createServerFn({ method: 'POST' })
+  .validator((data: { email: string; message: string }) => {
+    if (!data.email) throw new Error('Email is required')
+    return data
+  })
+  .handler(async ({ data }) => {
+    // data 被推断为 { email: string; message: string }
+    await sendEmail(data.email, data.message)
+    return { success: true }
+  })
+```
+
+它的价值在于：不需要单独写一个 API 层也能完成服务器逻辑，同时仍然清晰区分"只能在服务端执行"的边界。
+
+## Middleware：可组合的服务端逻辑
+
+TanStack Start 有一套可组合的 middleware 系统，附加在 Server Functions 上。这是它与 Next.js 设计理念分歧最大的地方之一。
+
+```tsx
+import { createMiddleware } from '@tanstack/react-start'
+
+const authMiddleware = createMiddleware({ type: 'function' })
+  .server(async ({ next }) => {
+    const session = await getSession()
+    if (!session) throw redirect({ to: '/login' })
+    return next({ sendContext: { user: session.user } })
+  })
+
+// 附加到任意 Server Function
+const getProtectedData = createServerFn({ method: 'GET' })
+  .middleware([authMiddleware])
+  .handler(async ({ context }) => {
+    // context.user 的类型来自 middleware
+    return fetchUserData(context.user.id)
+  })
+```
+
+Middleware 支持组合——一个 middleware 可以依赖另一个，context 在链条中流转，全程类型安全。
+
+在 Next.js 中，`middleware.ts` 运行在 Edge Runtime，在路由之前做请求级处理。它擅长重定向和重写，但不能像 TanStack Start 的 middleware 那样按函数组合、传递类型化 context。
+
+## Head 与 Meta 管理
+
+TanStack Start 使用路由的 `head` 选项配合 `<HeadContent />` 组件：
+
+```tsx
+export const Route = createFileRoute('/posts/$postId')({
+  loader: async ({ params }) => fetchPost(params.postId),
+  head: ({ loaderData }) => ({
+    meta: [
+      { title: loaderData.title },
+      { name: 'description', content: loaderData.excerpt },
+      { property: 'og:title', content: loaderData.title },
+      { property: 'og:image', content: loaderData.coverImage },
+    ],
+  }),
+  component: PostPage,
+})
+```
+
+子路由中相同 `name` 或 `property` 的 meta 标签会自动覆盖父路由的。`head` 函数能拿到 loader 数据，所以动态 meta 写起来很直接。
+
+Next.js 用 `metadata` 导出或 `generateMetadata` 异步函数——思路类似但体感不同。Next.js 的 `generateMetadata` 优势在于自动去重和更声明式的 API，而 Start 更接近于"直接返回一个标签数组"。
+
+## SSR 灵活性：按路由控制
+
+让我比较意外的是 TanStack Start 的 **选择性 SSR**。你可以按路由配置 SSR 行为：
+
+```tsx
+// 完整 SSR（默认）：loader + 渲染都在服务端
+export const Route = createFileRoute('/page')({
+  ssr: true,
+})
+
+// 仅数据：loader 在服务端运行，渲染在客户端
+export const Route = createFileRoute('/heavy-ui')({
+  ssr: 'data-only',
+})
+
+// 纯客户端：完全不做 SSR
+export const Route = createFileRoute('/dashboard')({
+  ssr: false,
+})
+```
+
+甚至可以根据路由参数或搜索参数动态决定：
+
+```tsx
+export const Route = createFileRoute('/reports/$reportId')({
+  ssr: ({ search }) => {
+    return search.value?.printMode ? true : 'data-only'
+  },
+})
+```
+
+在 Next.js 中，SSR 还是静态渲染取决于你的组件是否使用了动态 API（`cookies()`、`headers()` 等）或动态路由段。你无法做到同样细粒度的按路由选择。
+
+## Server Routes：API 与页面同文件夹
+
+Start 还支持把 API 路由放在页面路由旁边：
+
+```tsx
+import { createFileRoute } from '@tanstack/react-router'
+
+export const Route = createFileRoute('/hello')({
+  server: {
+    handlers: {
+      GET: async () => new Response('Hello from Start'),
+    },
+  },
+  component: HelloPage,
+})
+```
+
+如果你喜欢"一个路由文件就能管理 UI 与接口"的组织方式，这点会很舒服。
+
+## Link 预取策略
+
+两个框架都会为链接预取数据，但默认行为和控制粒度不同。
+
+TanStack Start 提供多种策略：
+
+```tsx
+// 路由级别的默认配置
+const router = createRouter({
+  routeTree,
+  defaultPreload: 'intent', // hover/touch
+  defaultPreloadStaleTime: 30_000,
+})
+
+// 单个链接覆盖
+<Link to="/posts/$postId" params={{ postId: '1' }} preload="viewport">
+  查看文章
+</Link>
+```
+
+可选策略：
+- **`intent`** — hover 或 touch 时预加载（默认）。
+- **`viewport`** — 链接进入视口时预加载。
+- **`render`** — `<Link>` 挂载后立即预加载。
+- **`false`** — 禁用。
+
+预加载时，目标路由的 loader 会被调用，结果被缓存。Loader 甚至会收到一个 `cause` 参数，让你区分"预取"和"真正导航"。
+
+Next.js 自动预取进入视口的 `<Link>` 组件，默认预取路由的 loading 状态（静态壳）。你可以用 `prefetch={false}` 禁用，但在触发时机上选择较少。
+
+## 与 Next.js 的关键差异（基于上手体验）
+
+### 1) 数据获取与缓存默认值
+
+**Next.js** 的缓存行为取决于渲染模式：静态渲染时，`fetch` 结果会进入 Data Cache / Full Route Cache；动态渲染时，`fetch` 每次请求都会执行，除非你主动通过 `fetch` 选项（如 `cache` 或 `next.revalidate`）来启用缓存，且支持 `revalidatePath` 这种按需失效。
+
+**TanStack Start** 更像把缓存能力作为 Router loader 的一部分，内置 loader 缓存，支持配置 `staleTime` 和自动预取。
+
+```tsx
+// TanStack Start：缓存是路由定义的一部分
+export const Route = createFileRoute('/posts')({
+  loader: () => fetchPosts(),
+  staleTime: 5_000,        // 数据 5 秒内保鲜
+  preloadStaleTime: 30_000, // 预加载数据 30 秒内保鲜
+})
+```
+
+我的感受是：Next.js 更像"需要建立清晰的缓存心智，区分静态和动态渲染"，Start 更像"加载器天然就包含缓存能力"。如果你已经熟悉 TanStack Query 的模式，Start 会更亲切。
+
+### 2) 表单提交与服务端写入
+
+**Next.js Server Actions** 可以直接用于表单提交，并支持渐进增强。
+
+**TanStack Start** 用 Server Functions 提供类似能力，但更偏"显式函数调用"的风格。
+
+直观对比：
+
+- Next.js 更偏"HTML/表单驱动"：表单用 `action={myServerAction}` 自然调用。
+- Start 更偏"函数驱动"：你在任何地方显式调用 Server Functions，输入校验在函数边界完成。
+
+### 3) 路由体验
+
+两者都采用文件路由，但约定不同：
+
+| 概念 | Next.js | TanStack Start |
+|------|---------|----------------|
+| 动态参数 | `[slug]/page.tsx` | `$slug.tsx` |
+| Catch-all | `[...slug]/page.tsx` | `$.tsx` |
+| 路由组 | `(group)/page.tsx` | `(group)/page.tsx` |
+| 布局 | `layout.tsx`（隐式） | 父路由文件 + `<Outlet />` |
+| 无路径布局 | `(group)` 约定 | `_layout.tsx` 前缀 |
+| 错误边界 | `error.tsx` | `errorComponent` 路由选项 |
+
+Start 的优势在于**极强的类型推断**——路由参数、搜索参数、loader 数据全程有类型。代价是命名约定的学习曲线更陡（`__root`、`$`、`_`、`.` 都有特定含义）。
+
+### 4) 部署方式
+
+**Next.js** 针对 Vercel 做了最佳优化，也可以通过 standalone 输出或社区适配器部署到其他平台。
+
+**TanStack Start** 底层使用 **Nitro**，对 Vercel、Cloudflare Workers、Netlify、Node.js、Bun、AWS Lambda 等都有一等支持。你在 Vite 配置中选择目标：
+
+```tsx
+// vite.config.ts
+import { tanstackStart } from '@tanstack/react-start/plugin/vite'
+import { nitro } from 'nitro/vite'
+
+export default defineConfig({
+  plugins: [tanstackStart(), nitro({ preset: 'cloudflare-workers' })],
+})
+```
+
+对于目标不是 Vercel 的团队，这是实打实的优势。部署体验更像"选择你要部署到哪里"，而不是"从默认方案往外迁移"。
+
+### 5) 错误处理
+
+**Next.js** 使用 `error.tsx` 文件约定——在任意路由段放一个错误边界文件，就能捕获该段及其子路由的错误。
+
+**TanStack Start** 使用路由级别的 `errorComponent` 选项：
+
+```tsx
+export const Route = createFileRoute('/posts/$postId')({
+  errorComponent: ({ error, reset }) => (
+    <div>
+      <p>加载文章失败：{error.message}</p>
+      <button onClick={reset}>重试</button>
+    </div>
+  ),
+})
+```
+
+两种方式都好用。Start 的优势在于把路由相关的一切（loader、组件、错误处理、head）都放在一个文件里。Next.js 的约定让你可以后续随时加一个文件来补上错误处理。
+
+## 优缺点整理
+
+### TanStack Start — 我觉得很加分的点
+
+- 类型安全路由与 URL 状态管理（尤其是搜索参数配合 Zod 校验）。
+- 内置 loader 缓存与自动预取，SWR 风格。
+- Server Functions 足够轻量，适合中小型服务端逻辑，还有可组合的 middleware。
+- 按路由控制 SSR（`true`、`'data-only'`、`false`），灵活度很高。
+- Vite 驱动的开发体验 + Nitro 驱动的跨平台部署。
+- 一个路由文件管所有：loader、组件、错误处理、head、搜索参数。
+
+### TanStack Start — 我认为需要谨慎的点
+
+- 仍处于 RC——API 稳定，但长期生产项目我还是希望看到正式 1.0。
+- 还不支持 React Server Components（计划 1.0 后加入）。如果 RSC 对你的架构很重要，目前只有 Next.js。
+- 路由命名规则强，但容错低，文件名写错可能悄无声息地产生错误的路由树。
+- 生态和社区规模更小。教程、Stack Overflow 回答和生产案例都比 Next.js 少。
+
+### Next.js — 依旧稳的部分
+
+- React Server Components 完整支持且深度整合。
+- 缓存与 revalidate 机制（含 `fetch` 选项与按需失效）文档清晰、能力完整。
+- Server Actions + 表单的渐进增强体验很自然。
+- 庞大的生态：中间件库、认证方案、CMS 集成几乎都默认支持 Next.js。
+- `generateMetadata` 是很干净的动态 SEO API。
+
+### Next.js — 纠结的地方
+
+- 缓存模型与渲染模式、`fetch` 选项强相关，上手时需要更强的心智模型。
+- 搜索参数是无类型的字符串，校验需要自己做。
+- Middleware 只运行在 Edge Runtime，没法用 Node.js API，没法直接查数据库。
+- 路由参数的类型需要额外工作（比如手动定义参数类型）。
+
+## 我会如何选择
+
+- **TanStack Start**：如果你重视类型安全路由与函数式服务端调用，希望用 Vite 和跨平台部署，且项目允许使用 pre-1.0 框架。如果团队已经在用 TanStack Router 或 TanStack Query，尤其值得考虑。
+- **Next.js**：如果你需要 React Server Components，想要成熟的缓存语义与表单工作流，并希望依赖更大的生态系统和更强的框架约定。
+
+## 总结
+
+TanStack Start 和 Next.js 在解决类似问题，但哲学真的不同。Start 押注类型安全、URL-as-state 和 Vite/Nitro 生态；Next.js 押注 Server Components、约定式架构和深度平台集成。
+
+如果你的团队已经熟悉 TanStack Router / TanStack Query，Start 会非常自然；如果你追求成熟稳定的全栈体验与丰富的生产案例，Next.js 仍然是更稳妥的选择。
+
+我最大的感受是：这两个框架在让彼此变得更好。在类型安全、Server Functions 和开发体验上的竞争，对所有用 React 构建产品的人来说都是好事。

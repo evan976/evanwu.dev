@@ -18,7 +18,7 @@ export function SocialLink({
       aria-label={`Follow on ${name}`}
     >
       <Image
-        src={`/${name}.svg`}
+        src={`/icons/social/${name}.svg`}
         alt={name}
         width={20}
         height={20}

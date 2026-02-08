@@ -1,0 +1,443 @@
+---
+title: 'Hands-on with TanStack Start: First Steps and a Next.js Comparison'
+description: 'A practical, side-by-side look at TanStack Start's onboarding experience and how its routing, server functions, and caching model compare with Next.js.'
+publishedAt: '2026-02-08'
+image: '/articles/next-vs-tanstack.jpg'
+---
+
+## Why I tried TanStack Start (and what it actually is)
+
+TanStack Start positions itself as a full-stack framework powered by **TanStack Router** and **Vite**, with full-document SSR, streaming, server functions, and API/server routes built in.
+
+One important context note before you dive in: TanStack Start reached its **v1 Release Candidate** in September 2025 and remains in RC as of early 2026. The API is considered stable and feature-complete, but a stable 1.0 hasn't shipped yet. React Server Components support is planned as a non-breaking addition post-1.0.
+
+## One hour onboarding: project structure and routing mental model
+
+### Create the project
+
+```bash
+npm create @tanstack/start@latest
+```
+
+### Route files
+
+TanStack Start uses **file-based routing** via TanStack Router. In a fresh project, routes live under `src/routes`, and the router entry is `src/router.tsx`.
+
+A minimal route tree looks like this:
+
+```txt
+src/
+├── router.tsx
+└── routes/
+    ├── __root.tsx
+    ├── index.tsx
+    ├── about.tsx
+    └── posts/$postId.tsx
+```
+
+The key rules that mattered most in practice:
+
+- `__root.tsx` is required and acts as the root route shell.
+- `$` marks dynamic params (e.g. `$postId`).
+- A `.` in the filename can express nesting without deep folders.
+- Prefix with `_` for pathless layouts (e.g. `_auth.tsx` wraps `_auth/login.tsx` and `_auth/register.tsx` without adding a URL segment).
+- Parentheses `(group)` create organizational folders that don't appear in the URL, similar to Next.js route groups.
+- A trailing `_` before a `.` breaks out of nesting: `posts_.$postId.edit.tsx` renders at `/posts/:postId/edit` without being wrapped by the posts layout.
+
+### Why the router feels different
+
+TanStack Router puts **type-safety** at the center, including route params and search-param APIs. It also includes data-loading primitives (loaders) with caching built in.
+
+That shifts the mindset a bit:
+
+- You think in **route trees** and data loaders first.
+- URL state (search params) feels like a typed store rather than string parsing.
+- You get a lot of compile-time safety at the cost of learning naming conventions.
+
+## Route loaders: type-safe data fetching
+
+Loaders are one of the first things you'll reach for. They're isomorphic — running server-side during SSR and client-side during navigation — and their return type flows directly into the component.
+
+```tsx
+import { createFileRoute } from '@tanstack/react-router'
+
+export const Route = createFileRoute('/posts/$postId')({
+  loader: async ({ params }) => {
+    // params.postId is typed as string
+    const post = await fetchPost(params.postId)
+    return { post }
+  },
+  component: PostPage,
+})
+
+function PostPage() {
+  // TypeScript infers { post: Post } from the loader
+  const { post } = Route.useLoaderData()
+  return <h1>{post.title}</h1>
+}
+```
+
+You can also run pre-checks with `beforeLoad` for things like auth guards:
+
+```tsx
+export const Route = createFileRoute('/dashboard')({
+  beforeLoad: async () => {
+    const session = await checkAuth()
+    if (!session) throw redirect({ to: '/login' })
+    return { user: session.user }
+  },
+  loader: async ({ context }) => {
+    // context.user is typed from beforeLoad
+    return { data: await fetchDashboard(context.user.id) }
+  },
+})
+```
+
+The execution model: `beforeLoad` runs sequentially from outermost to innermost route, while `loader` functions run **in parallel** for sibling routes. Built-in SWR caching means loaders won't re-fetch unnecessarily.
+
+Compare this with Next.js, where data fetching happens inside async Server Components or via `fetch` calls — there's no dedicated loader primitive, and type inference between the fetching layer and the component is something you manage yourself.
+
+## Type-safe search params: the standout feature
+
+This is one of the features that genuinely felt like a step forward. In TanStack Router, search params are validated at the route level and fully typed everywhere — in `<Link>`, `useSearch`, and `navigate`.
+
+```tsx
+import { z } from 'zod'
+import { zodValidator } from '@tanstack/zod-adapter'
+import { createFileRoute } from '@tanstack/react-router'
+
+const searchSchema = z.object({
+  query: z.string().optional(),
+  category: z.enum(['electronics', 'clothing', 'books']).optional(),
+  page: z.number().default(1),
+})
+
+export const Route = createFileRoute('/products')({
+  validateSearch: zodValidator(searchSchema),
+  component: ProductsPage,
+})
+```
+
+Now every `<Link>` to this route gets type-checked search params:
+
+```tsx
+// TypeScript enforces the correct shape
+<Link to="/products" search={{ query: 'keyboard', page: 2 }}>
+  Search
+</Link>
+```
+
+And reading them is just as clean:
+
+```tsx
+function ProductsPage() {
+  const { query, category, page } = Route.useSearch()
+  // All typed. page is always a number (default: 1).
+}
+```
+
+You can even set up loaders that re-fetch when search params change:
+
+```tsx
+export const Route = createFileRoute('/products')({
+  validateSearch: zodValidator(searchSchema),
+  loaderDeps: ({ search }) => [search.page, search.category],
+  loader: async ({ deps: [page, category] }) => {
+    return fetchProducts({ page, category })
+  },
+})
+```
+
+In Next.js, `useSearchParams()` returns untyped strings. You can add Zod validation yourself, but it's not built into the routing layer. The difference is felt most on larger apps where search params drive significant UI state.
+
+## Server functions: the sharp, practical feature
+
+Server functions let you define server-only logic that can be invoked from client code with full type safety.
+
+```tsx
+import { createServerFn } from '@tanstack/react-start'
+
+export const getServerTime = createServerFn().handler(async () => {
+  return new Date().toISOString()
+})
+
+// Call from loaders, components, or hooks
+const time = await getServerTime()
+```
+
+They also support input validation:
+
+```tsx
+const submitContact = createServerFn({ method: 'POST' })
+  .validator((data: { email: string; message: string }) => {
+    if (!data.email) throw new Error('Email is required')
+    return data
+  })
+  .handler(async ({ data }) => {
+    // data is typed as { email: string; message: string }
+    await sendEmail(data.email, data.message)
+    return { success: true }
+  })
+```
+
+The key payoff is conceptual simplicity: no separate API layer for small tasks, but still server-only execution and clear boundaries.
+
+## Middleware: composable server logic
+
+TanStack Start has a composable middleware system that attaches to server functions. This is one area where the design philosophy diverges significantly from Next.js.
+
+```tsx
+import { createMiddleware } from '@tanstack/react-start'
+
+const authMiddleware = createMiddleware({ type: 'function' })
+  .server(async ({ next }) => {
+    const session = await getSession()
+    if (!session) throw redirect({ to: '/login' })
+    return next({ sendContext: { user: session.user } })
+  })
+
+// Attach to any server function
+const getProtectedData = createServerFn({ method: 'GET' })
+  .middleware([authMiddleware])
+  .handler(async ({ context }) => {
+    // context.user is typed from the middleware
+    return fetchUserData(context.user.id)
+  })
+```
+
+Middleware can be composed — one middleware can depend on another, and context flows through the chain with full type safety.
+
+In Next.js, `middleware.ts` runs on the Edge runtime and operates at the request level (before routing). It's powerful for redirects and rewrites but doesn't compose per-function or flow typed context into your handlers the way TanStack Start's middleware does.
+
+## Head and meta management
+
+TanStack Start uses a `head` route option combined with a `<HeadContent />` component:
+
+```tsx
+export const Route = createFileRoute('/posts/$postId')({
+  loader: async ({ params }) => fetchPost(params.postId),
+  head: ({ loaderData }) => ({
+    meta: [
+      { title: loaderData.title },
+      { name: 'description', content: loaderData.excerpt },
+      { property: 'og:title', content: loaderData.title },
+      { property: 'og:image', content: loaderData.coverImage },
+    ],
+  }),
+  component: PostPage,
+})
+```
+
+Child route meta tags automatically override parent tags with the same `name` or `property`. The `head` function receives loader data, so dynamic meta is straightforward.
+
+Next.js uses the `metadata` export or `generateMetadata` async function — a similar approach with different ergonomics. Next.js's `generateMetadata` has the advantage of automatic deduplication and a more declarative API, while Start's approach feels closer to "just return an array of tags."
+
+## SSR flexibility: per-route control
+
+One thing that surprised me was TanStack Start's **selective SSR**. You can configure SSR behavior per route:
+
+```tsx
+// Full SSR (default): loader + rendering on server
+export const Route = createFileRoute('/page')({
+  ssr: true,
+})
+
+// Data-only: loaders run on server, rendering on client
+export const Route = createFileRoute('/heavy-ui')({
+  ssr: 'data-only',
+})
+
+// Client-only: no SSR at all
+export const Route = createFileRoute('/dashboard')({
+  ssr: false,
+})
+```
+
+You can even make it dynamic based on route params or search params:
+
+```tsx
+export const Route = createFileRoute('/reports/$reportId')({
+  ssr: ({ search }) => {
+    return search.value?.printMode ? true : 'data-only'
+  },
+})
+```
+
+In Next.js, SSR vs static rendering is determined by whether your component uses dynamic APIs (`cookies()`, `headers()`, etc.) or dynamic route segments. You don't get the same per-route opt-in/opt-out granularity.
+
+## Server routes (API routes) live alongside UI routes
+
+Start also allows server endpoints to live right next to your UI routes:
+
+```tsx
+import { createFileRoute } from '@tanstack/react-router'
+
+export const Route = createFileRoute('/hello')({
+  server: {
+    handlers: {
+      GET: async () => new Response('Hello from Start'),
+    },
+  },
+  component: HelloPage,
+})
+```
+
+If you like the "everything in one route file" model, this feels clean and cohesive.
+
+## Link prefetching strategies
+
+Both frameworks prefetch data for links, but with different defaults and controls.
+
+TanStack Start offers multiple strategies:
+
+```tsx
+// Router-level default
+const router = createRouter({
+  routeTree,
+  defaultPreload: 'intent', // hover/touch
+  defaultPreloadStaleTime: 30_000,
+})
+
+// Per-link override
+<Link to="/posts/$postId" params={{ postId: '1' }} preload="viewport">
+  View Post
+</Link>
+```
+
+The available strategies:
+- **`intent`** — preloads on hover/touch (default).
+- **`viewport`** — preloads when the link enters the viewport.
+- **`render`** — preloads as soon as the `<Link>` mounts.
+- **`false`** — disabled.
+
+When a link is preloaded, the target route's loader runs and results are cached. The loader even receives a `cause` parameter so you can distinguish preloads from actual navigations.
+
+Next.js automatically prefetches `<Link>` components that enter the viewport, prefetching the route's loading state (static shell) by default. You can disable it with `prefetch={false}`, but there's less granularity in choosing the trigger.
+
+## Comparing with Next.js: the practical deltas I noticed
+
+### 1) Data fetching and caching defaults
+
+**Next.js** caching depends on the rendering mode: for static rendering, `fetch` results are cached and served from the Data Cache / Full Route Cache; for dynamic rendering, `fetch` runs on every request unless you opt into caching. You can control this with `fetch` options (like `cache` or `next.revalidate`) and on-demand invalidation (e.g. `revalidatePath`).
+
+**TanStack Start** leans on TanStack Router's loader model, which includes built-in loader caching with configurable `staleTime` and automatic prefetching.
+
+```tsx
+// TanStack Start: caching is part of the route definition
+export const Route = createFileRoute('/posts')({
+  loader: () => fetchPosts(),
+  staleTime: 5_000,        // data fresh for 5s
+  preloadStaleTime: 30_000, // preloaded data fresh for 30s
+})
+```
+
+In practice, Next.js "nudges" you toward a cache-aware mental model where you think about static vs dynamic rendering, while Start makes caching feel like part of the router's data-loading contract. If you already like TanStack Query patterns, Start's approach can feel more familiar.
+
+### 2) Server mutations and form handling
+
+**Next.js Server Actions** can be invoked from forms, support progressive enhancement, and integrate with the caching/revalidation system.
+
+**TanStack Start** uses server functions for similar use cases but in a more explicit RPC style.
+
+When I compared the mental models:
+
+- Next.js feels "HTML-first": forms call server actions naturally with `action={myServerAction}`.
+- Start feels "function-first": you call server functions explicitly wherever you like, with typed input validation at the function boundary.
+
+### 3) Routing ergonomics
+
+Both frameworks are file-based, but their conventions differ:
+
+| Concept | Next.js | TanStack Start |
+|---------|---------|----------------|
+| Dynamic params | `[slug]/page.tsx` | `$slug.tsx` |
+| Catch-all | `[...slug]/page.tsx` | `$.tsx` |
+| Route groups | `(group)/page.tsx` | `(group)/page.tsx` |
+| Layouts | `layout.tsx` (implicit) | Parent route file + `<Outlet />` |
+| Pathless layouts | `(group)` convention | `_layout.tsx` prefix |
+| Error boundary | `error.tsx` | `errorComponent` route option |
+
+The upside of Start is **very strong type inference** — route params, search params, and loader data are all typed end-to-end. The cost is a steeper learning curve on naming conventions (`__root`, `$`, `_`, `.` all have specific meanings).
+
+### 4) Deployment story
+
+**Next.js** is optimized for Vercel but deployable anywhere via standalone output or community adapters.
+
+**TanStack Start** uses **Nitro** under the hood, which gives it first-class presets for Vercel, Cloudflare Workers, Netlify, Node.js, Bun, AWS Lambda, and more. You configure the target in your Vite config:
+
+```tsx
+// vite.config.ts
+import { tanstackStart } from '@tanstack/react-start/plugin/vite'
+import { nitro } from 'nitro/vite'
+
+export default defineConfig({
+  plugins: [tanstackStart(), nitro({ preset: 'cloudflare-workers' })],
+})
+```
+
+This is a genuine advantage for teams targeting non-Vercel platforms. The deployment story feels more "choose your target" rather than "adapt from the default."
+
+### 5) Error handling
+
+**Next.js** uses the `error.tsx` file convention — drop an error boundary file in any route segment and it catches errors for that segment and its children.
+
+**TanStack Start** uses a route-level `errorComponent` option:
+
+```tsx
+export const Route = createFileRoute('/posts/$postId')({
+  errorComponent: ({ error, reset }) => (
+    <div>
+      <p>Failed to load post: {error.message}</p>
+      <button onClick={reset}>Retry</button>
+    </div>
+  ),
+})
+```
+
+Both approaches work well. Start's version has the advantage of co-locating everything about a route (loader, component, error handler, head) in a single file. Next.js's convention makes it easier to add error handling as an afterthought since it's just dropping a file.
+
+## Pros and cons after a real onboarding sprint
+
+### TanStack Start — what I liked
+
+- Type-safe routing and URL state (especially search params with Zod validation).
+- Built-in route loaders with SWR-style caching and automatic prefetching.
+- Server functions are ergonomic for small-to-medium server logic, with composable middleware.
+- Per-route SSR control (`true`, `'data-only'`, `false`) is surprisingly useful.
+- Vite-based dev experience and Nitro-powered deployment flexibility across platforms.
+- Everything about a route lives in one file: loader, component, error handler, head, search params.
+
+### TanStack Start — what felt risky or unfinished
+
+- Still in RC — API is stable, but I'd want a 1.0 stamp for long-lived production projects.
+- No React Server Components yet (planned post-1.0). If RSC is important to your architecture, Next.js is the only option today.
+- File-based routing rules are powerful but error-prone without tooling — mis-naming a file silently produces the wrong route tree.
+- Ecosystem and community are smaller. Fewer tutorials, Stack Overflow answers, and production case studies compared to Next.js.
+
+### Next.js — where it still felt strong
+
+- React Server Components are fully supported and deeply integrated.
+- Caching and revalidation tools (including fetch options and on-demand revalidation) are clearly documented and powerful.
+- Server Actions provide a natural, progressively enhanced form workflow.
+- Massive ecosystem: middleware packages, auth libraries, CMS integrations all assume Next.js.
+- `generateMetadata` is a very clean API for dynamic SEO.
+
+### Next.js — where I still feel friction
+
+- The cache model depends on rendering mode and `fetch` options, which requires a deliberate mental model early on.
+- Search params are untyped strings out of the box — you build your own validation layer.
+- Middleware runs on Edge only, which limits what you can do (no Node.js APIs, no database calls).
+- Route params typing requires extra work (e.g. defining param types manually).
+
+## When I'd choose each one
+
+- **TanStack Start**: greenfield apps where type-safe routing and server functions are a priority, you want Vite and multi-platform deployment, and you're comfortable with a pre-1.0 framework. Especially compelling if your team already uses TanStack Router or TanStack Query.
+- **Next.js**: teams that need React Server Components, want well-documented caching semantics, progressive-enhanced forms, and a mature framework with a large ecosystem and strong conventions.
+
+## Closing
+
+TanStack Start and Next.js are solving similar problems with genuinely different philosophies. Start bets on type safety, URL-as-state, and the Vite/Nitro ecosystem. Next.js bets on Server Components, convention-based architecture, and deep platform integration.
+
+If your team already loves TanStack Router or TanStack Query, Start feels like a natural, cohesive extension. If you want a highly prescriptive full-stack model with RSC, deep caching semantics, and a large body of production patterns, Next.js still feels like the safer default.
+
+The real takeaway for me: these frameworks are making each other better. The competition on type safety, server functions, and developer experience benefits everyone building on React.

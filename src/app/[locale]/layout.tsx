@@ -40,7 +40,7 @@ export async function generateMetadata({
       type: 'website',
       images: [
         {
-          url: '/opengraph-image.png',
+          url: '/og/opengraph-image.png',
           width: 1200,
           height: 630,
         },
@@ -53,7 +53,7 @@ export async function generateMetadata({
       creator: '@evan1297',
       images: [
         {
-          url: '/opengraph-image.png',
+          url: '/og/opengraph-image.png',
           width: 1200,
           height: 630,
         },
@@ -73,11 +73,11 @@ export async function generateMetadata({
     icons: {
       icon: [
         {
-          url: '/logo.svg',
-          href: '/logo.svg',
+          url: '/logos/logo.svg',
+          href: '/logos/logo.svg',
         },
       ],
-      apple: '/logo.svg',
+      apple: '/logos/logo.svg',
     },
   }
 }

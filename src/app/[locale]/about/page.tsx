@@ -1,3 +1,4 @@
+import { FileTextIcon } from 'lucide-react'
 import Image from 'next/image'
 import { getTranslations } from 'next-intl/server'
 import { Container } from '@/components/container'
@@ -22,7 +23,7 @@ export default async function Page() {
             <div className="max-w-xs px-2.5 lg:max-w-none">
               <Image
                 priority
-                src="/about.png"
+                src="/avatars/about.png"
                 alt="Evan"
                 width={800}
                 height={800}
@@ -87,7 +88,7 @@ export default async function Page() {
                 <span className="ml-4">{t('follow_on_linkedin')}</span>
               </Link>
             </li>
-            <li className="mt-8 border-t border-neutral-100 pt-8 dark:border-neutral-700/40 flex">
+            <li className="mt-8 border-t border-neutral-100 pt-8 dark:border-neutral-700/40 flex flex-col gap-4">
               <Link
                 href="mailto:jihua.evan@icloud.com"
                 className="group flex items-center text-sm font-medium text-neutral-800 transition hover:text-violet-500 dark:text-neutral-200 dark:hover:text-violet-500"
@@ -102,7 +103,17 @@ export default async function Page() {
                     d="M6 5a3 3 0 0 0-3 3v8a3 3 0 0 0 3 3h12a3 3 0 0 0 3-3V8a3 3 0 0 0-3-3H6Zm.245 2.187a.75.75 0 0 0-.99 1.126l6.25 5.5a.75.75 0 0 0 .99 0l6.25-5.5a.75.75 0 0 0-.99-1.126L12 12.251 6.245 7.187Z"
                   />
                 </svg>
-                <span className="ml-4">jihua.evan@icloud.com</span>
+                <span className="ml-4">jihua.evan@gmail.com</span>
+              </Link>
+              <Link
+                href="https://cv.evanwu.dev"
+                className="group flex items-center text-sm font-medium text-neutral-800 transition hover:text-violet-500 dark:text-neutral-200 dark:hover:text-violet-500 ml-0.5"
+              >
+                <FileTextIcon
+                  aria-hidden="true"
+                  className="size-5 text-neutral-500 group-hover:text-violet-500"
+                />
+                <span className="ml-4">cv.evanwu.dev</span>
               </Link>
             </li>
           </ul>
