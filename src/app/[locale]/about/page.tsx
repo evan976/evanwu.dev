@@ -1,15 +1,22 @@
 import { FileTextIcon } from 'lucide-react'
 import Image from 'next/image'
-import { getTranslations } from 'next-intl/server'
+import { getLocale, getTranslations } from 'next-intl/server'
+import { baseUrl } from '@/app/sitemap'
 import { Container } from '@/components/container'
 import { GithubIcon, LinkedInIcon, XIcon } from '@/components/icons'
+import { routing } from '@/i18n/routing'
 import { Link } from '@/i18n/navigation'
 
 export async function generateMetadata() {
   const t = await getTranslations('about')
+  const locale = await getLocale()
+  const localePath = locale === routing.defaultLocale ? '' : `/${locale}`
   return {
     title: t('title'),
     description: t('description'),
+    alternates: {
+      canonical: `${baseUrl}${localePath}/about`,
+    },
   }
 }
 
@@ -24,7 +31,7 @@ export default async function Page() {
               <Image
                 priority
                 src="/avatars/about.png"
-                alt="Evan"
+                alt="Portrait photo of Evan Wu, frontend developer"
                 width={800}
                 height={800}
                 sizes="(min-width: 1024px) 32rem, 20rem"
@@ -38,10 +45,30 @@ export default async function Page() {
             {t('description')}
           </h1>
           <div className="mt-6 space-y-7 text-base text-neutral-600 dark:text-neutral-400">
-            <p>{t('content.childhood')}</p>
-            <p>{t('content.school')}</p>
-            <p>{t('content.programming')}</p>
-            <p>{t('content.graduation')}</p>
+            <section>
+              <h3 className="text-sm font-semibold text-neutral-800 dark:text-neutral-200 mb-2">
+                {t('content.childhood_heading')}
+              </h3>
+              <p>{t('content.childhood')}</p>
+            </section>
+            <section>
+              <h3 className="text-sm font-semibold text-neutral-800 dark:text-neutral-200 mb-2">
+                {t('content.school_heading')}
+              </h3>
+              <p>{t('content.school')}</p>
+            </section>
+            <section>
+              <h3 className="text-sm font-semibold text-neutral-800 dark:text-neutral-200 mb-2">
+                {t('content.programming_heading')}
+              </h3>
+              <p>{t('content.programming')}</p>
+            </section>
+            <section>
+              <h3 className="text-sm font-semibold text-neutral-800 dark:text-neutral-200 mb-2">
+                {t('content.graduation_heading')}
+              </h3>
+              <p>{t('content.graduation')}</p>
+            </section>
           </div>
         </div>
         <div className="lg:pl-20">

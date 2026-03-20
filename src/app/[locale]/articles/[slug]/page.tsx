@@ -49,10 +49,15 @@ export async function generateMetadata({
 
   const ogUrl = image ? image : `/api/og?path=/articles/${slug}`
 
+  const localePath = locale === 'en' ? '' : `/${locale}`
+
   return {
     metadataBase: new URL(baseUrl),
     title,
     description,
+    alternates: {
+      canonical: `${baseUrl}${localePath}/articles/${slug}`,
+    },
     openGraph: {
       title,
       description,
@@ -60,7 +65,7 @@ export async function generateMetadata({
       siteName: "Evan's Blog",
       locale,
       publishedTime: publishedAt,
-      url: `/articles/${slug}`,
+      url: `${baseUrl}/articles/${slug}`,
       images: [
         {
           url: ogUrl,
@@ -116,8 +121,15 @@ export default async function Page({
             datePublished: publishedAt,
             dateModified: publishedAt,
             description,
-            image: image || `/api/og?path=/articles/${slug}`,
-            url: `/articles/${slug}`,
+            image: image
+              ? `${baseUrl}${image}`
+              : `${baseUrl}/api/og?path=/articles/${slug}`,
+            url: `${baseUrl}/articles/${slug}`,
+            author: {
+              '@type': 'Person',
+              name: 'Evan Wu',
+              url: baseUrl,
+            },
           }),
         }}
       />

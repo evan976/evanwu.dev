@@ -1,15 +1,22 @@
 import { LinkIcon } from 'lucide-react'
 import Image from 'next/image'
-import { getTranslations } from 'next-intl/server'
+import { getLocale, getTranslations } from 'next-intl/server'
+import { baseUrl } from '@/app/sitemap'
 import { Layout } from '@/components/layout'
+import { routing } from '@/i18n/routing'
 import { Link } from '@/i18n/navigation'
 import { projects } from '@/lib/constants'
 
 export async function generateMetadata() {
   const t = await getTranslations('projects')
+  const locale = await getLocale()
+  const localePath = locale === routing.defaultLocale ? '' : `/${locale}`
   return {
     title: t('title'),
     description: t('description'),
+    alternates: {
+      canonical: `${baseUrl}${localePath}/projects`,
+    },
   }
 }
 
