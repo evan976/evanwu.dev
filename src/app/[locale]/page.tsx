@@ -2,13 +2,15 @@ import * as React from 'react'
 import { ChevronRight } from 'lucide-react'
 import * as motion from 'motion/react-client'
 import Image from 'next/image'
-import { getFormatter, getTranslations } from 'next-intl/server'
+import { getFormatter, getLocale, getTranslations } from 'next-intl/server'
+import { baseUrl } from '@/app/sitemap'
 import { AuroraText } from '@/components/aurora-text'
 import { Container } from '@/components/container'
 import { Highlighter } from '@/components/highlighter'
 import { Resume } from '@/components/resume'
 import { SocialLink } from '@/components/social-link'
 import { SubscribeForm } from '@/components/subscribe-form'
+import { routing } from '@/i18n/routing'
 import { Link } from '@/i18n/navigation'
 import { links } from '@/lib/constants'
 import { getArticles } from '@/lib/mdx'
@@ -20,9 +22,14 @@ import snow from '@/public/photos/snow.jpg'
 
 export async function generateMetadata() {
   const t = await getTranslations()
+  const locale = await getLocale()
+  const localePath = locale === routing.defaultLocale ? '' : `/${locale}`
   return {
     title: t('metadata.title'),
     description: t('home.description'),
+    alternates: {
+      canonical: `${baseUrl}${localePath || '/'}`,
+    },
   }
 }
 
@@ -33,6 +40,33 @@ export default async function Page({ params }: PageProps<'/[locale]'>) {
   const formatter = await getFormatter()
   return (
     <React.Fragment>
+      <script
+        type="application/ld+json"
+        suppressHydrationWarning
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'Person',
+            name: 'Evan Wu',
+            url: 'https://evanwu.dev',
+            jobTitle: 'Frontend Developer',
+            sameAs: [
+              'https://x.com/evan1297',
+              'https://www.linkedin.com/in/evan976',
+              'https://github.com/evan976',
+              'https://t.me/evan9712',
+            ],
+            knowsAbout: [
+              'Frontend Development',
+              'Web Design',
+              'Open Source',
+              'React',
+              'TypeScript',
+            ],
+            image: 'https://evanwu.dev/avatars/about.png',
+          }),
+        }}
+      />
       <Container className="mt-9">
         <div className="max-w-2xl text-lg">
           <h1 className="text-4xl font-black tracking-tight text-balance leading-tight text-neutral-800 dark:text-neutral-100 sm:text-5xl">
@@ -137,7 +171,16 @@ function Photos() {
 
   return (
     <div className="flex justify-center items-center py-16 sm:py-24 overflow-hidden">
-      {[sea, beach, fall, mountain, snow].map((image, imageIndex) => (
+      {[
+        { src: sea, alt: 'Ocean waves crashing on the seaside shore' },
+        { src: beach, alt: 'Evan at the beach in Chengdu' },
+        { src: fall, alt: 'Autumn trees with golden and red foliage' },
+        {
+          src: mountain,
+          alt: 'Mountain landscape with dramatic snow-capped peaks',
+        },
+        { src: snow, alt: 'Snow-covered winter landscape' },
+      ].map((photo, imageIndex) => (
         <motion.div
           key={imageIndex}
           tabIndex={0}
@@ -153,8 +196,8 @@ function Photos() {
         >
           <div className="relative size-full">
             <Image
-              src={image}
-              alt="Photo"
+              src={photo.src}
+              alt={photo.alt}
               priority
               fill
               draggable={false}

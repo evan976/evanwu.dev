@@ -1,14 +1,21 @@
 import { ChevronRightIcon } from 'lucide-react'
-import { getFormatter, getTranslations } from 'next-intl/server'
+import { getFormatter, getLocale, getTranslations } from 'next-intl/server'
+import { baseUrl } from '@/app/sitemap'
 import { Layout } from '@/components/layout'
+import { routing } from '@/i18n/routing'
 import { Link } from '@/i18n/navigation'
 import { getArticles } from '@/lib/mdx'
 
 export async function generateMetadata() {
   const t = await getTranslations('articles')
+  const locale = await getLocale()
+  const localePath = locale === routing.defaultLocale ? '' : `/${locale}`
   return {
     title: t('title'),
     description: t('description'),
+    alternates: {
+      canonical: `${baseUrl}${localePath}/articles`,
+    },
   }
 }
 

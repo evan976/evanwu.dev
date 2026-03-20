@@ -22,17 +22,25 @@ export async function generateMetadata({
 }) {
   const { locale } = await params
   const t = await getTranslations()
+  const localePath = locale === routing.defaultLocale ? '' : `/${locale}`
   return {
     metadataBase: new URL(baseUrl),
     title: {
       template: '%s - Evan',
       default: 'Evan',
     },
-    description: t('home.description'),
+    description: t('metadata.description'),
     keywords:
-      'Evan, Blog, Developer, Full Stack, Frontend, Engineer, Designer, Open Source',
+      'Evan Wu, Blog, Developer, Full Stack, Frontend, Engineer, Designer, Open Source, React, TypeScript, Web Development',
+    alternates: {
+      canonical: `${baseUrl}${localePath}`,
+      languages: {
+        en: baseUrl,
+        zh: `${baseUrl}/zh`,
+      },
+    },
     openGraph: {
-      title: 'Evan',
+      title: t('metadata.title'),
       description: t('metadata.description'),
       url: baseUrl,
       siteName: "Evan's Blog",
@@ -48,7 +56,7 @@ export async function generateMetadata({
     },
     twitter: {
       card: 'summary_large_image',
-      title: 'Evan',
+      title: t('metadata.title'),
       description: t('metadata.description'),
       creator: '@evan1297',
       images: [

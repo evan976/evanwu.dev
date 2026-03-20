@@ -95,7 +95,7 @@ function Avatar({
       <Image
         priority
         src={avatarImage}
-        alt="Avatar"
+        alt="Evan Wu"
         sizes={large ? '4rem' : '2.25rem'}
         className={cn(
           'rounded-full bg-neutral-100 object-cover dark:bg-neutral-800',
