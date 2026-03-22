@@ -17,17 +17,19 @@ import {
   getArticleSlugs,
   getPreviousOrNextArticleSlug,
 } from '@/lib/mdx'
+import {
+  canonicalForPath,
+  languageAlternatesForPath,
+} from '@/lib/metadata-urls'
 
 export const dynamicParams = false
 
 export async function generateStaticParams({
   params,
 }: {
-  params: Promise<{
-    locale: string
-  }>
+  params: { locale: string; slug: string }
 }) {
-  const { locale } = await params
+  const { locale } = params
   const slugs = await getArticleSlugs(locale)
   return slugs.map((slug) => ({ slug }))
 }
@@ -47,16 +49,19 @@ export async function generateMetadata({
 
   const { title, description, publishedAt, image } = article.metadata
 
-  const ogUrl = image ? image : `/api/og?path=/articles/${slug}`
-
-  const localePath = locale === 'en' ? '' : `/${locale}`
+  const canonicalUrl = canonicalForPath(`/articles/${slug}`, locale)
+  const articlePathname = new URL(canonicalUrl).pathname
+  const ogImagePath = image
+    ? image
+    : `/api/og?path=${encodeURIComponent(articlePathname)}`
 
   return {
     metadataBase: new URL(baseUrl),
     title,
     description,
     alternates: {
-      canonical: `${baseUrl}${localePath}/articles/${slug}`,
+      canonical: canonicalUrl,
+      languages: languageAlternatesForPath(`/articles/${slug}`),
     },
     openGraph: {
       title,
@@ -65,10 +70,10 @@ export async function generateMetadata({
       siteName: "Evan's Blog",
       locale,
       publishedTime: publishedAt,
-      url: `${baseUrl}/articles/${slug}`,
+      url: canonicalUrl,
       images: [
         {
-          url: ogUrl,
+          url: ogImagePath,
           width: 1200,
           height: 630,
         },
@@ -78,9 +83,10 @@ export async function generateMetadata({
       card: 'summary_large_image',
       title,
       description,
+      creator: '@evan1297',
       images: [
         {
-          url: ogUrl,
+          url: ogImagePath,
           width: 1200,
           height: 630,
         },
@@ -94,10 +100,12 @@ export default async function Page({
 }: PageProps<'/[locale]/articles/[slug]'>) {
   const { slug, locale } = await params
 
-  const article = await getArticleBySlug(slug, locale)
-  const adjacent = await getPreviousOrNextArticleSlug(slug, locale)
-  const t = await getTranslations('articles')
-  const formatter = await getFormatter()
+  const [article, adjacent, t, formatter] = await Promise.all([
+    getArticleBySlug(slug, locale),
+    getPreviousOrNextArticleSlug(slug, locale),
+    getTranslations('articles'),
+    getFormatter(),
+  ])
 
   if (!article) {
     notFound()
@@ -105,6 +113,12 @@ export default async function Page({
 
   const { title, description, publishedAt, readingTime, image } =
     article.metadata
+
+  const articleUrl = canonicalForPath(`/articles/${slug}`, locale)
+  const articlePathname = new URL(articleUrl).pathname
+  const jsonLdImage = image
+    ? `${baseUrl}${image}`
+    : `${baseUrl}/api/og?path=${encodeURIComponent(articlePathname)}`
 
   setRequestLocale(locale)
 
@@ -121,10 +135,8 @@ export default async function Page({
             datePublished: publishedAt,
             dateModified: publishedAt,
             description,
-            image: image
-              ? `${baseUrl}${image}`
-              : `${baseUrl}/api/og?path=/articles/${slug}`,
-            url: `${baseUrl}/articles/${slug}`,
+            image: jsonLdImage,
+            url: articleUrl,
             author: {
               '@type': 'Person',
               name: 'Evan Wu',

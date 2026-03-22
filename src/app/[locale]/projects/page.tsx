@@ -1,21 +1,43 @@
 import { LinkIcon } from 'lucide-react'
 import Image from 'next/image'
 import { getLocale, getTranslations } from 'next-intl/server'
-import { baseUrl } from '@/app/sitemap'
 import { Layout } from '@/components/layout'
-import { routing } from '@/i18n/routing'
 import { Link } from '@/i18n/navigation'
 import { projects } from '@/lib/constants'
+import {
+  canonicalForPath,
+  defaultOgImage,
+  languageAlternatesForPath,
+} from '@/lib/metadata-urls'
 
 export async function generateMetadata() {
-  const t = await getTranslations('projects')
-  const locale = await getLocale()
-  const localePath = locale === routing.defaultLocale ? '' : `/${locale}`
+  const [t, locale] = await Promise.all([
+    getTranslations('projects'),
+    getLocale(),
+  ])
+  const canonical = canonicalForPath('/projects', locale)
   return {
     title: t('title'),
     description: t('description'),
     alternates: {
-      canonical: `${baseUrl}${localePath}/projects`,
+      canonical,
+      languages: languageAlternatesForPath('/projects'),
+    },
+    openGraph: {
+      title: t('title'),
+      description: t('description'),
+      url: canonical,
+      siteName: "Evan's Blog",
+      locale,
+      type: 'website',
+      images: [defaultOgImage],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: t('title'),
+      description: t('description'),
+      creator: '@evan1297',
+      images: [defaultOgImage],
     },
   }
 }

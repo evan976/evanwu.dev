@@ -3,17 +3,20 @@ import { ChevronRight } from 'lucide-react'
 import * as motion from 'motion/react-client'
 import Image from 'next/image'
 import { getFormatter, getLocale, getTranslations } from 'next-intl/server'
-import { baseUrl } from '@/app/sitemap'
 import { AuroraText } from '@/components/aurora-text'
 import { Container } from '@/components/container'
 import { Highlighter } from '@/components/highlighter'
 import { Resume } from '@/components/resume'
 import { SocialLink } from '@/components/social-link'
 import { SubscribeForm } from '@/components/subscribe-form'
-import { routing } from '@/i18n/routing'
 import { Link } from '@/i18n/navigation'
 import { links } from '@/lib/constants'
 import { getArticles } from '@/lib/mdx'
+import {
+  canonicalForPath,
+  defaultOgImage,
+  languageAlternatesForPath,
+} from '@/lib/metadata-urls'
 import beach from '@/public/photos/beach.jpeg'
 import fall from '@/public/photos/fall.jpg'
 import mountain from '@/public/photos/mountain.jpg'
@@ -21,23 +24,41 @@ import sea from '@/public/photos/sea.jpeg'
 import snow from '@/public/photos/snow.jpg'
 
 export async function generateMetadata() {
-  const t = await getTranslations()
-  const locale = await getLocale()
-  const localePath = locale === routing.defaultLocale ? '' : `/${locale}`
+  const [t, locale] = await Promise.all([getTranslations(), getLocale()])
+  const canonical = canonicalForPath('/', locale)
   return {
     title: t('metadata.title'),
     description: t('home.description'),
     alternates: {
-      canonical: `${baseUrl}${localePath || '/'}`,
+      canonical,
+      languages: languageAlternatesForPath('/'),
+    },
+    openGraph: {
+      title: t('metadata.title'),
+      description: t('home.description'),
+      url: canonical,
+      siteName: "Evan's Blog",
+      locale,
+      type: 'website',
+      images: [defaultOgImage],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: t('metadata.title'),
+      description: t('home.description'),
+      creator: '@evan1297',
+      images: [defaultOgImage],
     },
   }
 }
 
 export default async function Page({ params }: PageProps<'/[locale]'>) {
   const { locale } = await params
-  const articles = await getArticles(locale)
-  const t = await getTranslations()
-  const formatter = await getFormatter()
+  const [articles, t, formatter] = await Promise.all([
+    getArticles(locale),
+    getTranslations(),
+    getFormatter(),
+  ])
   return (
     <React.Fragment>
       <script

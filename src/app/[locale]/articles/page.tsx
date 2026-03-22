@@ -1,20 +1,42 @@
 import { ChevronRightIcon } from 'lucide-react'
 import { getFormatter, getLocale, getTranslations } from 'next-intl/server'
-import { baseUrl } from '@/app/sitemap'
 import { Layout } from '@/components/layout'
-import { routing } from '@/i18n/routing'
 import { Link } from '@/i18n/navigation'
 import { getArticles } from '@/lib/mdx'
+import {
+  canonicalForPath,
+  defaultOgImage,
+  languageAlternatesForPath,
+} from '@/lib/metadata-urls'
 
 export async function generateMetadata() {
-  const t = await getTranslations('articles')
-  const locale = await getLocale()
-  const localePath = locale === routing.defaultLocale ? '' : `/${locale}`
+  const [t, locale] = await Promise.all([
+    getTranslations('articles'),
+    getLocale(),
+  ])
+  const canonical = canonicalForPath('/articles', locale)
   return {
     title: t('title'),
     description: t('description'),
     alternates: {
-      canonical: `${baseUrl}${localePath}/articles`,
+      canonical,
+      languages: languageAlternatesForPath('/articles'),
+    },
+    openGraph: {
+      title: t('title'),
+      description: t('description'),
+      url: canonical,
+      siteName: "Evan's Blog",
+      locale,
+      type: 'website',
+      images: [defaultOgImage],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: t('title'),
+      description: t('description'),
+      creator: '@evan1297',
+      images: [defaultOgImage],
     },
   }
 }
@@ -23,9 +45,11 @@ export default async function Page({
   params,
 }: PageProps<'/[locale]/articles'>) {
   const { locale } = await params
-  const articles = await getArticles(locale)
-  const t = await getTranslations()
-  const formatter = await getFormatter()
+  const [articles, t, formatter] = await Promise.all([
+    getArticles(locale),
+    getTranslations(),
+    getFormatter(),
+  ])
 
   return (
     <Layout title={t('articles.title')} intro={t('articles.description')}>
