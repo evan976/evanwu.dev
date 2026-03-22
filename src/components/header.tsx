@@ -123,13 +123,13 @@ function NavItem({
         className={cn(
           'relative block px-3 whitespace-nowrap py-2.5 transition',
           isActive
-            ? 'text-violet-500 dark:text-violet-400'
-            : 'hover:text-violet-500 dark:hover:text-violet-400',
+            ? 'text-neutral-900 dark:text-neutral-200'
+            : 'hover:text-neutral-900 dark:hover:text-neutral-200',
         )}
       >
         {children}
         {isActive && (
-          <span className="absolute inset-x-1 -bottom-px h-px bg-linear-to-r from-violet-500/0 via-violet-500/40 to-violet-500/0 dark:from-violet-400/0 dark:via-violet-400/40 dark:to-violet-400/0" />
+          <span className="absolute inset-x-1 -bottom-px h-px bg-linear-to-r from-neutral-900/0 via-neutral-900/35 to-neutral-900/0 dark:from-neutral-200/0 dark:via-neutral-200/40 dark:to-neutral-200/0" />
         )}
       </Link>
     </li>

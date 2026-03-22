@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils'
 
 const variantStyles = {
   primary:
-    'bg-violet-500 font-medium text-neutral-100 hover:bg-violet-600 active:bg-violet-700 active:text-neutral-100/70 dark:bg-violet-500 dark:hover:bg-violet-600 dark:active:bg-violet-500 dark:active:text-neutral-100/70',
+    'bg-neutral-900 font-medium text-neutral-100 hover:bg-neutral-800 active:bg-neutral-950 active:text-neutral-100/70 dark:bg-neutral-200 dark:text-neutral-900 dark:hover:bg-neutral-100 dark:active:bg-neutral-300 dark:active:text-neutral-900/70',
   secondary:
     'bg-neutral-50 font-medium text-neutral-900 hover:bg-neutral-100 active:bg-neutral-100 active:text-neutral-900/60 dark:bg-neutral-800/50 dark:text-neutral-300 dark:hover:bg-neutral-800 dark:hover:text-neutral-50 dark:active:bg-neutral-800/50 dark:active:text-neutral-50/70',
 } as const

@@ -76,7 +76,7 @@ export default async function Page() {
             <p className="relative z-10 mt-2 text-sm text-neutral-600 dark:text-neutral-400 line-clamp-2">
               {project.description}
             </p>
-            <p className="relative z-10 mt-6 flex items-center text-sm font-medium text-neutral-400 transition group-hover:text-violet-500 dark:text-neutral-200">
+            <p className="relative z-10 mt-6 flex items-center text-sm font-medium text-neutral-400 transition group-hover:text-neutral-900 dark:text-neutral-200 dark:group-hover:text-neutral-100">
               <LinkIcon className="size-3.5" />
               <span className="ml-2">{new URL(project.url).hostname}</span>
             </p>
