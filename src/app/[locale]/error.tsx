@@ -14,7 +14,7 @@ export default function GlobalError({
   const t = useTranslations('error')
   return (
     <html lang="en">
-      <body className="flex h-screen flex-col items-center justify-center">
+      <body className="flex min-h-dvh flex-col items-center justify-center">
         <h2 className="text-4xl font-bold text-neutral-800 dark:text-neutral-100">
           {t('title')}
         </h2>

@@ -1,21 +1,40 @@
 import { FileTextIcon } from 'lucide-react'
 import Image from 'next/image'
 import { getLocale, getTranslations } from 'next-intl/server'
-import { baseUrl } from '@/app/sitemap'
 import { Container } from '@/components/container'
 import { GithubIcon, LinkedInIcon, XIcon } from '@/components/icons'
-import { routing } from '@/i18n/routing'
 import { Link } from '@/i18n/navigation'
+import {
+  canonicalForPath,
+  defaultOgImage,
+  languageAlternatesForPath,
+} from '@/lib/metadata-urls'
 
 export async function generateMetadata() {
-  const t = await getTranslations('about')
-  const locale = await getLocale()
-  const localePath = locale === routing.defaultLocale ? '' : `/${locale}`
+  const [t, locale] = await Promise.all([getTranslations('about'), getLocale()])
+  const canonical = canonicalForPath('/about', locale)
   return {
     title: t('title'),
     description: t('description'),
     alternates: {
-      canonical: `${baseUrl}${localePath}/about`,
+      canonical,
+      languages: languageAlternatesForPath('/about'),
+    },
+    openGraph: {
+      title: t('title'),
+      description: t('description'),
+      url: canonical,
+      siteName: "Evan's Blog",
+      locale,
+      type: 'website',
+      images: [defaultOgImage],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: t('title'),
+      description: t('description'),
+      creator: '@evan1297',
+      images: [defaultOgImage],
     },
   }
 }
@@ -78,11 +97,11 @@ export default async function Page() {
                 target="_blank"
                 rel="noopener noreferrer"
                 href="https://x.com/evan1297"
-                className="group flex items-center text-sm font-medium text-neutral-800 transition hover:text-violet-500 dark:text-neutral-200 dark:hover:text-violet-500"
+                className="group flex items-center text-sm font-medium text-neutral-800 transition hover:text-neutral-950 dark:text-neutral-200 dark:hover:text-neutral-50"
               >
                 <XIcon
                   aria-hidden="true"
-                  className="size-6 flex-none fill-neutral-500 transition group-hover:fill-violet-500"
+                  className="size-6 flex-none fill-neutral-500 transition group-hover:fill-neutral-900 dark:group-hover:fill-neutral-100"
                 />
                 <span className="ml-4">{t('follow_on_x')}</span>
               </Link>
@@ -92,11 +111,11 @@ export default async function Page() {
                 target="_blank"
                 rel="noopener noreferrer"
                 href="https://github.com/evan976"
-                className="group flex items-center text-sm font-medium text-neutral-800 transition hover:text-violet-500 dark:text-neutral-200 dark:hover:text-violet-500"
+                className="group flex items-center text-sm font-medium text-neutral-800 transition hover:text-neutral-950 dark:text-neutral-200 dark:hover:text-neutral-50"
               >
                 <GithubIcon
                   aria-hidden="true"
-                  className="size-6 flex-none fill-neutral-500 transition group-hover:fill-violet-500"
+                  className="size-6 flex-none fill-neutral-500 transition group-hover:fill-neutral-900 dark:group-hover:fill-neutral-100"
                 />
                 <span className="ml-4">{t('follow_on_github')}</span>
               </Link>
@@ -106,11 +125,11 @@ export default async function Page() {
                 target="_blank"
                 rel="noopener noreferrer"
                 href="https://www.linkedin.com/in/evan976"
-                className="group flex items-center text-sm font-medium text-neutral-800 transition hover:text-violet-500 dark:text-neutral-200 dark:hover:text-violet-500"
+                className="group flex items-center text-sm font-medium text-neutral-800 transition hover:text-neutral-950 dark:text-neutral-200 dark:hover:text-neutral-50"
               >
                 <LinkedInIcon
                   aria-hidden="true"
-                  className="size-6 flex-none fill-neutral-500 transition group-hover:fill-violet-500"
+                  className="size-6 flex-none fill-neutral-500 transition group-hover:fill-neutral-900 dark:group-hover:fill-neutral-100"
                 />
                 <span className="ml-4">{t('follow_on_linkedin')}</span>
               </Link>
@@ -118,12 +137,12 @@ export default async function Page() {
             <li className="mt-8 border-t border-neutral-100 pt-8 dark:border-neutral-700/40 flex flex-col gap-4">
               <Link
                 href="mailto:jihua.evan@icloud.com"
-                className="group flex items-center text-sm font-medium text-neutral-800 transition hover:text-violet-500 dark:text-neutral-200 dark:hover:text-violet-500"
+                className="group flex items-center text-sm font-medium text-neutral-800 transition hover:text-neutral-950 dark:text-neutral-200 dark:hover:text-neutral-50"
               >
                 <svg
                   viewBox="0 0 24 24"
                   aria-hidden="true"
-                  className="size-6 flex-none fill-neutral-500 transition group-hover:fill-violet-500"
+                  className="size-6 flex-none fill-neutral-500 transition group-hover:fill-neutral-900 dark:group-hover:fill-neutral-100"
                 >
                   <path
                     fillRule="evenodd"
@@ -134,11 +153,11 @@ export default async function Page() {
               </Link>
               <Link
                 href="https://cv.evanwu.dev"
-                className="group flex items-center text-sm font-medium text-neutral-800 transition hover:text-violet-500 dark:text-neutral-200 dark:hover:text-violet-500 ml-0.5"
+                className="group flex items-center text-sm font-medium text-neutral-800 transition hover:text-neutral-950 dark:text-neutral-200 dark:hover:text-neutral-50 ml-0.5"
               >
                 <FileTextIcon
                   aria-hidden="true"
-                  className="size-5 text-neutral-500 group-hover:text-violet-500"
+                  className="size-5 text-neutral-500 group-hover:text-neutral-900 dark:group-hover:text-neutral-100"
                 />
                 <span className="ml-4">cv.evanwu.dev</span>
               </Link>

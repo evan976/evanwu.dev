@@ -42,7 +42,7 @@ export function SubscribeForm() {
           name="email"
           placeholder={t('email')}
           aria-label={t('email')}
-          className="min-w-0 flex-auto h-9 text-sm appearance-none rounded-md border border-neutral-900/10 bg-white px-3 py-2 shadow-md shadow-neutral-800/5 placeholder:text-neutral-400 focus:border-violet-500 focus:outline-hidden focus:ring-3 focus:ring-violet-500/10 dark:border-neutral-700 dark:bg-neutral-700/15 dark:text-neutral-200 dark:placeholder:text-neutral-500 dark:focus:border-violet-400 dark:focus:ring-violet-400/10 sm:text-sm transition-all duration-200"
+          className="min-w-0 flex-auto h-9 text-sm appearance-none rounded-md border border-neutral-900/10 bg-white px-3 py-2 shadow-md shadow-neutral-800/5 placeholder:text-neutral-400 focus:border-neutral-900 focus:outline-hidden focus:ring-3 focus:ring-neutral-900/10 dark:border-neutral-700 dark:bg-neutral-700/15 dark:text-neutral-200 dark:placeholder:text-neutral-500 dark:focus:border-neutral-300 dark:focus:ring-neutral-300/10 sm:text-sm transition-all duration-200"
         />
         <Button
           type="submit"

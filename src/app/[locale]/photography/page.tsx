@@ -1,17 +1,39 @@
 import { getLocale, getTranslations } from 'next-intl/server'
-import { baseUrl } from '@/app/sitemap'
 import { Layout } from '@/components/layout'
-import { routing } from '@/i18n/routing'
+import {
+  canonicalForPath,
+  defaultOgImage,
+  languageAlternatesForPath,
+} from '@/lib/metadata-urls'
 
 export async function generateMetadata() {
-  const t = await getTranslations('photography')
-  const locale = await getLocale()
-  const localePath = locale === routing.defaultLocale ? '' : `/${locale}`
+  const [t, locale] = await Promise.all([
+    getTranslations('photography'),
+    getLocale(),
+  ])
+  const canonical = canonicalForPath('/photography', locale)
   return {
     title: t('title'),
     description: t('description'),
     alternates: {
-      canonical: `${baseUrl}${localePath}/photography`,
+      canonical,
+      languages: languageAlternatesForPath('/photography'),
+    },
+    openGraph: {
+      title: t('title'),
+      description: t('description'),
+      url: canonical,
+      siteName: "Evan's Blog",
+      locale,
+      type: 'website',
+      images: [defaultOgImage],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: t('title'),
+      description: t('description'),
+      creator: '@evan1297',
+      images: [defaultOgImage],
     },
   }
 }

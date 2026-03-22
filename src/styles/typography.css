@@ -1,10 +1,10 @@
 .prose {
   --prose-body: var(--color-neutral-600);
   --prose-headings: var(--color-neutral-900);
-  --prose-links: var(--color-violet-500);
-  --prose-links-hover: var(--color-violet-600);
-  --prose-underline: --alpha(var(--color-violet-950) / 20%);
-  --prose-underline-hover: var(--color-violet-500);
+  --prose-links: var(--color-neutral-900);
+  --prose-links-hover: var(--color-neutral-950);
+  --prose-underline: --alpha(var(--color-neutral-900) / 25%);
+  --prose-underline-hover: var(--color-neutral-900);
   --prose-bold: var(--color-neutral-900);
   --prose-counters: var(--color-neutral-900);
   --prose-bullets: var(--color-neutral-900);
@@ -12,7 +12,7 @@
   --prose-quote-borders: var(--color-neutral-200);
   --prose-quote-bg: var(--color-neutral-50);
   --prose-captions: var(--color-neutral-400);
-  --prose-code: var(--color-violet-600);
+  --prose-code: var(--color-neutral-800);
   --prose-code-bg: var(--color-neutral-100);
   --prose-code-border: var(--color-neutral-200);
   --prose-pre-code: var(--color-neutral-800);
@@ -28,10 +28,10 @@
   &:where(.dark, .dark *) {
     --prose-body: var(--color-neutral-400);
     --prose-headings: var(--color-neutral-200);
-    --prose-links: var(--color-violet-400);
-    --prose-links-hover: var(--color-violet-500);
-    --prose-underline: --alpha(var(--color-violet-400) / 30%);
-    --prose-underline-hover: var(--color-violet-400);
+    --prose-links: var(--color-neutral-200);
+    --prose-links-hover: var(--color-neutral-50);
+    --prose-underline: --alpha(var(--color-neutral-200) / 35%);
+    --prose-underline-hover: var(--color-neutral-200);
     --prose-bold: var(--color-neutral-200);
     --prose-counters: var(--color-neutral-200);
     --prose-bullets: var(--color-neutral-200);
@@ -39,7 +39,7 @@
     --prose-quote-borders: --alpha(var(--color-white) / 10%);
     --prose-quote-bg: var(--color-neutral-800);
     --prose-captions: var(--color-neutral-500);
-    --prose-code: var(--color-violet-400);
+    --prose-code: var(--color-neutral-300);
     --prose-code-bg: var(--color-neutral-800);
     --prose-code-border: var(--color-neutral-700);
     --prose-pre-code: var(--color-neutral-100);
@@ -57,10 +57,10 @@
     &:where(.system, .system *) {
       --prose-body: var(--color-neutral-400);
       --prose-headings: var(--color-neutral-200);
-      --prose-links: var(--color-violet-400);
-      --prose-links-hover: var(--color-violet-500);
-      --prose-underline: --alpha(var(--color-violet-400) / 30%);
-      --prose-underline-hover: var(--color-violet-400);
+      --prose-links: var(--color-neutral-200);
+      --prose-links-hover: var(--color-neutral-50);
+      --prose-underline: --alpha(var(--color-neutral-200) / 35%);
+      --prose-underline-hover: var(--color-neutral-200);
       --prose-bold: var(--color-neutral-200);
       --prose-counters: var(--color-neutral-200);
       --prose-bullets: var(--color-neutral-200);
@@ -68,7 +68,7 @@
       --prose-quote-borders: --alpha(var(--color-white) / 10%);
       --prose-quote-bg: var(--color-neutral-800);
       --prose-captions: var(--color-neutral-500);
-      --prose-code: var(--color-violet-400);
+      --prose-code: var(--color-neutral-300);
       --prose-code-bg: var(--color-neutral-800);
       --prose-code-border: var(--color-neutral-700);
       --prose-pre-code: var(--color-neutral-100);
