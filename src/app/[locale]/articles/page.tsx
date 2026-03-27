@@ -115,8 +115,8 @@ export default async function Page({
         <div className="md:border-l md:border-neutral-100 md:pl-6 md:dark:border-neutral-700/40">
           <ol className="flex max-w-3xl flex-col space-y-16">
             {articles.map((article) => (
+              <li key={article.slug}>
               <article
-                key={article.slug}
                 className="group/article md:grid md:grid-cols-4 md:items-baseline"
               >
                 <Link
@@ -127,7 +127,7 @@ export default async function Page({
                   <time
                     dateTime={article.publishedAt.toLocaleString()}
                     suppressHydrationWarning
-                    className="md:hidden relative z-10 mb-3 flex items-center text-sm text-neutral-400 dark:text-neutral-500 pl-3.5"
+                    className="md:hidden relative z-10 mb-3 flex items-center text-sm text-neutral-500 dark:text-neutral-400 pl-3.5"
                   >
                     <span
                       aria-hidden="true"
@@ -150,18 +150,18 @@ export default async function Page({
                   >
                     {article.description}
                   </p>
-                  <div className="relative z-10 mt-4 flex items-center text-xs text-neutral-400 dark:text-neutral-600">
+                  <div className="relative z-10 mt-4 flex items-center text-xs text-neutral-500 dark:text-neutral-400">
                     {t('common.read_more')}
                     <ChevronRightIcon
                       aria-hidden="true"
-                      className="ml-1 mt-0.5 size-3 shrink-0 text-neutral-400 dark:text-neutral-600 group-hover/article:translate-x-0.5 transition-transform duration-200"
+                      className="ml-1 mt-0.5 size-3 shrink-0 text-neutral-500 dark:text-neutral-400 group-hover/article:translate-x-0.5 transition-transform duration-200"
                     />
                   </div>
                 </Link>
                 <time
                   suppressHydrationWarning
                   dateTime={article.publishedAt.toLocaleString()}
-                  className="mt-1 max-md:hidden relative z-10 order-first mb-3 flex items-center text-sm text-neutral-400 dark:text-neutral-500"
+                  className="mt-1 max-md:hidden relative z-10 order-first mb-3 flex items-center text-sm text-neutral-500 dark:text-neutral-400"
                 >
                   {formatter.dateTime(new Date(article.publishedAt), {
                     month: 'short',
@@ -170,6 +170,7 @@ export default async function Page({
                   })}
                 </time>
               </article>
+              </li>
             ))}
           </ol>
         </div>
