@@ -1,6 +1,7 @@
 import 'server-only'
 import fs from 'node:fs/promises'
 import path from 'node:path'
+import { cache } from 'react'
 import readingTime from 'reading-time'
 
 type Metadata = {
@@ -83,24 +84,24 @@ export async function getArticleSlugs(locale: string) {
   return slugs
 }
 
-export async function getArticles(locale: string) {
+export const getArticles = cache(async (locale: string) => {
   const slugs = await getArticleSlugs(locale)
-  const articles = []
 
-  for (const slug of slugs) {
-    const article = await getArticleBySlug(slug, locale)
-    if (!article) continue
-    articles.push({
-      slug,
-      ...article.metadata,
-    })
-  }
-
-  return articles.sort(
-    (a, b) =>
-      new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime(),
+  const results = await Promise.all(
+    slugs.map(async (slug) => {
+      const article = await getArticleBySlug(slug, locale)
+      if (!article) return null
+      return { slug, ...article.metadata }
+    }),
   )
-}
+
+  return results
+    .filter((a): a is NonNullable<typeof a> => a !== null)
+    .sort(
+      (a, b) =>
+        new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime(),
+    )
+})
 
 export async function getPreviousOrNextArticleSlug(
   slug: string,

@@ -27,14 +27,14 @@ export async function generateMetadata() {
   const [t, locale] = await Promise.all([getTranslations(), getLocale()])
   const canonical = canonicalForPath('/', locale)
   return {
-    title: t('metadata.title'),
+    title: t('home.seo_title'),
     description: t('home.description'),
     alternates: {
       canonical,
       languages: languageAlternatesForPath('/'),
     },
     openGraph: {
-      title: t('metadata.title'),
+      title: t('home.seo_title'),
       description: t('home.description'),
       url: canonical,
       siteName: "Evan's Blog",
@@ -44,7 +44,7 @@ export async function generateMetadata() {
     },
     twitter: {
       card: 'summary_large_image',
-      title: t('metadata.title'),
+      title: t('home.seo_title'),
       description: t('home.description'),
       creator: '@evan1297',
       images: [defaultOgImage],
@@ -67,24 +67,69 @@ export default async function Page({ params }: PageProps<'/[locale]'>) {
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({
             '@context': 'https://schema.org',
-            '@type': 'Person',
-            name: 'Evan Wu',
-            url: 'https://evanwu.dev',
-            jobTitle: 'Frontend Developer',
-            sameAs: [
-              'https://x.com/evan1297',
-              'https://www.linkedin.com/in/evan976',
-              'https://github.com/evan976',
-              'https://t.me/evan9712',
+            '@graph': [
+              {
+                '@type': 'Person',
+                name: 'Evan Wu',
+                url: 'https://evanwu.dev',
+                jobTitle: 'Frontend Developer',
+                sameAs: [
+                  'https://x.com/evan1297',
+                  'https://www.linkedin.com/in/evan976',
+                  'https://github.com/evan976',
+                  'https://t.me/evan9712',
+                ],
+                knowsAbout: [
+                  'Frontend Development',
+                  'Web Design',
+                  'Open Source',
+                  'React',
+                  'TypeScript',
+                ],
+                image: 'https://evanwu.dev/avatars/about.png',
+              },
+              {
+                '@type': 'ItemList',
+                name: 'Latest Articles',
+                itemListOrder: 'https://schema.org/ItemListOrderDescending',
+                numberOfItems: Math.min(articles.length, 3),
+                itemListElement: articles.slice(0, 3).map((article, i) => ({
+                  '@type': 'ListItem',
+                  position: i + 1,
+                  url: `https://evanwu.dev${locale === 'en' ? '' : `/${locale}`}/articles/${article.slug}`,
+                  name: article.title,
+                })),
+              },
+              {
+                '@type': 'FAQPage',
+                mainEntity: [
+                  {
+                    '@type': 'Question',
+                    name: 'Who is Evan Wu?',
+                    acceptedAnswer: {
+                      '@type': 'Answer',
+                      text: 'Evan Wu is a full-stack engineer and frontend developer based in Chengdu, China. He designs and builds open source tools and products.',
+                    },
+                  },
+                  {
+                    '@type': 'Question',
+                    name: 'What does Evan Wu write about?',
+                    acceptedAnswer: {
+                      '@type': 'Answer',
+                      text: 'Evan writes about web development, React, TypeScript, open source, and modern frontend engineering.',
+                    },
+                  },
+                  {
+                    '@type': 'Question',
+                    name: 'How can I contact Evan Wu?',
+                    acceptedAnswer: {
+                      '@type': 'Answer',
+                      text: 'You can find Evan on X (@evan1297), GitHub (evan976), LinkedIn (evan976), or Telegram (@evan9712).',
+                    },
+                  },
+                ],
+              },
             ],
-            knowsAbout: [
-              'Frontend Development',
-              'Web Design',
-              'Open Source',
-              'React',
-              'TypeScript',
-            ],
-            image: 'https://evanwu.dev/avatars/about.png',
           }),
         }}
       />
@@ -128,8 +173,7 @@ export default async function Page({ params }: PageProps<'/[locale]'>) {
       <Photos />
       <Container>
         <div className="mx-auto grid max-w-xl grid-cols-1 gap-y-20 lg:max-w-none lg:grid-cols-2">
-          <div className="flex flex-col gap-16">
-            <React.Suspense>
+          <ol className="flex flex-col gap-16">
               {articles.slice(0, 3).map((article) => (
                 <article
                   key={article.slug}
@@ -161,18 +205,17 @@ export default async function Page({ params }: PageProps<'/[locale]'>) {
                     >
                       {article.description}
                     </p>
-                    <div className="relative z-10 mt-4 flex items-center text-sm font-medium text-neutral-900 dark:text-neutral-200">
+                    <div className="relative z-10 mt-4 flex items-center text-xs text-neutral-400 dark:text-neutral-600">
                       {t('common.read_more')}
                       <ChevronRight
                         aria-hidden="true"
-                        className="ml-1 mt-0.5 size-3 shrink-0 text-neutral-900 dark:text-neutral-200 group-hover:translate-x-0.5 transition-transform duration-200"
+                        className="ml-1 mt-0.5 size-3 shrink-0 text-neutral-400 dark:text-neutral-600 group-hover:translate-x-0.5 transition-transform duration-200"
                       />
                     </div>
                   </Link>
                 </article>
               ))}
-            </React.Suspense>
-          </div>
+          </ol>
           <div className="space-y-10 lg:pl-16 xl:pl-24">
             <SubscribeForm />
             <Resume />

@@ -14,14 +14,14 @@ export async function generateMetadata() {
   const [t, locale] = await Promise.all([getTranslations('about'), getLocale()])
   const canonical = canonicalForPath('/about', locale)
   return {
-    title: t('title'),
+    title: t('seo_title'),
     description: t('description'),
     alternates: {
       canonical,
       languages: languageAlternatesForPath('/about'),
     },
     openGraph: {
-      title: t('title'),
+      title: t('seo_title'),
       description: t('description'),
       url: canonical,
       siteName: "Evan's Blog",
@@ -31,7 +31,7 @@ export async function generateMetadata() {
     },
     twitter: {
       card: 'summary_large_image',
-      title: t('title'),
+      title: t('seo_title'),
       description: t('description'),
       creator: '@evan1297',
       images: [defaultOgImage],

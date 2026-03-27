@@ -1,5 +1,6 @@
 import { ChevronRightIcon } from 'lucide-react'
 import { getFormatter, getLocale, getTranslations } from 'next-intl/server'
+import { baseUrl } from '@/app/sitemap'
 import { Layout } from '@/components/layout'
 import { Link } from '@/i18n/navigation'
 import { getArticles } from '@/lib/mdx'
@@ -16,14 +17,14 @@ export async function generateMetadata() {
   ])
   const canonical = canonicalForPath('/articles', locale)
   return {
-    title: t('title'),
+    title: t('seo_title'),
     description: t('description'),
     alternates: {
       canonical,
       languages: languageAlternatesForPath('/articles'),
     },
     openGraph: {
-      title: t('title'),
+      title: t('seo_title'),
       description: t('description'),
       url: canonical,
       siteName: "Evan's Blog",
@@ -33,7 +34,7 @@ export async function generateMetadata() {
     },
     twitter: {
       card: 'summary_large_image',
-      title: t('title'),
+      title: t('seo_title'),
       description: t('description'),
       creator: '@evan1297',
       images: [defaultOgImage],
@@ -53,9 +54,66 @@ export default async function Page({
 
   return (
     <Layout title={t('articles.title')} intro={t('articles.description')}>
+      <script
+        type="application/ld+json"
+        suppressHydrationWarning
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@graph': [
+              {
+                '@type': 'ItemList',
+                name: 'All Articles by Evan Wu',
+                itemListOrder:
+                  'https://schema.org/ItemListOrderDescending',
+                numberOfItems: articles.length,
+                itemListElement: articles.map((article, i) => ({
+                  '@type': 'ListItem',
+                  position: i + 1,
+                  url: `${baseUrl}${locale === 'en' ? '' : `/${locale}`}/articles/${article.slug}`,
+                  name: article.title,
+                })),
+              },
+              {
+                '@type': 'CollectionPage',
+                name: 'Articles',
+                description:
+                  'All long-form thoughts on programming, open source, infrastructure, and more.',
+                url: `${baseUrl}${locale === 'en' ? '' : `/${locale}`}/articles`,
+                author: {
+                  '@type': 'Person',
+                  name: 'Evan Wu',
+                  url: baseUrl,
+                },
+              },
+              {
+                '@type': 'FAQPage',
+                mainEntity: [
+                  {
+                    '@type': 'Question',
+                    name: 'What topics does Evan Wu write about?',
+                    acceptedAnswer: {
+                      '@type': 'Answer',
+                      text: 'Evan writes about frontend development, React, TypeScript, web performance, open source tools, and modern JavaScript engineering.',
+                    },
+                  },
+                  {
+                    '@type': 'Question',
+                    name: 'How often does Evan Wu publish new articles?',
+                    acceptedAnswer: {
+                      '@type': 'Answer',
+                      text: `Evan has published ${articles.length} articles covering various web development topics. New articles are published regularly.`,
+                    },
+                  },
+                ],
+              },
+            ],
+          }),
+        }}
+      />
       <div className="mt-16 sm:mt-20">
         <div className="md:border-l md:border-neutral-100 md:pl-6 md:dark:border-neutral-700/40">
-          <div className="flex max-w-3xl flex-col space-y-16">
+          <ol className="flex max-w-3xl flex-col space-y-16">
             {articles.map((article) => (
               <article
                 key={article.slug}
@@ -113,7 +171,7 @@ export default async function Page({
                 </time>
               </article>
             ))}
-          </div>
+          </ol>
         </div>
       </div>
     </Layout>
