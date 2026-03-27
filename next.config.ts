@@ -11,6 +11,17 @@ const nextConfig: NextConfig = {
   outputFileTracingIncludes: {
     '/**/*': ['./src/content/*.mdx'],
   },
+  experimental: {
+    optimizePackageImports: [
+      'lucide-react',
+      'motion',
+      'motion/react',
+      'motion/react-client',
+      '@radix-ui/react-dialog',
+      '@radix-ui/react-tooltip',
+      'date-fns',
+    ],
+  },
 }
 
 const withNextIntl = createNextIntlPlugin()

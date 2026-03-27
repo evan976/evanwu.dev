@@ -1,8 +1,5 @@
 import '@/styles/globals.css'
 import type { Viewport } from 'next'
-import { GoogleAnalytics } from '@next/third-parties/google'
-import { Analytics } from '@vercel/analytics/next'
-import { SpeedInsights } from '@vercel/speed-insights/next'
 import { notFound } from 'next/navigation'
 import { hasLocale, NextIntlClientProvider } from 'next-intl'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
@@ -14,6 +11,7 @@ import { TooltipProvider } from '@/components/tooltip'
 import { routing } from '@/i18n/routing'
 import { geist, geistMono } from '@/lib/fonts'
 import { cn } from '@/lib/utils'
+import { DeferredAnalytics } from '@/components/deferred-analytics'
 
 export async function generateMetadata({
   params,
@@ -24,10 +22,7 @@ export async function generateMetadata({
   const t = await getTranslations()
   return {
     metadataBase: new URL(baseUrl),
-    title: {
-      template: '%s - Evan',
-      default: 'Evan',
-    },
+    title: t('metadata.title'),
     description: t('metadata.description'),
     keywords:
       'Evan Wu, Blog, Developer, Full Stack, Frontend, Engineer, Designer, Open Source, React, TypeScript, Web Development',
@@ -137,9 +132,7 @@ export default async function RootLayout({
           </ThemeProvider>
         </NextIntlClientProvider>
       </body>
-      <SpeedInsights />
-      <Analytics />
-      <GoogleAnalytics gaId="G-MF7M0W46QW" />
+      <DeferredAnalytics />
     </html>
   )
 }

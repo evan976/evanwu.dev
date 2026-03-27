@@ -130,18 +130,78 @@ export default async function Page({
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({
             '@context': 'https://schema.org',
-            '@type': 'BlogPosting',
-            headline: title,
-            datePublished: publishedAt,
-            dateModified: publishedAt,
-            description,
-            image: jsonLdImage,
-            url: articleUrl,
-            author: {
-              '@type': 'Person',
-              name: 'Evan Wu',
-              url: baseUrl,
-            },
+            '@graph': [
+              {
+                '@type': 'BlogPosting',
+                headline: title,
+                datePublished: publishedAt,
+                dateModified: publishedAt,
+                description,
+                image: jsonLdImage,
+                url: articleUrl,
+                wordCount: readingTime
+                  ? Math.round(readingTime.minutes * 200)
+                  : undefined,
+                author: {
+                  '@type': 'Person',
+                  name: 'Evan Wu',
+                  url: baseUrl,
+                },
+                publisher: {
+                  '@type': 'Person',
+                  name: 'Evan Wu',
+                  url: baseUrl,
+                },
+                mainEntityOfPage: {
+                  '@type': 'WebPage',
+                  '@id': articleUrl,
+                },
+              },
+              {
+                '@type': 'BreadcrumbList',
+                itemListElement: [
+                  {
+                    '@type': 'ListItem',
+                    position: 1,
+                    name: 'Home',
+                    item: baseUrl,
+                  },
+                  {
+                    '@type': 'ListItem',
+                    position: 2,
+                    name: 'Articles',
+                    item: `${baseUrl}${locale === 'en' ? '' : `/${locale}`}/articles`,
+                  },
+                  {
+                    '@type': 'ListItem',
+                    position: 3,
+                    name: title,
+                    item: articleUrl,
+                  },
+                ],
+              },
+              {
+                '@type': 'FAQPage',
+                mainEntity: [
+                  {
+                    '@type': 'Question',
+                    name: `What is "${title}" about?`,
+                    acceptedAnswer: {
+                      '@type': 'Answer',
+                      text: description,
+                    },
+                  },
+                  {
+                    '@type': 'Question',
+                    name: `Who wrote "${title}"?`,
+                    acceptedAnswer: {
+                      '@type': 'Answer',
+                      text: `This article was written by Evan Wu, a frontend developer and open source enthusiast based in Chengdu, China.`,
+                    },
+                  },
+                ],
+              },
+            ],
           }),
         }}
       />
@@ -199,7 +259,15 @@ export default async function Page({
                       </div>
                     )}
                     <div className="mt-8 prose">
-                      <React.Suspense>
+                      <React.Suspense
+                        fallback={
+                          <div className="space-y-4 animate-pulse">
+                            <div className="h-4 bg-neutral-200 dark:bg-neutral-700 rounded w-3/4" />
+                            <div className="h-4 bg-neutral-200 dark:bg-neutral-700 rounded w-full" />
+                            <div className="h-4 bg-neutral-200 dark:bg-neutral-700 rounded w-5/6" />
+                          </div>
+                        }
+                      >
                         <CustomMDX source={article.content} />
                       </React.Suspense>
                     </div>

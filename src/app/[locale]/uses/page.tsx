@@ -10,14 +10,14 @@ export async function generateMetadata() {
   const [t, locale] = await Promise.all([getTranslations('uses'), getLocale()])
   const canonical = canonicalForPath('/uses', locale)
   return {
-    title: t('title'),
+    title: t('seo_title'),
     description: t('description'),
     alternates: {
       canonical,
       languages: languageAlternatesForPath('/uses'),
     },
     openGraph: {
-      title: t('title'),
+      title: t('seo_title'),
       description: t('description'),
       url: canonical,
       siteName: "Evan's Blog",
@@ -27,7 +27,7 @@ export async function generateMetadata() {
     },
     twitter: {
       card: 'summary_large_image',
-      title: t('title'),
+      title: t('seo_title'),
       description: t('description'),
       creator: '@evan1297',
       images: [defaultOgImage],
@@ -47,10 +47,10 @@ export default async function Page() {
                 {t('workstation')}
               </h2>
               <div className="md:col-span-3">
-                <ul className="space-y-16">
+                <ol className="space-y-16">
                   <li className="group relative flex flex-col items-start">
                     <h3 className="text-base font-semibold tracking-tight text-neutral-800 dark:text-neutral-100">
-                      13.6” MacBook Pro, M2, 16GB RAM (2022)
+                      1. 13.6" MacBook Pro, M2, 16GB RAM (2022)
                     </h3>
                     <p className="relative z-10 mt-2 text-sm text-neutral-600 dark:text-neutral-400">
                       My main machine. It&apos;s powerful enough to run most of
@@ -60,7 +60,7 @@ export default async function Page() {
                   </li>
                   <li className="group relative flex flex-col items-start">
                     <h3 className="text-base font-semibold tracking-tight text-neutral-800 dark:text-neutral-100">
-                      13.6” MacBook Air, M2, 16GB RAM (2022)
+                      2. 13.6" MacBook Air, M2, 16GB RAM (2022)
                     </h3>
                     <p className="relative z-10 mt-2 text-sm text-neutral-600 dark:text-neutral-400">
                       My backup machine. It&apos;s not as powerful as my main
@@ -71,7 +71,7 @@ export default async function Page() {
                   </li>
                   <li className="group relative flex flex-col items-start">
                     <h3 className="text-base font-semibold tracking-tight text-neutral-800 dark:text-neutral-100">
-                      AOC 27” 144Hz 4K Monitor
+                      3. AOC 27" 144Hz 4K Monitor
                     </h3>
                     <p className="relative z-10 mt-2 text-sm text-neutral-600 dark:text-neutral-400">
                       I use this monitor for everything, from coding to watching
@@ -80,7 +80,7 @@ export default async function Page() {
                   </li>
                   <li className="group relative flex flex-col items-start">
                     <h3 className="text-base font-semibold tracking-tight text-neutral-800 dark:text-neutral-100">
-                      Razer v2x 2.4Ghz Wireless Gaming Mouse
+                      4. Razer v2x 2.4Ghz Wireless Gaming Mouse
                     </h3>
                     <p className="relative z-10 mt-2 text-sm text-neutral-600 dark:text-neutral-400">
                       The best wireless mouse I&apos;ve used. It&apos;s
@@ -88,7 +88,7 @@ export default async function Page() {
                       responsive.
                     </p>
                   </li>
-                </ul>
+                </ol>
               </div>
             </div>
           </section>
@@ -98,10 +98,10 @@ export default async function Page() {
                 {t('development')}
               </h2>
               <div className="md:col-span-3">
-                <ul className="space-y-16">
+                <ol className="space-y-16">
                   <li className="group relative flex flex-col items-start">
                     <h3 className="text-base font-semibold tracking-tight text-neutral-800 dark:text-neutral-100">
-                      Cursor IDE
+                      1. Cursor IDE
                     </h3>
                     <p className="relative z-10 mt-2 text-sm text-neutral-600 dark:text-neutral-400">
                       AI-powered IDE. I use it for so many things. When I
@@ -111,7 +111,7 @@ export default async function Page() {
                   </li>
                   <li className="group relative flex flex-col items-start">
                     <h3 className="text-base font-semibold tracking-tight text-neutral-800 dark:text-neutral-100">
-                      iTerm2
+                      2. iTerm2
                     </h3>
                     <p className="relative z-10 mt-2 text-sm text-neutral-600 dark:text-neutral-400">
                       iTerm2 is a replacement for Terminal and the successor to
@@ -121,7 +121,7 @@ export default async function Page() {
                   </li>
                   <li className="group relative flex flex-col items-start">
                     <h3 className="text-base font-semibold tracking-tight text-neutral-800 dark:text-neutral-100">
-                      Notion
+                      3. Notion
                     </h3>
                     <p className="relative z-10 mt-2 text-sm text-neutral-600 dark:text-neutral-400">
                       The happier workspace. I use it for my notes and for my
@@ -129,7 +129,7 @@ export default async function Page() {
                       interface.
                     </p>
                   </li>
-                </ul>
+                </ol>
               </div>
             </div>
           </section>
@@ -139,17 +139,17 @@ export default async function Page() {
                 {t('design')}
               </h2>
               <div className="md:col-span-3">
-                <ul className="space-y-16">
+                <ol className="space-y-16">
                   <li className="group relative flex flex-col items-start">
                     <h3 className="text-base font-semibold tracking-tight text-neutral-800 dark:text-neutral-100">
-                      Figma
+                      1. Figma
                     </h3>
                     <p className="relative z-10 mt-2 text-sm text-neutral-600 dark:text-neutral-400">
                       The collaborative interface design tool. I use it for all
                       of my design needs.
                     </p>
                   </li>
-                </ul>
+                </ol>
               </div>
             </div>
           </section>

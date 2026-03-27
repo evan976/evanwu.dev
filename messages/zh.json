@@ -35,11 +35,13 @@
   },
   "home": {
     "title": "前端<developer>开发者,</developer> <designer>设计师,</designer> 和<open_source>开源</open_source>爱好者",
+    "seo_title": "Evan – 前端开发者、设计师与开源爱好者",
     "description": "我是 Evan，一名来自成都的全栈工程师和前端开发者。我热衷于设计和构建开源工具与产品，帮助人们过上更好的生活。",
     "read_article": "阅读文章"
   },
   "articles": {
     "title": "文章",
+    "seo_title": "技术文章 – Web 开发、React 与 TypeScript 教程",
     "description": "所有关于编程、开源、基础设施等的长期思考，按时间顺序排列。",
     "reading_time": "阅读需约 {minutes} 分钟",
     "back_to_articles": "返回文章列表",
@@ -49,14 +51,17 @@
   },
   "projects": {
     "title": "项目",
+    "seo_title": "开源项目 – Evan 的开发工具与作品集",
     "description": "我尝试在宇宙中留下我的印记。"
   },
   "photography": {
     "title": "摄影",
+    "seo_title": "摄影作品 – 记录生活中的美好瞬间",
     "description": "虽然我不是摄影师，但我喜欢记录每一个美丽的瞬间。"
   },
   "uses": {
     "title": "设备清单",
+    "seo_title": "开发工具清单 – 我日常使用的软件与设备推荐",
     "description": "我使用的软件、硬件和其他推荐的东西。",
     "workstation": "工作台",
     "development": "开发工具",
@@ -64,6 +69,7 @@
   },
   "about": {
     "title": "关于",
+    "seo_title": "关于 Evan – 我的软件工程之路",
     "description": "我是 Evan，我居住在成都，在这里构建未来。",
     "follow_on_x": "在推特上关注我",
     "follow_on_github": "在 GitHub 上关注我",
@@ -90,6 +96,6 @@
   },
   "metadata": {
     "title": "前端开发者, 设计师, 和开源爱好者",
-    "description": "Evan Wu — 前端开发者、设计师和开源爱好者。分享关于 Web 开发、React 和现代 JavaScript 的博客文章。"
+    "description": "Evan — 前端开发者、设计师和开源爱好者。分享关于 Web 开发、React 和现代 JavaScript 的博客文章。"
   }
 }

@@ -17,14 +17,14 @@ export async function generateMetadata() {
   ])
   const canonical = canonicalForPath('/projects', locale)
   return {
-    title: t('title'),
+    title: t('seo_title'),
     description: t('description'),
     alternates: {
       canonical,
       languages: languageAlternatesForPath('/projects'),
     },
     openGraph: {
-      title: t('title'),
+      title: t('seo_title'),
       description: t('description'),
       url: canonical,
       siteName: "Evan's Blog",
@@ -34,7 +34,7 @@ export async function generateMetadata() {
     },
     twitter: {
       card: 'summary_large_image',
-      title: t('title'),
+      title: t('seo_title'),
       description: t('description'),
       creator: '@evan1297',
       images: [defaultOgImage],
@@ -46,7 +46,7 @@ export default async function Page() {
   const t = await getTranslations('projects')
   return (
     <Layout title={t('title')} intro={t('description')}>
-      <ul className="grid grid-cols-1 gap-x-12 gap-y-16 sm:grid-cols-2 lg:grid-cols-3">
+      <ol className="grid grid-cols-1 gap-x-12 gap-y-16 sm:grid-cols-2 lg:grid-cols-3">
         {projects.map((project) => (
           <li
             key={project.name}
@@ -82,7 +82,7 @@ export default async function Page() {
             </p>
           </li>
         ))}
-      </ul>
+      </ol>
     </Layout>
   )
 }
