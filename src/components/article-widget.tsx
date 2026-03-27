@@ -92,7 +92,7 @@ export function ArticleWidget({
     >
       <div className="flex items-center gap-2 rounded-full bg-white/80 backdrop-blur-sm px-2.5 py-1.5 shadow-lg border border-neutral-200 dark:bg-neutral-800 dark:border-neutral-700/50">
         <div
-          className="relative size-7 shrink-0 text-teal-200/90 dark:text-teal-950/55"
+          className="relative size-7 shrink-0 text-neutral-200 dark:text-neutral-700"
           role="progressbar"
           aria-valuenow={percent}
           aria-valuemin={0}
@@ -111,7 +111,7 @@ export function ArticleWidget({
               cx={RING_CENTER}
               cy={RING_CENTER}
               r={RING_R}
-              className="text-teal-600 dark:text-teal-400"
+              className="text-neutral-800 dark:text-neutral-200"
               stroke="currentColor"
               strokeWidth={RING_STROKE}
               strokeLinecap="round"
@@ -121,7 +121,7 @@ export function ArticleWidget({
             />
           </svg>
           <span
-            className="pointer-events-none absolute inset-0 flex items-center justify-center text-[7px] font-medium tabular-nums leading-none text-teal-700 dark:text-teal-300"
+            className="pointer-events-none absolute inset-0 flex items-center justify-center text-[7px] font-medium tabular-nums leading-none text-neutral-700 dark:text-neutral-300"
             aria-hidden
           >
             {percent}%

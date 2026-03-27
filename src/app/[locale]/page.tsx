@@ -175,8 +175,8 @@ export default async function Page({ params }: PageProps<'/[locale]'>) {
         <div className="mx-auto grid max-w-xl grid-cols-1 gap-y-20 lg:max-w-none lg:grid-cols-2">
           <ol className="flex flex-col gap-16">
               {articles.slice(0, 3).map((article) => (
+                <li key={article.slug}>
                 <article
-                  key={article.slug}
                   className="group relative flex flex-col items-start"
                 >
                   <Link
@@ -186,7 +186,7 @@ export default async function Page({ params }: PageProps<'/[locale]'>) {
                     <div className="absolute -inset-x-4 -inset-y-6 z-0 scale-95 bg-neutral-50 opacity-0 transition group-hover:scale-100 group-hover:opacity-100 sm:-inset-x-6 sm:rounded-xl dark:bg-neutral-800/50" />
                     <time
                       dateTime={article.publishedAt}
-                      className="relative z-10 order-first mb-3 flex items-center text-sm text-neutral-400 dark:text-neutral-500 pl-3.5"
+                      className="relative z-10 order-first mb-3 flex items-center text-sm text-neutral-500 dark:text-neutral-400 pl-3.5"
                     >
                       <span
                         aria-hidden="true"
@@ -205,15 +205,16 @@ export default async function Page({ params }: PageProps<'/[locale]'>) {
                     >
                       {article.description}
                     </p>
-                    <div className="relative z-10 mt-4 flex items-center text-xs text-neutral-400 dark:text-neutral-600">
+                    <div className="relative z-10 mt-4 flex items-center text-xs text-neutral-500 dark:text-neutral-400">
                       {t('common.read_more')}
                       <ChevronRight
                         aria-hidden="true"
-                        className="ml-1 mt-0.5 size-3 shrink-0 text-neutral-400 dark:text-neutral-600 group-hover:translate-x-0.5 transition-transform duration-200"
+                        className="ml-1 mt-0.5 size-3 shrink-0 text-neutral-500 dark:text-neutral-400 group-hover:translate-x-0.5 transition-transform duration-200"
                       />
                     </div>
                   </Link>
                 </article>
+                </li>
               ))}
           </ol>
           <div className="space-y-10 lg:pl-16 xl:pl-24">
