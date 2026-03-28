@@ -46,7 +46,7 @@ export function Header() {
                     scale: clampedAvatarScale,
                   }}
                 >
-                  <Avatar large className="block h-16 w-16" />
+                  <Avatar large className="block size-16" />
                 </motion.div>
               </div>
             </Container>
@@ -57,7 +57,7 @@ export function Header() {
             <div className="relative flex gap-4">
               {!isHomePage && (
                 <div className="absolute left-0 top-0">
-                  <div className="h-10 w-10 rounded-full bg-white/90 p-0.5 shadow-lg shadow-neutral-800/5 ring-1 ring-neutral-900/5 backdrop-blur dark:bg-neutral-800/90 dark:ring-white/10">
+                  <div className="size-10 rounded-full bg-white/90 p-0.5 shadow-lg shadow-neutral-800/5 ring-1 ring-neutral-900/5 backdrop-blur dark:bg-neutral-800/90 dark:ring-white/10">
                     <Avatar />
                   </div>
                 </div>
@@ -99,7 +99,7 @@ function Avatar({
         sizes={large ? '4rem' : '2.25rem'}
         className={cn(
           'rounded-full bg-neutral-100 object-cover dark:bg-neutral-800',
-          large ? 'h-16 w-16' : 'h-9 w-9',
+          large ? 'size-16' : 'size-9',
         )}
       />
     </Link>
@@ -221,7 +221,7 @@ function MobileNavigation({
                 {t('navigation')}
               </Dialog.Description>
               <Dialog.Close asChild>
-                <button type="button">
+                <button type="button" aria-label="Close navigation">
                   <XIcon className="size-5 text-neutral-500 dark:text-neutral-400" />
                 </button>
               </Dialog.Close>

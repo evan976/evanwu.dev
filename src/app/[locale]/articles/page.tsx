@@ -141,7 +141,7 @@ export default async function Page({
                       year: 'numeric',
                     })}
                   </time>
-                  <h2 className="relative z-10 text-base font-semibold tracking-tight text-neutral-800 dark:text-neutral-100">
+                  <h2 className="relative z-10 text-base font-semibold text-neutral-800 dark:text-neutral-100">
                     {article.title}
                   </h2>
                   <p

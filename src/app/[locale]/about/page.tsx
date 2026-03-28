@@ -60,10 +60,10 @@ export default async function Page() {
           </div>
         </div>
         <div className="lg:order-first lg:row-span-2">
-          <h1 className="text-4xl font-bold tracking-tight leading-tight text-neutral-800 sm:text-5xl dark:text-neutral-100">
+          <h1 className="text-4xl font-bold text-balance leading-tight text-neutral-800 sm:text-5xl dark:text-neutral-100">
             {t('description')}
           </h1>
-          <div className="mt-6 space-y-7 text-base text-neutral-600 dark:text-neutral-400">
+          <div className="mt-6 space-y-7 text-base text-pretty text-neutral-600 dark:text-neutral-400">
             <section>
               <h3 className="text-sm font-semibold text-neutral-800 dark:text-neutral-200 mb-2">
                 {t('content.childhood_heading')}

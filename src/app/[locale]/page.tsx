@@ -135,7 +135,7 @@ export default async function Page({ params }: PageProps<'/[locale]'>) {
       />
       <Container className="mt-9">
         <div className="max-w-2xl text-lg">
-          <h1 className="text-4xl font-black tracking-tight text-balance leading-tight text-neutral-800 dark:text-neutral-100 sm:text-5xl">
+          <h1 className="text-4xl font-black text-balance leading-tight text-neutral-800 dark:text-neutral-100 sm:text-5xl">
             {t.rich('home.title', {
               developer: (chunks) => (
                 <Highlighter action="underline" color="#38bdf8">
@@ -160,7 +160,7 @@ export default async function Page({ params }: PageProps<'/[locale]'>) {
               ),
             })}
           </h1>
-          <p className="mt-6 text-base text-neutral-600 dark:text-neutral-400 text-balance">
+          <p className="mt-6 text-base text-neutral-600 dark:text-neutral-400 text-pretty">
             {t('home.description')}
           </p>
           <div className="mt-6 flex gap-6">
@@ -196,7 +196,7 @@ export default async function Page({ params }: PageProps<'/[locale]'>) {
                       </span>
                       {formatter.relativeTime(new Date(article.publishedAt))}
                     </time>
-                    <h2 className="relative z-10 text-base font-semibold tracking-tight text-neutral-800 dark:text-neutral-100">
+                    <h2 className="relative z-10 text-base font-semibold text-neutral-800 dark:text-neutral-100">
                       {article.title}
                     </h2>
                     <p

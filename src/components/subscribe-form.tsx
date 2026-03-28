@@ -30,7 +30,7 @@ export function SubscribeForm() {
         <MailIcon className="size-5 flex-none text-neutral-400 dark:text-neutral-500" />
         <span className="ml-3">{t('title')}</span>
       </h2>
-      <p className="mt-2 text-sm text-neutral-600 dark:text-neutral-400">
+      <p className="mt-2 text-sm text-pretty text-neutral-600 dark:text-neutral-400">
         {t('description')}
       </p>
       <div className="mt-6 flex">

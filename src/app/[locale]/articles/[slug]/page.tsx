@@ -220,7 +220,7 @@ export default async function Page({
                   </Link>
                   <article>
                     <header className="flex flex-col">
-                      <h1 className="mt-6 text-3xl font-bold tracking-tight text-neutral-800 sm:text-4xl dark:text-neutral-100">
+                      <h1 className="mt-6 text-3xl font-bold text-balance text-neutral-800 sm:text-4xl dark:text-neutral-100">
                         {title}
                       </h1>
                       <div className="order-first flex items-center gap-4 text-sm">

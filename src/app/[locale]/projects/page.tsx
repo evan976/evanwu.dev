@@ -73,7 +73,7 @@ export default async function Page() {
                 <span className="relative z-10">{project.name}</span>
               </Link>
             </h2>
-            <p className="relative z-10 mt-2 text-sm text-neutral-600 dark:text-neutral-400 line-clamp-2">
+            <p className="relative z-10 mt-2 text-sm text-pretty text-neutral-600 dark:text-neutral-400 line-clamp-2">
               {project.description}
             </p>
             <p className="relative z-10 mt-6 flex items-center text-sm font-medium text-neutral-400 transition group-hover:text-neutral-900 dark:text-neutral-200 dark:group-hover:text-neutral-100">
