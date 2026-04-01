@@ -58,7 +58,9 @@ export function ArticleWidget({
   const [percent, setPercent] = React.useState(0)
 
   const syncPercent = React.useCallback((v: number) => {
-    setPercent(Math.min(100, Math.max(0, Math.round(v * 100))))
+    React.startTransition(() => {
+      setPercent(Math.min(100, Math.max(0, Math.round(v * 100))))
+    })
   }, [])
 
   React.useLayoutEffect(() => {
@@ -68,7 +70,9 @@ export function ArticleWidget({
   useMotionValueEvent(progress, 'change', syncPercent)
 
   useMotionValueEvent(scrollYProgress, 'change', (latest) => {
-    setVisible(latest > 0.1)
+    React.startTransition(() => {
+      setVisible(latest > 0.1)
+    })
   })
 
   function scrollToTop() {

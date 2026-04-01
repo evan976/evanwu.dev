@@ -160,7 +160,9 @@ function DesktopNavigation({
   const { scrollYProgress } = useScroll()
 
   useMotionValueEvent(scrollYProgress, 'change', (latest) => {
-    setVisible(latest === 0 || latest >= 0.5)
+    React.startTransition(() => {
+      setVisible(latest === 0 || latest >= 0.5)
+    })
   })
 
   return (

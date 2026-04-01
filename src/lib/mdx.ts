@@ -12,11 +12,12 @@ type Metadata = {
   image?: string
 }
 
+const FRONTMATTER_REGEX = /---\s*([\s\S]*?)\s*---/
+
 function parseFrontmatter(fileContent: string) {
-  const frontmatterRegex = /---\s*([\s\S]*?)\s*---/
-  const match = frontmatterRegex.exec(fileContent)
+  const match = FRONTMATTER_REGEX.exec(fileContent)
   const frontMatterBlock = match![1]
-  const content = fileContent.replace(frontmatterRegex, '').trim()
+  const content = fileContent.replace(FRONTMATTER_REGEX, '').trim()
   const frontMatterLines = frontMatterBlock.trim().split('\n')
   const metadata: Record<string, string> = {}
 
@@ -35,7 +36,7 @@ async function readMDXFile(filePath: string) {
   return raw
 }
 
-export async function getArticleBySlug(
+export const getArticleBySlug = cache(async function getArticleBySlug(
   slug: string,
   locale: string,
 ): Promise<null | {
@@ -69,7 +70,7 @@ export async function getArticleBySlug(
     console.error(error)
     return null
   }
-}
+})
 
 export async function getArticleSlugs(locale: string) {
   const slugs = []

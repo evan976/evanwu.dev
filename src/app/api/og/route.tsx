@@ -6,11 +6,16 @@ import { baseUrl } from '@/app/sitemap'
 const HOST =
   process.env.NODE_ENV === 'production' ? baseUrl : 'http://localhost:3000'
 
+const TITLE_REGEX = /(.*?) - (.*?)?$/
+
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)
   const path = searchParams.get('path') ?? '/'
 
-  const response = await fetch(`${HOST}${path}`)
+  const [response, geist] = await Promise.all([
+    fetch(`${HOST}${path}`),
+    loadGeistFont(),
+  ])
 
   if (!response.ok) {
     return NextResponse.error()
@@ -24,10 +29,9 @@ export async function GET(request: NextRequest) {
     return NextResponse.error()
   }
 
-  const regex = /(.*?) - (.*?)?$/
   let title = result.ogTitle ?? ''
   let description = result.ogDescription ?? ''
-  const matches = regex.exec(title)
+  const matches = TITLE_REGEX.exec(title)
 
   if (matches) {
     title = matches[1] ?? result.ogTitle ?? ''
@@ -37,11 +41,11 @@ export async function GET(request: NextRequest) {
     return NextResponse.error()
   }
 
-  if (description.split(' ').length > 2) {
-    description = `${description.split(' ').slice(0, -1).join(' ')}\xa0${description.split(' ').at(-1)}`
+  const words = description.split(' ')
+  if (words.length > 2) {
+    const lastWord = words.pop()
+    description = `${words.join(' ')}\xa0${lastWord}`
   }
-
-  const geist = await loadGeistFont()
 
   return new ImageResponse(
     <div
