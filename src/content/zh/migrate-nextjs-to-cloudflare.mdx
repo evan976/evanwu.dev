@@ -1,0 +1,264 @@
+---
+title: '将 Next.js 应用从 Vercel 迁移到 Cloudflare Workers'
+description: '一篇实战指南，记录如何使用 OpenNext 将 Next.js 16 应用从 Vercel 迁移到 Cloudflare Workers，涵盖配置、踩坑和经验总结。'
+publishedAt: '2026-04-06'
+image: '/articles/migrate-nextjs-to-cloudflare.png'
+---
+
+## 为什么选择 Cloudflare？
+
+Vercel 是一个优秀的 Next.js 部署平台，但 Cloudflare Workers 有其独特优势：
+
+- **全球边缘网络** — Cloudflare 在全球 300+ 个城市运营，Workers 在离用户最近的边缘节点运行，全球范围内延迟更低。
+- **慷慨的免费额度** — 免费计划每天 100,000 次请求，无冷启动。
+- **集成服务** — 图片优化、R2 存储、D1 数据库、KV 存储等，全部在同一生态系统内。
+- **成本优势** — 对于中等流量的站点，Cloudflare Workers 的费用可以远低于 Vercel Pro 计划。
+
+问题在于：Next.js 基于 Node.js 构建，而 Cloudflare Workers 运行在 V8 隔离运行时（`workerd`）上。这就是 [OpenNext](https://opennext.js.org) 的用武之地。
+
+## 什么是 OpenNext？
+
+OpenNext 是一个开源适配器，让 Next.js 可以跨平台部署。`@opennextjs/cloudflare` 包负责将 Next.js 功能转换为 Workers 兼容的代码。
+
+它支持大部分 Next.js 功能，包括 App Router、Server Components、API 路由、中间件、图片优化、ISR 和 SSG。
+
+## 迁移步骤
+
+### 1. 安装依赖
+
+```bash
+bun add @opennextjs/cloudflare
+bun add -d wrangler
+```
+
+### 2. 创建 `wrangler.jsonc`
+
+这是 Cloudflare Workers 的配置文件，放在项目根目录：
+
+```jsonc
+/* [!code filename:wrangler.jsonc] */
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "main": ".open-next/worker.js",
+  "name": "my-app",
+  "compatibility_date": "2026-04-06",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "services": [
+    {
+      "binding": "WORKER_SELF_REFERENCE",
+      "service": "my-app"
+    }
+  ],
+  "images": {
+    "binding": "IMAGES"
+  }
+}
+```
+
+关键配置说明：
+
+- `nodejs_compat` — Next.js 在 Workers 上运行的必要条件，启用 Node.js API 兼容。
+- `global_fetch_strictly_public` — 允许 `fetch()` 调用公网 URL。
+- `WORKER_SELF_REFERENCE` — service 名称必须与 `name` 字段一致。
+- `images` 绑定 — 启用 [Cloudflare 图片优化](https://developers.cloudflare.com/images/)。
+
+### 3. 添加 `open-next.config.ts`
+
+```ts
+/* [!code filename:open-next.config.ts] */
+import { defineCloudflareConfig } from '@opennextjs/cloudflare'
+import staticAssetsIncrementalCache from '@opennextjs/cloudflare/overrides/incremental-cache/static-assets-incremental-cache'
+
+export default defineCloudflareConfig({
+  incrementalCache: staticAssetsIncrementalCache,
+  enableCacheInterception: true,
+})
+```
+
+如果需要完整的 ISR / 按需重验证功能，可以将 `staticAssetsIncrementalCache` 替换为 `r2IncrementalCache` 并配置 R2 存储桶。对于以静态内容为主的站点，静态资源缓存更简单也足够用。
+
+### 4. 配置图片优化
+
+Cloudflare 有自己的图片优化管道。创建自定义图片加载器：
+
+```ts
+/* [!code filename:image-loader.ts] */
+import type { ImageLoaderProps } from 'next/image'
+
+function normalizeSrc(src: string) {
+  return src.startsWith('/') ? src.slice(1) : src
+}
+
+export default function cloudflareLoader({
+  src,
+  width,
+  quality,
+}: ImageLoaderProps) {
+  const params = [`width=${width}`]
+  if (quality) {
+    params.push(`quality=${quality}`)
+  }
+  if (process.env.NODE_ENV === 'development') {
+    return `${src}?${params.join('&')}`
+  }
+  return `/cdn-cgi/image/${params.join(',')}/${normalizeSrc(src)}`
+}
+```
+
+然后在 `next.config.ts` 中使用它：
+
+```ts
+/* [!code filename:next.config.ts] */
+const nextConfig: NextConfig = {
+  images: {
+    loader: 'custom',
+    loaderFile: './image-loader.ts',
+  },
+  // ...
+}
+```
+
+### 5. 更新 `next.config.ts` 以支持本地开发
+
+在配置文件底部添加 `initOpenNextCloudflareForDev` 调用，用于在本地开发时设置 Cloudflare 绑定：
+
+```ts
+/* [!code filename:next.config.ts] */
+import type { NextConfig } from 'next'
+
+const nextConfig: NextConfig = {
+  // ... 你的配置
+}
+
+export default nextConfig
+
+import { initOpenNextCloudflareForDev } from '@opennextjs/cloudflare'
+
+initOpenNextCloudflareForDev()
+```
+
+### 6. 添加静态资源缓存
+
+创建 `public/_headers` 为静态资源设置缓存策略：
+
+```txt
+/_next/static/*
+  Cache-Control: public,max-age=31536000,immutable
+```
+
+### 7. 更新 `package.json` 脚本
+
+```json
+{
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
+    "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy"
+  }
+}
+```
+
+### 8. 更新 `.gitignore`
+
+```txt
+# cloudflare
+.open-next
+.wrangler
+```
+
+### 9. 部署
+
+```bash
+bun run deploy
+```
+
+就这样，你的应用现在运行在 Cloudflare Workers 上了。
+
+## 踩坑与经验总结
+
+### Node.js `fs` 模块在运行时不可用
+
+这是最大的坑。Cloudflare Workers 没有传统文件系统。如果你的路由在运行时（而非构建时）使用了 `node:fs`，会直接报 500 错误。
+
+我的案例中，RSS 路由在每次请求时动态读取 MDX 文件：
+
+```ts
+// 这在 Vercel（Node.js 运行时）上正常工作，但在 Workers 上会失败
+const files = await fs.readdir(
+  path.join(process.cwd(), 'src', 'content', locale)
+)
+```
+
+解决方案：让路由在构建时静态生成，这样 `fs` 操作只在构建阶段执行：
+
+```ts
+/* [!code filename:src/app/[locale]/rss/route.ts] */
+import { routing } from '@/i18n/routing'
+
+export const dynamic = 'force-static'
+
+export function generateStaticParams() {
+  return routing.locales.map((locale) => ({ locale }))
+}
+```
+
+**经验法则：** 任何读取文件系统的路由，在部署到 Cloudflare Workers 时都必须静态生成（`generateStaticParams` + `force-static`）。
+
+### 中间件必须使用 Edge 运行时
+
+如果你有 Next.js 中间件，它必须运行在 Edge 运行时上。如果中间件使用 Node.js 运行时，OpenNext 会在构建时抛出错误：
+
+```
+ERROR Node.js middleware is not currently supported. Consider switching to Edge Middleware.
+```
+
+在 Next.js 16 中，`proxy.ts` 取代了 `middleware.ts`，默认运行在 Node.js 运行时上，这与 Workers 不兼容。解决方法很简单：将 `proxy.ts` 改回 `middleware.ts`。像 `next-intl` 这样的库已经导出了 Edge 兼容的中间件，通常不需要修改代码。
+
+### 二进制 `bun.lockb` 可能导致构建失败
+
+如果使用 Cloudflare 的 Git 集成进行自动部署，构建环境可能使用与本地不同版本的 Bun。二进制 `bun.lockb` 格式在 Bun 大版本之间不向后兼容，会导致类似这样的错误：
+
+```
+Outdated lockfile version: failed to parse lockfile: 'bun.lockb'
+error: lockfile had changes, but lockfile is frozen
+```
+
+解决方案：切换到文本格式的 `bun.lock`：
+
+```bash
+bun install --save-text-lockfile
+```
+
+### 清理 Vercel 相关依赖
+
+别忘了清理 Vercel 特有的依赖：
+
+- `@vercel/analytics`
+- `@vercel/speed-insights`
+- `vercel.json`
+
+替换为 Google Analytics、Cloudflare Web Analytics 或其他分析工具。
+
+## DNS 和域名配置
+
+如果你的域名已经在 Cloudflare 上（使用 Workers 的话大概率已经是了），将它指向你的 Worker：
+
+1. 在 DNS 设置中添加一条 **Worker** 路由，指向你部署的 Worker。
+2. 要将 `www` 重定向到裸域名，添加一条 `www` 的 CNAME 记录指向裸域名（开启代理），然后使用 Cloudflare 的 **重定向规则** 中的「从 WWW 重定向到根」模板创建规则。
+
+## 总结
+
+从 Vercel 迁移到 Cloudflare Workers 的过程，得益于 OpenNext 的存在，出奇地顺畅。主要需要注意的是运行时文件系统访问和中间件兼容性。解决这些问题后，一切正常工作。
+
+Cloudflare 的生态系统很有吸引力 — 图片优化、边缘缓存、DDoS 防护和 Workers 紧密集成。对于个人站点或博客，免费额度绰绰有余。
+
+相关链接：
+
+- [OpenNext Cloudflare 文档](https://opennext.js.org/cloudflare/get-started)
+- [Cloudflare Workers 文档](https://developers.cloudflare.com/workers/)
+- [Wrangler CLI 参考](https://developers.cloudflare.com/workers/wrangler/)

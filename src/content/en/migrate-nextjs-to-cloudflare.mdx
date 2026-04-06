@@ -1,0 +1,264 @@
+---
+title: 'Migrating a Next.js App from Vercel to Cloudflare Workers'
+description: 'A practical guide to migrating a Next.js 16 app from Vercel to Cloudflare Workers using OpenNext, covering configuration, gotchas, and lessons learned.'
+publishedAt: '2026-04-06'
+image: '/articles/migrate-nextjs-to-cloudflare.png'
+---
+
+## Why Cloudflare?
+
+Vercel is a fantastic platform for Next.js apps, but there are compelling reasons to consider Cloudflare Workers:
+
+- **Global edge network** — Cloudflare operates in 300+ cities worldwide. Workers run at the edge closest to your users, meaning lower latency across the globe.
+- **Generous free tier** — 100,000 requests per day on the free plan, with no cold starts.
+- **Integrated services** — Image optimization, R2 storage, D1 databases, KV store, and more, all within the same ecosystem.
+- **Cost efficiency** — For sites with moderate traffic, Cloudflare Workers can be significantly cheaper than Vercel's Pro plan.
+
+The catch? Next.js is built for Node.js, and Cloudflare Workers runs on the V8 isolate runtime (`workerd`). That's where [OpenNext](https://opennext.js.org) comes in.
+
+## What is OpenNext?
+
+OpenNext is an open-source adapter that makes Next.js portable across different deployment platforms. The `@opennextjs/cloudflare` package bridges the gap between Next.js and Cloudflare Workers, handling the translation of Next.js features into Workers-compatible code.
+
+It supports most Next.js features including App Router, Server Components, API routes, middleware, image optimization, ISR, and SSG.
+
+## Step-by-Step Migration
+
+### 1. Install Dependencies
+
+```bash
+bun add @opennextjs/cloudflare
+bun add -d wrangler
+```
+
+### 2. Create `wrangler.jsonc`
+
+This is your Cloudflare Workers configuration. Create it in the project root:
+
+```jsonc
+/* [!code filename:wrangler.jsonc] */
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "main": ".open-next/worker.js",
+  "name": "my-app",
+  "compatibility_date": "2026-04-06",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "services": [
+    {
+      "binding": "WORKER_SELF_REFERENCE",
+      "service": "my-app"
+    }
+  ],
+  "images": {
+    "binding": "IMAGES"
+  }
+}
+```
+
+Key settings:
+
+- `nodejs_compat` — Required for Next.js to work on Workers, enabling Node.js API compatibility.
+- `global_fetch_strictly_public` — Allows `fetch()` calls to public URLs.
+- `WORKER_SELF_REFERENCE` — The service name must match the `name` field.
+- `images` binding — Enables [Cloudflare Image Optimization](https://developers.cloudflare.com/images/).
+
+### 3. Add `open-next.config.ts`
+
+```ts
+/* [!code filename:open-next.config.ts] */
+import { defineCloudflareConfig } from '@opennextjs/cloudflare'
+import staticAssetsIncrementalCache from '@opennextjs/cloudflare/overrides/incremental-cache/static-assets-incremental-cache'
+
+export default defineCloudflareConfig({
+  incrementalCache: staticAssetsIncrementalCache,
+  enableCacheInterception: true,
+})
+```
+
+If you need full ISR/on-demand revalidation, swap `staticAssetsIncrementalCache` for `r2IncrementalCache` and configure an R2 bucket. For a mostly-static site, the static assets cache is simpler and sufficient.
+
+### 4. Configure Image Optimization
+
+Cloudflare has its own image optimization pipeline. Create a custom image loader:
+
+```ts
+/* [!code filename:image-loader.ts] */
+import type { ImageLoaderProps } from 'next/image'
+
+function normalizeSrc(src: string) {
+  return src.startsWith('/') ? src.slice(1) : src
+}
+
+export default function cloudflareLoader({
+  src,
+  width,
+  quality,
+}: ImageLoaderProps) {
+  const params = [`width=${width}`]
+  if (quality) {
+    params.push(`quality=${quality}`)
+  }
+  if (process.env.NODE_ENV === 'development') {
+    return `${src}?${params.join('&')}`
+  }
+  return `/cdn-cgi/image/${params.join(',')}/${normalizeSrc(src)}`
+}
+```
+
+Then update `next.config.ts` to use it:
+
+```ts
+/* [!code filename:next.config.ts] */
+const nextConfig: NextConfig = {
+  images: {
+    loader: 'custom',
+    loaderFile: './image-loader.ts',
+  },
+  // ...
+}
+```
+
+### 5. Update `next.config.ts` for Local Dev
+
+Add the `initOpenNextCloudflareForDev` call at the bottom of your config file. This sets up Cloudflare bindings during local development:
+
+```ts
+/* [!code filename:next.config.ts] */
+import type { NextConfig } from 'next'
+
+const nextConfig: NextConfig = {
+  // ... your config
+}
+
+export default nextConfig
+
+import { initOpenNextCloudflareForDev } from '@opennextjs/cloudflare'
+
+initOpenNextCloudflareForDev()
+```
+
+### 6. Add Static Asset Caching
+
+Create `public/_headers` to set proper caching for static assets:
+
+```txt
+/_next/static/*
+  Cache-Control: public,max-age=31536000,immutable
+```
+
+### 7. Update `package.json` Scripts
+
+```json
+{
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
+    "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy"
+  }
+}
+```
+
+### 8. Update `.gitignore`
+
+```txt
+# cloudflare
+.open-next
+.wrangler
+```
+
+### 9. Deploy
+
+```bash
+bun run deploy
+```
+
+That's it. Your app is now running on Cloudflare Workers.
+
+## Gotchas and Lessons Learned
+
+### Node.js `fs` Module Doesn't Work at Runtime
+
+This was the biggest surprise. Cloudflare Workers don't have a traditional filesystem. If any of your routes use `node:fs` at runtime (not just at build time), they will throw a 500 error.
+
+In my case, the RSS route was dynamically reading MDX files from disk on every request:
+
+```ts
+// This works on Vercel (Node.js runtime) but fails on Workers
+const files = await fs.readdir(
+  path.join(process.cwd(), 'src', 'content', locale)
+)
+```
+
+The fix: make the route statically generated so `fs` operations only happen at build time:
+
+```ts
+/* [!code filename:src/app/[locale]/rss/route.ts] */
+import { routing } from '@/i18n/routing'
+
+export const dynamic = 'force-static'
+
+export function generateStaticParams() {
+  return routing.locales.map((locale) => ({ locale }))
+}
+```
+
+**Rule of thumb:** Any route that reads from the filesystem must be statically generated (`generateStaticParams` + `force-static`) when deploying to Cloudflare Workers.
+
+### Middleware Must Use the Edge Runtime
+
+If you have Next.js middleware, it must run on the Edge runtime. OpenNext for Cloudflare will throw an error during build if your middleware uses the Node.js runtime:
+
+```
+ERROR Node.js middleware is not currently supported. Consider switching to Edge Middleware.
+```
+
+In Next.js 16, `proxy.ts` replaced `middleware.ts` and runs on the Node.js runtime by default, which is incompatible. The fix is simple: rename `proxy.ts` back to `middleware.ts`. Libraries like `next-intl` already export Edge-compatible middleware, so it usually works without code changes.
+
+### Binary `bun.lockb` May Cause Build Failures
+
+If you use Cloudflare's Git integration for automatic deployments, the build environment may use a different version of Bun than your local machine. The binary `bun.lockb` format is not backward-compatible across major Bun versions, leading to errors like:
+
+```
+Outdated lockfile version: failed to parse lockfile: 'bun.lockb'
+error: lockfile had changes, but lockfile is frozen
+```
+
+The fix: switch to the text-based `bun.lock` format:
+
+```bash
+bun install --save-text-lockfile
+```
+
+### Remove Vercel-Specific Packages
+
+Don't forget to clean up Vercel-specific dependencies:
+
+- `@vercel/analytics`
+- `@vercel/speed-insights`
+- `vercel.json`
+
+Replace with alternatives like Google Analytics, Cloudflare Web Analytics, or any other analytics provider.
+
+## DNS and Domain Setup
+
+If your domain is already on Cloudflare (which it likely is if you're using Workers), point it to your Worker:
+
+1. Add a **Worker** route in DNS settings pointing to your deployed Worker.
+2. To redirect `www` to the apex domain, add a CNAME record for `www` pointing to your apex domain (proxied), then create a **Redirect Rule** using the "Redirect from WWW to Root" template.
+
+## Final Thoughts
+
+The migration from Vercel to Cloudflare Workers is surprisingly smooth thanks to OpenNext. The main things to watch out for are runtime filesystem access and middleware compatibility. Once those are sorted, everything works as expected.
+
+The Cloudflare ecosystem is compelling — image optimization, edge caching, DDoS protection, and Workers are all tightly integrated. For a personal site or blog, the free tier is more than enough.
+
+Useful links:
+
+- [OpenNext Cloudflare documentation](https://opennext.js.org/cloudflare/get-started)
+- [Cloudflare Workers documentation](https://developers.cloudflare.com/workers/)
+- [Wrangler CLI reference](https://developers.cloudflare.com/workers/wrangler/)
