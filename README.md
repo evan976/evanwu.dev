@@ -2,7 +2,7 @@
 
 [简体中文](./README.zh.md)
 
-This is the repository for my personal website, [evanwu.dev](https://evanwu.dev): portfolio, blog, photography, and a few utility pages. It is built as a bilingual (English / Chinese) Next.js app and deployed on Vercel.
+This is the repository for my personal website, [evanwu.dev](https://evanwu.dev): portfolio, blog, photography, and a few utility pages. It is built as a bilingual (English / Chinese) Next.js app and deployed on Cloudflare Workers via [OpenNext](https://opennext.js.org).
 
 ![Preview](./public/og/opengraph-image.png)
 
@@ -13,7 +13,7 @@ This is the repository for my personal website, [evanwu.dev](https://evanwu.dev)
 - **Dynamic OG images** — `src/app/api/og/route.tsx` generates Open Graph images for sharing.
 - **RSS** — Per-locale feeds under `src/app/[locale]/rss/route.ts`.
 - **Email subscriptions** — Optional: server action in `src/actions/subscription.ts` stores signups in [Neon](https://neon.tech) PostgreSQL when `DATABASE_URL` is set.
-- **Analytics** — Vercel Analytics and Speed Insights (`@vercel/analytics`, `@vercel/speed-insights`).
+- **Analytics** — Google Analytics via `@next/third-parties`.
 
 ## Tech stack
 
@@ -84,6 +84,8 @@ bun run build        # Production build
 bun run start        # Run production server locally
 bun run typecheck    # tsc --noEmit
 bun run lint         # Biome: format with --write
+bun run preview      # Build & preview with Cloudflare Workers locally
+bun run deploy       # Build & deploy to Cloudflare Workers
 ```
 
 ## Conventions (short)
@@ -95,4 +97,4 @@ bun run lint         # Biome: format with --write
 
 ## Deployment
 
-The site is intended to run on **Vercel**. Connect the repo, set `DATABASE_URL` if you use subscriptions, and deploy. `sitemap.ts` and `robots.ts` live under `src/app/` for crawlers.
+The site runs on **Cloudflare Workers** via [@opennextjs/cloudflare](https://opennext.js.org/cloudflare). Configuration lives in `wrangler.jsonc` (Workers config) and `open-next.config.ts` (OpenNext overrides). Run `bun run deploy` to build and deploy. Set `DATABASE_URL` as a secret via `wrangler secret put DATABASE_URL` if you use the subscription feature. `sitemap.ts` and `robots.ts` live under `src/app/` for crawlers.

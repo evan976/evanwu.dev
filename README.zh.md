@@ -1,6 +1,6 @@
 # evanwu.dev
 
-个人网站 [evanwu.dev](https://evanwu.dev) 的源码仓库，包含作品集、博客、摄影页等。基于中英双语的 Next.js 应用，部署在 Vercel。
+个人网站 [evanwu.dev](https://evanwu.dev) 的源码仓库，包含作品集、博客、摄影页等。基于中英双语的 Next.js 应用，通过 [OpenNext](https://opennext.js.org) 部署在 Cloudflare Workers。
 
 ![预览](./public/og/opengraph-image.png)
 
@@ -13,7 +13,7 @@
 - **动态 OG 图** — `src/app/api/og/route.tsx` 生成用于分享的 Open Graph 图片。
 - **RSS** — 按语言划分的订阅地址，见 `src/app/[locale]/rss/route.ts`。
 - **邮件订阅（可选）** — `src/actions/subscription.ts` 中的 Server Action 在配置了 `DATABASE_URL` 时，将订阅写入 [Neon](https://neon.tech) PostgreSQL。
-- **分析** — Vercel Analytics 与 Speed Insights（`@vercel/analytics`、`@vercel/speed-insights`）。
+- **分析** — 通过 `@next/third-parties` 接入 Google Analytics。
 
 ## 技术栈
 
@@ -73,7 +73,7 @@ image: '/可选的-og-或卡片图.png'
 |------|----------|------|
 | `DATABASE_URL` | 否 | Neon 连接串，用于邮件订阅。不配置时站点其余功能仍可用，仅订阅功能需要数据库。 |
 
-`NODE_ENV` 由运行环境设置；本地开发时，RSS / OG 等场景下默认使用 `http://localhost:3000` 作为站点基址。
+`NODE_ENV` 由运行环境设置；本地开发时，RSS / OG 等场景默认使用 `http://localhost:3000` 作为站点基址。在 Cloudflare Workers 中通过 `wrangler secret` 管理环境变量。
 
 ## 本地开发
 
@@ -84,6 +84,8 @@ bun run build        # 生产构建
 bun run start        # 本地运行生产构建
 bun run typecheck    # tsc --noEmit
 bun run lint         # Biome：格式化并写回（--write）
+bun run preview      # 构建并在本地以 Cloudflare Workers 预览
+bun run deploy       # 构建并部署到 Cloudflare Workers
 ```
 
 ## 代码约定（摘要）
@@ -95,4 +97,4 @@ bun run lint         # Biome：格式化并写回（--write）
 
 ## 部署
 
-站点面向 **Vercel** 部署：连接仓库，若使用订阅功能则配置 `DATABASE_URL`。`sitemap.ts` 与 `robots.ts` 位于 `src/app/`，供爬虫与 SEO 使用。
+站点通过 [@opennextjs/cloudflare](https://opennext.js.org/cloudflare) 部署在 **Cloudflare Workers** 上。Workers 配置见 `wrangler.jsonc`，OpenNext 配置见 `open-next.config.ts`。运行 `bun run deploy` 即可构建并部署。若使用订阅功能，通过 `wrangler secret put DATABASE_URL` 设置数据库密钥。`sitemap.ts` 与 `robots.ts` 位于 `src/app/`，供爬虫与 SEO 使用。

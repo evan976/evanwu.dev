@@ -5,13 +5,13 @@ import { hasLocale, NextIntlClientProvider } from 'next-intl'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
 import { ThemeProvider } from 'next-themes'
 import { baseUrl } from '@/app/sitemap'
+import { DeferredAnalytics } from '@/components/deferred-analytics'
 import { Footer } from '@/components/footer'
 import { Header } from '@/components/header'
 import { TooltipProvider } from '@/components/tooltip'
 import { routing } from '@/i18n/routing'
 import { geist, geistMono } from '@/lib/fonts'
 import { cn } from '@/lib/utils'
-import { DeferredAnalytics } from '@/components/deferred-analytics'
 
 export async function generateMetadata({
   params,
