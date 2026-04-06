@@ -4,10 +4,13 @@ import createNextIntlPlugin from 'next-intl/plugin'
 const nextConfig: NextConfig = {
   reactStrictMode: false,
   reactCompiler: true,
+  images: {
+    loader: 'custom',
+    loaderFile: './image-loader.ts',
+  },
   typescript: {
     ignoreBuildErrors: true,
   },
-  pageExtensions: ['js', 'jsx', 'ts', 'tsx'],
   outputFileTracingIncludes: {
     '/**/*': ['./src/content/*.mdx'],
   },
@@ -27,3 +30,7 @@ const nextConfig: NextConfig = {
 const withNextIntl = createNextIntlPlugin()
 
 export default withNextIntl(nextConfig)
+
+import { initOpenNextCloudflareForDev } from '@opennextjs/cloudflare'
+
+initOpenNextCloudflareForDev()
