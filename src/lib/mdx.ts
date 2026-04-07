@@ -73,16 +73,18 @@ export const getArticleBySlug = cache(async function getArticleBySlug(
 })
 
 export async function getArticleSlugs(locale: string) {
-  const slugs = []
-  const files = await fs.readdir(
-    path.join(process.cwd(), 'src', 'content', locale),
-  )
-
-  for (const file of files) {
-    if (!file.endsWith('.mdx')) continue
-    slugs.push(path.parse(file).name)
+  const dir = path.join(process.cwd(), 'src', 'content', locale)
+  try {
+    const files = await fs.readdir(dir)
+    const slugs = []
+    for (const file of files) {
+      if (!file.endsWith('.mdx')) continue
+      slugs.push(path.parse(file).name)
+    }
+    return slugs
+  } catch {
+    return []
   }
-  return slugs
 }
 
 export const getArticles = cache(async (locale: string) => {

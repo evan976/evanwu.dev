@@ -83,6 +83,8 @@ export const viewport: Viewport = {
   ],
 }
 
+export const dynamicParams = false
+
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }))
 }
