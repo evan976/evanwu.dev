@@ -47,7 +47,7 @@ export function Resume() {
               <div className="sr-only">{t('date')}</div>
               <div
                 role="tooltip"
-                className="ml-auto text-xs text-neutral-500 dark:text-neutral-500"
+                className="ml-auto text-xs text-neutral-500 dark:text-neutral-400"
                 aria-label={`${format(new Date(role.start), 'MMMM yyyy')} until ${isToday(new Date(role.end)) ? 'Present' : format(new Date(role.end), 'MMMM yyyy')}`}
               >
                 <time
