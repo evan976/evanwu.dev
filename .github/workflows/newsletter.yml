@@ -1,0 +1,45 @@
+name: Send newsletter for new articles
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/content/en/*.mdx'
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Detect new articles
+        id: detect
+        run: |
+          NEW_FILES=$(git diff --name-only --diff-filter=A HEAD~1 HEAD -- 'src/content/en/*.mdx')
+          if [ -z "$NEW_FILES" ]; then
+            echo "No new articles found"
+            echo "found=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          FILE=$(echo "$NEW_FILES" | head -1)
+          SLUG=$(basename "$FILE" .mdx)
+          echo "slug=$SLUG" >> "$GITHUB_OUTPUT"
+          echo "found=true" >> "$GITHUB_OUTPUT"
+
+          TITLE=$(grep '^title:' "$FILE" | sed "s/^title: *['\"]\\(.*\\)['\"]$/\\1/")
+          DESCRIPTION=$(grep '^description:' "$FILE" | sed "s/^description: *['\"]\\(.*\\)['\"]$/\\1/")
+          echo "title=$TITLE" >> "$GITHUB_OUTPUT"
+          echo "description=$DESCRIPTION" >> "$GITHUB_OUTPUT"
+
+          echo "New article detected: $TITLE ($SLUG)"
+
+      - name: Send newsletter
+        if: steps.detect.outputs.found == 'true'
+        run: |
+          curl -sf -X POST "${{ secrets.SITE_URL }}/api/newsletter" \
+            -H "Authorization: Bearer ${{ secrets.NEWSLETTER_SECRET }}" \
+            -H "Content-Type: application/json" \
+            -d "{\"slug\": \"${{ steps.detect.outputs.slug }}\", \"title\": \"${{ steps.detect.outputs.title }}\", \"description\": \"${{ steps.detect.outputs.description }}\"}"
