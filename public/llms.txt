@@ -1,0 +1,32 @@
+# Evan
+
+> Personal website and technical blog by Evan covering frontend development, React, TypeScript, web performance, deployment, and open source engineering.
+
+## Main sections
+
+- [Home](https://evanwu.dev/)
+- [About](https://evanwu.dev/about)
+- [Projects](https://evanwu.dev/projects)
+- [Articles](https://evanwu.dev/articles)
+- [Photography](https://evanwu.dev/photography)
+- [Uses](https://evanwu.dev/uses)
+
+## Featured articles
+
+- [What changed in Next.js 16?](https://evanwu.dev/articles/next-16)
+- [How to migrate Next.js to Cloudflare](https://evanwu.dev/articles/migrate-nextjs-to-cloudflare)
+- [TanStack Start vs Next.js](https://evanwu.dev/articles/tanstack-start-vs-next)
+- [How to create digital credentials with Solana Attestation Service](https://evanwu.dev/articles/how-to-create-digital-credentials)
+- [Web performance optimization](https://evanwu.dev/articles/web-performance-optimization)
+
+## Notes for language and structure
+
+- English is the default language.
+- Chinese content is available under the `/zh/` path.
+- Article pages include structured data, canonical URLs, and social metadata.
+
+## Contact
+
+- [X](https://x.com/evan1297)
+- [GitHub](https://github.com/evan976)
+- [LinkedIn](https://www.linkedin.com/in/evan976)

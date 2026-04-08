@@ -1,8 +1,7 @@
 import languine from 'languine.json'
 import { routing } from '@/i18n/routing'
 import { getArticles } from '@/lib/mdx'
-
-export const baseUrl = 'https://evanwu.dev'
+import { baseUrl } from '@/lib/site'
 
 const locales = [...languine.locale.targets, languine.locale.source]
 
@@ -19,7 +18,7 @@ export default async function sitemap() {
   for (const locale of locales) {
     const articles = (await getArticles(locale)).map((article) => ({
       url: `${baseUrl}${getLocalizedPath(`/articles/${article.slug}`, locale)}`,
-      lastModified: article.publishedAt,
+      lastModified: article.updatedAt ?? article.publishedAt,
     }))
 
     const routes = [

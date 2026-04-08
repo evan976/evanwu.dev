@@ -8,8 +8,10 @@ type Metadata = {
   title: string
   description: string
   publishedAt: string
+  updatedAt?: string
   readingTime: ReturnType<typeof readingTime>
   image?: string
+  topics?: string[]
 }
 
 const FRONTMATTER_REGEX = /---\s*([\s\S]*?)\s*---/
@@ -29,6 +31,17 @@ function parseFrontmatter(fileContent: string) {
   })
 
   return { metadata, content }
+}
+
+function parseListField(value?: string) {
+  if (!value) return undefined
+
+  const items = value
+    .split(',')
+    .map((item) => item.trim())
+    .filter(Boolean)
+
+  return items.length > 0 ? items : undefined
 }
 
 async function readMDXFile(filePath: string) {
@@ -61,8 +74,10 @@ export const getArticleBySlug = cache(async function getArticleBySlug(
         title: metadata.title,
         description: metadata.description,
         publishedAt: metadata.publishedAt,
+        updatedAt: metadata.updatedAt,
         readingTime: readingTime(content),
         image: metadata.image,
+        topics: parseListField(metadata.topics),
       },
       content,
     }

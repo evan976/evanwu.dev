@@ -17,6 +17,7 @@ import {
   defaultOgImage,
   languageAlternatesForPath,
 } from '@/lib/metadata-urls'
+import { buildHomeSchemas } from '@/lib/schema'
 import beach from '@/public/photos/beach.jpeg'
 import fall from '@/public/photos/fall.jpg'
 import mountain from '@/public/photos/mountain.jpg'
@@ -59,80 +60,20 @@ export default async function Page({ params }: PageProps<'/[locale]'>) {
     getTranslations(),
     getFormatter(),
   ])
+  const homeSchemas = buildHomeSchemas({ locale, articles })
+
   return (
     <React.Fragment>
-      <script
-        type="application/ld+json"
-        suppressHydrationWarning
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            '@context': 'https://schema.org',
-            '@graph': [
-              {
-                '@type': 'Person',
-                name: 'Evan Wu',
-                url: 'https://evanwu.dev',
-                jobTitle: 'Frontend Developer',
-                sameAs: [
-                  'https://x.com/evan1297',
-                  'https://www.linkedin.com/in/evan976',
-                  'https://github.com/evan976',
-                  'https://t.me/evan9712',
-                ],
-                knowsAbout: [
-                  'Frontend Development',
-                  'Web Design',
-                  'Open Source',
-                  'React',
-                  'TypeScript',
-                ],
-                image: 'https://evanwu.dev/avatars/about.png',
-              },
-              {
-                '@type': 'ItemList',
-                name: 'Latest Articles',
-                itemListOrder: 'https://schema.org/ItemListOrderDescending',
-                numberOfItems: Math.min(articles.length, 3),
-                itemListElement: articles.slice(0, 3).map((article, i) => ({
-                  '@type': 'ListItem',
-                  position: i + 1,
-                  url: `https://evanwu.dev${locale === 'en' ? '' : `/${locale}`}/articles/${article.slug}`,
-                  name: article.title,
-                })),
-              },
-              {
-                '@type': 'FAQPage',
-                mainEntity: [
-                  {
-                    '@type': 'Question',
-                    name: 'Who is Evan Wu?',
-                    acceptedAnswer: {
-                      '@type': 'Answer',
-                      text: 'Evan Wu is a full-stack engineer and frontend developer based in Chengdu, China. He designs and builds open source tools and products.',
-                    },
-                  },
-                  {
-                    '@type': 'Question',
-                    name: 'What does Evan Wu write about?',
-                    acceptedAnswer: {
-                      '@type': 'Answer',
-                      text: 'Evan writes about web development, React, TypeScript, open source, and modern frontend engineering.',
-                    },
-                  },
-                  {
-                    '@type': 'Question',
-                    name: 'How can I contact Evan Wu?',
-                    acceptedAnswer: {
-                      '@type': 'Answer',
-                      text: 'You can find Evan on X (@evan1297), GitHub (evan976), LinkedIn (evan976), or Telegram (@evan9712).',
-                    },
-                  },
-                ],
-              },
-            ],
-          }),
-        }}
-      />
+      {homeSchemas.map((schema, index) => (
+        <script
+          key={index}
+          type="application/ld+json"
+          suppressHydrationWarning
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(schema),
+          }}
+        />
+      ))}
       <Container className="mt-9">
         <div className="max-w-2xl text-lg">
           <h1 className="text-4xl font-black text-balance leading-tight text-neutral-800 dark:text-neutral-100 sm:text-5xl">
@@ -174,11 +115,9 @@ export default async function Page({ params }: PageProps<'/[locale]'>) {
       <Container>
         <div className="mx-auto grid max-w-xl grid-cols-1 gap-y-20 lg:max-w-none lg:grid-cols-2">
           <ol className="flex flex-col gap-16">
-              {articles.slice(0, 3).map((article) => (
-                <li key={article.slug}>
-                <article
-                  className="group relative flex flex-col items-start"
-                >
+            {articles.slice(0, 3).map((article) => (
+              <li key={article.slug}>
+                <article className="group relative flex flex-col items-start">
                   <Link
                     href={`/articles/${article.slug}`}
                     className="relative flex w-full flex-col items-start rounded-2xl text-left no-underline outline-offset-4 transition-colors focus-visible:ring-2 focus-visible:ring-neutral-900 dark:focus-visible:ring-neutral-200"
@@ -214,8 +153,8 @@ export default async function Page({ params }: PageProps<'/[locale]'>) {
                     </div>
                   </Link>
                 </article>
-                </li>
-              ))}
+              </li>
+            ))}
           </ol>
           <div className="space-y-10 lg:pl-16 xl:pl-24">
             <SubscribeForm />
