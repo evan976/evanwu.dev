@@ -1,14 +1,4 @@
-import { Resend } from 'resend'
 import { baseUrl } from '@/lib/site'
-
-let resendInstance: Resend | null = null
-
-function getResend() {
-  if (!resendInstance) {
-    resendInstance = new Resend(process.env.RESEND_API_KEY)
-  }
-  return resendInstance
-}
 
 export async function sendEmail({
   to,
@@ -19,17 +9,24 @@ export async function sendEmail({
   subject: string
   html: string
 }) {
-  const resend = getResend()
-  const { error } = await resend.emails.send({
-    from: 'Evan <noreply@evanwu.dev>',
-    to,
-    subject,
-    html,
+  const res = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+    },
+    body: JSON.stringify({
+      from: 'Evan <noreply@evanwu.dev>',
+      to,
+      subject,
+      html,
+    }),
   })
 
-  if (error) {
+  if (!res.ok) {
+    const error = await res.text()
     console.error('Failed to send email:', error)
-    throw new Error(`Failed to send email: ${error.message}`)
+    throw new Error(`Failed to send email: ${error}`)
   }
 }
 
