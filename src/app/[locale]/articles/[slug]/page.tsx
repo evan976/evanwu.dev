@@ -7,11 +7,14 @@ import {
   getTranslations,
   setRequestLocale,
 } from 'next-intl/server'
-import { baseUrl } from '@/app/sitemap'
 import { ArticleWidget } from '@/components/article-widget'
 import { ArrowLeftIcon } from '@/components/icons'
 import { CustomMDX } from '@/components/mdx'
 import { Link } from '@/i18n/navigation'
+import {
+  buildArticleSummary,
+  extractExternalReferences,
+} from '@/lib/article-content'
 import {
   getArticleBySlug,
   getArticleSlugs,
@@ -21,13 +24,18 @@ import {
   canonicalForPath,
   languageAlternatesForPath,
 } from '@/lib/metadata-urls'
+import { buildArticleSchemas } from '@/lib/schema'
+import { baseUrl } from '@/lib/site'
 
 export const dynamicParams = false
 
 export async function generateStaticParams({
   params,
 }: {
-  params: { locale: string; slug: string }
+  params: {
+    locale: string
+    slug: string
+  }
 }) {
   const { locale } = params
   const slugs = await getArticleSlugs(locale)
@@ -47,7 +55,7 @@ export async function generateMetadata({
 
   if (!article) return
 
-  const { title, description, publishedAt, image } = article.metadata
+  const { title, description, publishedAt, updatedAt, image } = article.metadata
 
   const canonicalUrl = canonicalForPath(`/articles/${slug}`, locale)
   const articlePathname = new URL(canonicalUrl).pathname
@@ -70,6 +78,7 @@ export async function generateMetadata({
       siteName: "Evan's Blog",
       locale,
       publishedTime: publishedAt,
+      modifiedTime: updatedAt ?? publishedAt,
       url: canonicalUrl,
       images: [
         {
@@ -111,100 +120,55 @@ export default async function Page({
     notFound()
   }
 
-  const { title, description, publishedAt, readingTime, image } =
-    article.metadata
+  const {
+    title,
+    description,
+    publishedAt,
+    updatedAt,
+    readingTime,
+    image,
+    topics,
+  } = article.metadata
 
   const articleUrl = canonicalForPath(`/articles/${slug}`, locale)
   const articlePathname = new URL(articleUrl).pathname
   const jsonLdImage = image
     ? `${baseUrl}${image}`
     : `${baseUrl}/api/og?path=${encodeURIComponent(articlePathname)}`
+  const articleSchemas = buildArticleSchemas({
+    locale,
+    url: articleUrl,
+    title,
+    description,
+    publishedAt,
+    updatedAt,
+    image: jsonLdImage,
+    readingTimeMinutes: readingTime?.minutes,
+    content: article.content,
+    topics,
+  })
+  const articleSummary = buildArticleSummary({
+    description,
+    topics,
+    locale,
+  })
+  const references = extractExternalReferences(article.content)
+  const lastUpdated = updatedAt ?? publishedAt
 
   setRequestLocale(locale)
 
   return (
     <section>
-      <script
-        type="application/ld+json"
-        suppressHydrationWarning
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            '@context': 'https://schema.org',
-            '@graph': [
-              {
-                '@type': 'BlogPosting',
-                headline: title,
-                datePublished: publishedAt,
-                dateModified: publishedAt,
-                description,
-                image: jsonLdImage,
-                url: articleUrl,
-                wordCount: readingTime
-                  ? Math.round(readingTime.minutes * 200)
-                  : undefined,
-                author: {
-                  '@type': 'Person',
-                  name: 'Evan Wu',
-                  url: baseUrl,
-                },
-                publisher: {
-                  '@type': 'Person',
-                  name: 'Evan Wu',
-                  url: baseUrl,
-                },
-                mainEntityOfPage: {
-                  '@type': 'WebPage',
-                  '@id': articleUrl,
-                },
-              },
-              {
-                '@type': 'BreadcrumbList',
-                itemListElement: [
-                  {
-                    '@type': 'ListItem',
-                    position: 1,
-                    name: 'Home',
-                    item: baseUrl,
-                  },
-                  {
-                    '@type': 'ListItem',
-                    position: 2,
-                    name: 'Articles',
-                    item: `${baseUrl}${locale === 'en' ? '' : `/${locale}`}/articles`,
-                  },
-                  {
-                    '@type': 'ListItem',
-                    position: 3,
-                    name: title,
-                    item: articleUrl,
-                  },
-                ],
-              },
-              {
-                '@type': 'FAQPage',
-                mainEntity: [
-                  {
-                    '@type': 'Question',
-                    name: `What is "${title}" about?`,
-                    acceptedAnswer: {
-                      '@type': 'Answer',
-                      text: description,
-                    },
-                  },
-                  {
-                    '@type': 'Question',
-                    name: `Who wrote "${title}"?`,
-                    acceptedAnswer: {
-                      '@type': 'Answer',
-                      text: `This article was written by Evan Wu, a frontend developer and open source enthusiast based in Chengdu, China.`,
-                    },
-                  },
-                ],
-              },
-            ],
-          }),
-        }}
-      />
+      {articleSchemas.map((schema, index) => (
+        <script
+          key={index}
+          type="application/ld+json"
+          suppressHydrationWarning
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(schema),
+          }}
+        />
+      ))}
       <div className="sm:px-8 mt-16 lg:mt-32">
         <div className="mx-auto w-full max-w-7xl lg:px-8">
           <div className="relative px-4 sm:px-8 lg:px-12">
@@ -213,7 +177,7 @@ export default async function Page({
                 <div className="mx-auto max-w-2xl">
                   <Link
                     href="/articles"
-                    aria-label="Go back to articles"
+                    aria-label={t('back_to_articles')}
                     className="group mb-8 flex h-10 w-10 items-center justify-center rounded-full bg-white ring-1 shadow-md shadow-neutral-800/5 ring-neutral-900/5 transition lg:absolute lg:-left-5 lg:-mt-2 lg:mb-0 xl:-top-1.5 xl:left-0 xl:mt-0 dark:border dark:border-neutral-700/50 dark:bg-neutral-800 dark:ring-0 dark:ring-white/10 dark:hover:border-neutral-700 dark:hover:ring-white/20"
                   >
                     <ArrowLeftIcon className="size-4" />
@@ -243,8 +207,32 @@ export default async function Page({
                             minutes: Math.ceil(readingTime?.minutes || 0),
                           })}
                         </span>
+                        <span className="text-neutral-400 dark:text-neutral-500">
+                          {t('updated_label', {
+                            date: formatter.dateTime(new Date(lastUpdated), {
+                              month: 'short',
+                              day: 'numeric',
+                              year: 'numeric',
+                            }),
+                          })}
+                        </span>
                       </div>
                     </header>
+                    <section className="mt-8 rounded-2xl border border-neutral-200/80 bg-neutral-50 p-6 dark:border-neutral-800 dark:bg-neutral-900/70">
+                      <h2 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100">
+                        {t('tldr_title')}
+                      </h2>
+                      <p className="mt-3 text-pretty text-sm/6 text-neutral-600 dark:text-neutral-300">
+                        {articleSummary}
+                      </p>
+                      {topics && topics.length > 0 && (
+                        <p className="mt-3 text-pretty text-xs text-neutral-500 dark:text-neutral-400">
+                          {t('topics_label', {
+                            topics: topics.join(locale === 'zh' ? '、' : ', '),
+                          })}
+                        </p>
+                      )}
+                    </section>
                     {image && (
                       <div className="mt-8 w-full p-1 rounded-xl overflow-hidden bg-white ring-1 ring-neutral-900/10 dark:bg-neutral-800/50 dark:ring-white/10">
                         <Image
@@ -271,6 +259,30 @@ export default async function Page({
                         <CustomMDX source={article.content} />
                       </React.Suspense>
                     </div>
+                    {references.length > 0 && (
+                      <section className="mt-12 border-t border-neutral-200 pt-8 dark:border-neutral-800">
+                        <h2 className="text-2xl font-semibold text-balance text-neutral-900 dark:text-neutral-100">
+                          {t('references_title')}
+                        </h2>
+                        <p className="mt-3 text-pretty text-neutral-600 dark:text-neutral-300">
+                          {t('references_description')}
+                        </p>
+                        <ul className="mt-4 space-y-3 text-sm text-neutral-600 dark:text-neutral-300">
+                          {references.map((reference) => (
+                            <li key={reference.url}>
+                              <a
+                                href={reference.url}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="underline underline-offset-4 hover:text-neutral-900 dark:hover:text-neutral-100"
+                              >
+                                {reference.label}
+                              </a>
+                            </li>
+                          ))}
+                        </ul>
+                      </section>
+                    )}
                   </article>
                 </div>
               </div>

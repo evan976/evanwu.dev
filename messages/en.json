@@ -44,7 +44,12 @@
     "seo_title": "Articles on Web Development, React & TypeScript",
     "description": "All of my long-form thoughts on programming, open source, infrastructure, and more, collected in chronological order.",
     "reading_time": "{minutes} min read",
+    "updated_label": "Updated {date}",
     "back_to_articles": "Back to articles",
+    "tldr_title": "TL;DR",
+    "topics_label": "Topics: {topics}",
+    "references_title": "References",
+    "references_description": "The following sources, documentation links, and external resources are referenced or recommended in this article.",
     "previous_article": "Previous article",
     "scroll_to_top": "Scroll to top",
     "next_article": "Next article"

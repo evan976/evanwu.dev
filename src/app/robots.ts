@@ -1,12 +1,10 @@
-import { baseUrl } from '@/app/sitemap'
+import { buildRobotsRules } from '@/lib/schema'
+import { baseUrl } from '@/lib/site'
 
 export default function robots() {
   return {
-    rules: [
-      {
-        userAgent: '*',
-      },
-    ],
+    rules: buildRobotsRules(),
+    host: baseUrl,
     sitemap: `${baseUrl}/sitemap.xml`,
   }
 }

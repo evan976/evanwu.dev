@@ -4,16 +4,19 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Personal portfolio and blog site for Evan Wu, built with Next.js 16 (App Router), React 19, TypeScript, and Tailwind CSS v4. Deployed on Vercel. Uses Bun as the package manager.
+Personal portfolio and blog site for Evan Wu, built with Next.js 16 (App Router), React 19, TypeScript, and Tailwind CSS v4. Deployed on Cloudflare via `@opennextjs/cloudflare`. Uses Bun as the package manager.
 
 ## Commands
 
 ```bash
-bun dev          # Start dev server with Turbopack
-bun run build    # Production build
-bun run start    # Start production server
-bun run typecheck # Type check (tsc --noEmit)
-bun run lint     # Format with Biome (biome format --write)
+bun dev            # Start dev server with Turbopack
+bun run build      # Production build
+bun run start      # Start production server
+bun run test       # Run tests (Vitest)
+bun run typecheck  # Type check (tsc --noEmit)
+bun run lint       # Format with Biome (biome format --write)
+bun run preview    # Build and preview on Cloudflare locally
+bun run deploy     # Build and deploy to Cloudflare
 ```
 
 ## Architecture
@@ -33,16 +36,27 @@ Articles are stored as `.mdx` files in `src/content/{locale}/` (e.g., `src/conte
 title: 'Article Title'
 description: 'Short description'
 publishedAt: 'YYYY-MM-DD'
+updatedAt: 'YYYY-MM-DD'
 image: '/optional-image.png'
+topics: 'React, TypeScript, Performance'
 ---
 ```
 
-`src/lib/mdx.ts` handles file reading, frontmatter parsing, and reading time calculation (server-only). MDX rendering uses `next-mdx-remote-client` with custom components defined in `src/components/mdx.tsx`. Code blocks use Shiki for syntax highlighting.
+`src/lib/mdx.ts` handles file reading, frontmatter parsing, reading time calculation, and article listing (server-only, `react.cache`-wrapped). MDX rendering uses `next-mdx-remote-client` with custom components defined in `src/components/mdx.tsx`. Code blocks use Shiki for syntax highlighting.
+
+### SEO & Structured Data
+
+- `src/lib/schema.ts` — JSON-LD structured data builders (`buildHomeSchemas`, `buildArticlesPageSchemas`, `buildArticleSchemas`, `buildRobotsRules`). Generates `WebSite`, `Person`, `Article`, `BlogPosting`, `BreadcrumbList`, and `ItemList` schemas. Includes entity recognition for known tech brands.
+- `src/lib/metadata-urls.ts` — Canonical URL helpers (`canonicalForPath`, `languageAlternatesForPath`) and default OG image config.
+- `src/lib/article-content.ts` — Article summary builder (`buildArticleSummary`) and external reference extractor (`extractExternalReferences`).
+- `src/lib/site.ts` — Single source of truth for the base URL (`https://evanwu.dev`).
+- `src/app/robots.ts` — Robots config with explicit AI crawler allow rules (GPTBot, ClaudeBot, CCBot, etc.).
+- `public/llms.txt` — LLM-friendly site description for AI crawlers.
 
 ### Key Directories
 
 - `src/components/` — React components (prefer RSC, mark client components with `'use client'`)
-- `src/lib/` — Utilities, constants (resume, projects, nav items), MDX helpers, fonts
+- `src/lib/` — Utilities, constants (resume, projects, nav items), MDX helpers, SEO helpers, fonts
 - `src/actions/` — Server actions (e.g., email subscription via Neon PostgreSQL)
 - `src/styles/` — Global CSS and typography
 - `src/app/api/og/` — Dynamic Open Graph image generation
@@ -51,9 +65,18 @@ image: '/optional-image.png'
 
 `src/lib/constants.ts` contains resume entries, social links, project definitions, and navigation items. This is the single source of truth for these data structures.
 
+### Testing
+
+Tests use Vitest (`vitest.config.ts`). Path aliases (`@/`) are configured via resolve aliases. Test files are co-located with source files using the `.test.ts` convention.
+
+Key test suites:
+- `src/lib/schema.test.ts` — JSON-LD schema builder correctness
+- `src/lib/article-content.test.ts` — Article summary and reference extraction
+- `src/content/content-signals.test.ts` — Content quality checks (external reference counts)
+
 ## Code Conventions
 
-- **Formatting:** Biome — 2-space indent, single quotes, no semicolons, 80-char width
+- **Formatting:** Biome — 2-space indent, single quotes, semicolons as needed, 80-char width
 - **Exports:** Prefer named exports over default exports
 - **Naming:** kebab-case directories, PascalCase component files
 - **Components:** Server Components by default. Only use `'use client'` when interactivity is required. Minimize client-side directives.
@@ -70,4 +93,6 @@ image: '/optional-image.png'
 - **Dark mode:** next-themes
 - **Database:** Neon serverless PostgreSQL (for subscriptions)
 - **Validation:** Zod
+- **Testing:** Vitest
+- **Deployment:** Cloudflare via `@opennextjs/cloudflare` + Wrangler
 - **Analytics:** Vercel Analytics + Speed Insights

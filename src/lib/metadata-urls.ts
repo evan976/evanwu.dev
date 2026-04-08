@@ -1,5 +1,5 @@
-import { baseUrl } from '@/app/sitemap'
 import { routing } from '@/i18n/routing'
+import { baseUrl } from '@/lib/site'
 
 /** Path after origin, e.g. `'/'`, `'/about'`, `'/articles/foo'`. */
 export function canonicalForPath(path: string, locale: string) {
