@@ -11,10 +11,7 @@ import { ArticleWidget } from '@/components/article-widget'
 import { ArrowLeftIcon } from '@/components/icons'
 import { CustomMDX } from '@/components/mdx'
 import { Link } from '@/i18n/navigation'
-import {
-  buildArticleSummary,
-  extractExternalReferences,
-} from '@/lib/article-content'
+import { buildArticleSummary } from '@/lib/article-content'
 import {
   getArticleBySlug,
   getArticleSlugs,
@@ -152,7 +149,6 @@ export default async function Page({
     topics,
     locale,
   })
-  const references = extractExternalReferences(article.content)
   const lastUpdated = updatedAt ?? publishedAt
 
   setRequestLocale(locale)
@@ -259,30 +255,6 @@ export default async function Page({
                         <CustomMDX source={article.content} />
                       </React.Suspense>
                     </div>
-                    {references.length > 0 && (
-                      <section className="mt-12 border-t border-neutral-200 pt-8 dark:border-neutral-800">
-                        <h2 className="text-2xl font-semibold text-balance text-neutral-900 dark:text-neutral-100">
-                          {t('references_title')}
-                        </h2>
-                        <p className="mt-3 text-pretty text-neutral-600 dark:text-neutral-300">
-                          {t('references_description')}
-                        </p>
-                        <ul className="mt-4 space-y-3 text-sm text-neutral-600 dark:text-neutral-300">
-                          {references.map((reference) => (
-                            <li key={reference.url}>
-                              <a
-                                href={reference.url}
-                                target="_blank"
-                                rel="noreferrer"
-                                className="underline underline-offset-4 hover:text-neutral-900 dark:hover:text-neutral-100"
-                              >
-                                {reference.label}
-                              </a>
-                            </li>
-                          ))}
-                        </ul>
-                      </section>
-                    )}
                   </article>
                 </div>
               </div>

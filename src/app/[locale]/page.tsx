@@ -1,6 +1,5 @@
 import * as React from 'react'
 import { ChevronRight } from 'lucide-react'
-import * as motion from 'motion/react-client'
 import Image from 'next/image'
 import { getFormatter, getLocale, getTranslations } from 'next-intl/server'
 import { AuroraText } from '@/components/aurora-text'
@@ -167,52 +166,42 @@ export default async function Page({ params }: PageProps<'/[locale]'>) {
 }
 
 function Photos() {
-  const rotations = [
-    '1.990229deg',
-    '-9.00747deg',
-    '0.19904deg',
-    '8.1674deg',
-    '-4.90447deg',
-  ]
+  const rotations = [1.990229, -9.00747, 0.19904, 8.1674, -4.90447]
 
   return (
-    <div className="flex justify-center items-center py-16 sm:py-24 overflow-hidden">
-      {[
-        { src: sea, alt: 'Ocean waves crashing on the seaside shore' },
-        { src: beach, alt: 'Evan at the beach in Chengdu' },
-        { src: fall, alt: 'Autumn trees with golden and red foliage' },
-        {
-          src: mountain,
-          alt: 'Mountain landscape with dramatic snow-capped peaks',
-        },
-        { src: snow, alt: 'Snow-covered winter landscape' },
-      ].map((photo, imageIndex) => (
-        <motion.div
-          key={imageIndex}
-          tabIndex={0}
-          className="aspect-9/10 cursor-pointer w-44 select-none p-1 flex-none bg-white sm:w-72 sm:rounded-2xl rounded-xl ring-2 ring-black/5 dark:ring-white/5 dark:bg-neutral-800 shrink-0 overflow-hidden"
-          initial={{
-            scale: 1.0,
-            transform: `rotate(${rotations[imageIndex % rotations.length]})`,
-          }}
-          whileHover={{
-            scale: 1.1,
-            transform: 'rotate(0deg)',
-          }}
-        >
-          <div className="relative size-full">
-            <Image
-              src={photo.src}
-              alt={photo.alt}
-              priority
-              fill
-              draggable={false}
-              sizes="(min-width: 640px) 18rem, 11rem"
-              className="rounded-lg sm:rounded-xl object-cover shrink-0"
-            />
+    <div className="w-full overflow-hidden">
+      <div className="flex justify-center items-center py-16 sm:py-24">
+        {[
+          { src: sea, alt: 'Ocean waves crashing on the seaside shore' },
+          { src: beach, alt: 'Evan at the beach in Chengdu' },
+          { src: fall, alt: 'Autumn trees with golden and red foliage' },
+          {
+            src: mountain,
+            alt: 'Mountain landscape with dramatic snow-capped peaks',
+          },
+          { src: snow, alt: 'Snow-covered winter landscape' },
+        ].map((photo, imageIndex) => (
+          <div
+            key={imageIndex}
+            className="w-44 h-48 select-none p-1 flex-none bg-white sm:w-72 sm:h-80 sm:rounded-2xl rounded-xl ring-2 ring-black/5 dark:ring-white/5 dark:bg-neutral-800 shrink-0 overflow-hidden"
+            style={{
+              transform: `rotate(${rotations[imageIndex % rotations.length]}deg)`,
+            }}
+          >
+            <div className="relative size-full">
+              <Image
+                src={photo.src}
+                alt={photo.alt}
+                priority
+                fill
+                draggable={false}
+                sizes="(min-width: 640px) 18rem, 11rem"
+                className="rounded-lg sm:rounded-xl object-cover shrink-0"
+              />
+            </div>
           </div>
-        </motion.div>
-      ))}
+        ))}
+      </div>
     </div>
   )
 }

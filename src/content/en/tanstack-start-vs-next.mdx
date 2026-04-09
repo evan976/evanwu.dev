@@ -365,7 +365,7 @@ The upside of Start is **very strong type inference** — route params, search p
 
 **Next.js** is optimized for Vercel but deployable anywhere via standalone output or community adapters.
 
-**TanStack Start** uses **Nitro** under the hood, which gives it first-class presets for Vercel, Cloudflare Workers, Netlify, Node.js, Bun, AWS Lambda, and more. You configure the target in your Vite config:
+**TanStack Start** is built on the **Vite Environment API**, which means deployment targets are configured through Vite plugins. For example, you can use Nitro's Vite plugin for platforms like Cloudflare Workers, Netlify, or AWS Lambda:
 
 ```tsx
 // vite.config.ts
@@ -377,7 +377,7 @@ export default defineConfig({
 })
 ```
 
-This is a genuine advantage for teams targeting non-Vercel platforms. The deployment story feels more "choose your target" rather than "adapt from the default."
+The key distinction: Nitro isn't baked into Start — it's one of several deployment adapters you can plug in via Vite. This is a genuine advantage for teams targeting non-Vercel platforms. The deployment story feels more "choose your target" rather than "adapt from the default."
 
 ### 5) Error handling
 
@@ -406,14 +406,14 @@ Both approaches work well. Start's version has the advantage of co-locating ever
 - Built-in route loaders with SWR-style caching and automatic prefetching.
 - Server functions are ergonomic for small-to-medium server logic, with composable middleware.
 - Per-route SSR control (`true`, `'data-only'`, `false`) is surprisingly useful.
-- Vite-based dev experience and Nitro-powered deployment flexibility across platforms.
+- Vite-based dev experience with pluggable deployment adapters (Nitro, Cloudflare, etc.).
 - Everything about a route lives in one file: loader, component, error handler, head, search params.
 
 ### TanStack Start — what felt risky or unfinished
 
 - Still in RC — API is stable, but I'd want a 1.0 stamp for long-lived production projects.
 - No React Server Components yet (planned post-1.0). If RSC is important to your architecture, Next.js is the only option today.
-- File-based routing rules are powerful but error-prone without tooling — mis-naming a file silently produces the wrong route tree.
+- File-based routing rules are strict — though the router watches for file changes and regenerates the route tree automatically, the naming conventions have a learning curve.
 - Ecosystem and community are smaller. Fewer tutorials, Stack Overflow answers, and production case studies compared to Next.js.
 
 ### Next.js — where it still felt strong
@@ -438,11 +438,13 @@ Both approaches work well. Start's version has the advantage of co-locating ever
 
 ## Closing
 
-TanStack Start and Next.js are solving similar problems with genuinely different philosophies. Start bets on type safety, URL-as-state, and the Vite/Nitro ecosystem. Next.js bets on Server Components, convention-based architecture, and deep platform integration.
+TanStack Start and Next.js are solving similar problems with genuinely different philosophies. Start bets on type safety, URL-as-state, and the Vite ecosystem. Next.js bets on Server Components, convention-based architecture, and deep platform integration.
 
 If your team already loves TanStack Router or TanStack Query, Start feels like a natural, cohesive extension. If you want a highly prescriptive full-stack model with RSC, deep caching semantics, and a large body of production patterns, Next.js still feels like the safer default.
 
 The real takeaway for me: these frameworks are making each other better. The competition on type safety, server functions, and developer experience benefits everyone building on React.
+
+---
 
 ## References
 

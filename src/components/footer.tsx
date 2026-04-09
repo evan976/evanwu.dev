@@ -1,4 +1,4 @@
-import { RssIcon } from 'lucide-react'
+import { BotIcon, RssIcon } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { ChangeLanguage } from '@/components/change-language'
 import { Container } from '@/components/container'
@@ -22,6 +22,14 @@ export function Footer() {
                 >
                   <RssIcon className="size-4 text-neutral-500 dark:text-neutral-400 transition hover:text-neutral-900 dark:hover:text-neutral-200" />
                 </Link>
+                <a
+                  href="/llms.txt"
+                  target="_blank"
+                  rel="noopener"
+                  aria-label="LLMs.txt"
+                >
+                  <BotIcon className="size-4 text-neutral-500 dark:text-neutral-400 transition hover:text-neutral-900 dark:hover:text-neutral-200" />
+                </a>
               </div>
               <div className="flex items-center gap-6">
                 <ChangeLanguage />
