@@ -3,9 +3,6 @@ import { type NextRequest, NextResponse } from 'next/server'
 import openGraphScraper from 'open-graph-scraper-lite'
 import { baseUrl } from '@/lib/site'
 
-const HOST =
-  process.env.NODE_ENV === 'production' ? baseUrl : 'http://localhost:3000'
-
 const TITLE_REGEX = /(.*?) - (.*?)?$/
 
 export async function GET(request: NextRequest) {
@@ -13,7 +10,7 @@ export async function GET(request: NextRequest) {
   const path = searchParams.get('path') ?? '/'
 
   const [response, geist] = await Promise.all([
-    fetch(`${HOST}${path}`),
+    fetch(`${baseUrl}${path}`),
     loadGeistFont(),
   ])
 

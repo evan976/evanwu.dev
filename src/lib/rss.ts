@@ -3,14 +3,11 @@ import { getArticles } from '@/lib/mdx'
 import { baseUrl } from '@/lib/site'
 
 export async function generateRSS(locale: string) {
-  const siteUrl =
-    process.env.NODE_ENV === 'production' ? baseUrl : 'http://localhost:3000'
-
   const feedOptions = {
     title: "Evan's Blog | RSS Feed",
     description: "Welcome to Evan's Blog!",
-    site_url: siteUrl,
-    feed_url: `${siteUrl}/rss.xml`,
+    site_url: baseUrl,
+    feed_url: `${baseUrl}/rss.xml`,
     pubDate: new Date(),
     copyright: `All rights reserved ${new Date().getFullYear()}`,
   }
@@ -23,7 +20,7 @@ export async function generateRSS(locale: string) {
     feed.item({
       title: article.title,
       description: article.description,
-      url: `${siteUrl}/articles/${article.slug}`,
+      url: `${baseUrl}/articles/${article.slug}`,
       date: article.publishedAt,
     })
   })
