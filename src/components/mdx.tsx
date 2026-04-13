@@ -34,7 +34,7 @@ function slugify(str: React.ReactNode) {
     .trim()
     .replace(/\s+/g, '-')
     .replace(/&/g, '-and-')
-    .replace(/[^\w-]+/g, '')
+    .replace(/[^\p{L}\p{N}_-]+/gu, '')
     .replace(/--+/g, '-')
 }
 

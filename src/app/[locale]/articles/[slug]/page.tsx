@@ -9,6 +9,7 @@ import {
 } from 'next-intl/server'
 import { ArticleWidget } from '@/components/article-widget'
 import { ArrowLeftIcon } from '@/components/icons'
+import { TableOfContents } from '@/components/table-of-contents'
 import { CustomMDX } from '@/components/mdx'
 import { Link } from '@/i18n/navigation'
 import { buildArticleSummary } from '@/lib/article-content'
@@ -263,6 +264,7 @@ export default async function Page({
         </div>
       </div>
       <ArticleWidget previous={adjacent.previous} next={adjacent.next} />
+      <TableOfContents />
     </section>
   )
 }
