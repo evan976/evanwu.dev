@@ -2,7 +2,7 @@
 title: 'Migrating a Next.js App from Vercel to Cloudflare Workers'
 description: 'A practical guide to migrating a Next.js 16 app from Vercel to Cloudflare Workers using OpenNext, covering configuration, gotchas, and lessons learned.'
 publishedAt: '2026-04-06'
-updatedAt: '2026-04-06'
+updatedAt: '2026-04-13'
 image: '/articles/migrate-nextjs-to-cloudflare.png'
 topics: 'Next.js, Cloudflare, OpenNext, Deployment'
 ---
@@ -22,7 +22,7 @@ The catch? Next.js is built for Node.js, and Cloudflare Workers runs on the V8 i
 
 OpenNext is an open-source adapter that makes Next.js portable across different deployment platforms. The `@opennextjs/cloudflare` package bridges the gap between Next.js and Cloudflare Workers, handling the translation of Next.js features into Workers-compatible code.
 
-It supports most Next.js features including App Router, Server Components, API routes, middleware, image optimization, ISR, and SSG.
+It supports most major Next.js features including the App Router, Server Components, Route Handlers, image optimization, ISR, and SSG. Middleware is also supported, but Next.js Node middleware (`proxy.ts` in Next.js 16) is not currently supported on Cloudflare via OpenNext.
 
 ## Step-by-Step Migration
 
@@ -85,7 +85,7 @@ If you need full ISR/on-demand revalidation, swap `staticAssetsIncrementalCache`
 
 ### 4. Configure Image Optimization
 
-Cloudflare has its own image optimization pipeline. Create a custom image loader:
+OpenNext supports image optimization on Cloudflare, and the `images` binding in `wrangler.jsonc` is the key requirement. In my setup, I used a custom Next.js image loader so `next/image` URLs route through Cloudflare's image pipeline:
 
 ```ts
 /* [!code filename:image-loader.ts] */
@@ -124,23 +124,24 @@ const nextConfig: NextConfig = {
 }
 ```
 
+This is a practical approach, not the only possible setup. The important part is that your deployment is configured to let OpenNext and Cloudflare handle image optimization correctly. If your app already has a working image strategy, you may not need a custom loader.
+
 ### 5. Update `next.config.ts` for Local Dev
 
-Add the `initOpenNextCloudflareForDev` call at the bottom of your config file. This sets up Cloudflare bindings during local development:
+Call `initOpenNextCloudflareForDev()` in your config file so Cloudflare bindings are available during local development:
 
 ```ts
 /* [!code filename:next.config.ts] */
+import { initOpenNextCloudflareForDev } from '@opennextjs/cloudflare'
 import type { NextConfig } from 'next'
+
+initOpenNextCloudflareForDev()
 
 const nextConfig: NextConfig = {
   // ... your config
 }
 
 export default nextConfig
-
-import { initOpenNextCloudflareForDev } from '@opennextjs/cloudflare'
-
-initOpenNextCloudflareForDev()
 ```
 
 ### 6. Add Static Asset Caching
@@ -185,7 +186,7 @@ That's it. Your app is now running on Cloudflare Workers.
 
 ### Node.js `fs` Module Doesn't Work at Runtime
 
-This was the biggest surprise. Cloudflare Workers don't have a traditional filesystem. If any of your routes use `node:fs` at runtime (not just at build time), they will throw a 500 error.
+This was the biggest surprise. Cloudflare Workers don't have a traditional filesystem. If your app reads from `node:fs` at request time, it will fail at runtime even if the same code worked on Vercel or in local Node.js development.
 
 In my case, the RSS route was dynamically reading MDX files from disk on every request:
 
@@ -196,7 +197,7 @@ const files = await fs.readdir(
 )
 ```
 
-The fix: make the route statically generated so `fs` operations only happen at build time:
+In my case, the fix was to make the route statically generated so the `fs` operations only happen at build time:
 
 ```ts
 /* [!code filename:src/app/[locale]/rss/route.ts] */
@@ -209,17 +210,17 @@ export function generateStaticParams() {
 }
 ```
 
-**Rule of thumb:** Any route that reads from the filesystem must be statically generated (`generateStaticParams` + `force-static`) when deploying to Cloudflare Workers.
+This is not a universal requirement to use `generateStaticParams` and `force-static` everywhere. The broader rule is: avoid reading from the local filesystem at request time on Cloudflare Workers. If a route depends on repository files, either move that work to build time, make the route static where appropriate, or move the content into a runtime-accessible service such as R2, KV, D1, or an external CMS.
 
-### Middleware Must Use the Edge Runtime
+### Node Middleware (`proxy.ts`) Is Not Yet Supported
 
-If you have Next.js middleware, it must run on the Edge runtime. OpenNext for Cloudflare will throw an error during build if your middleware uses the Node.js runtime:
+OpenNext Cloudflare runs Next.js apps using the Workers Node.js compatibility layer, so the app itself does not need to be limited to the Edge runtime. However, Next.js Node middleware is not currently supported, and OpenNext will fail the build if you use `proxy.ts`:
 
 ```
 ERROR Node.js middleware is not currently supported. Consider switching to Edge Middleware.
 ```
 
-In Next.js 16, `proxy.ts` replaced `middleware.ts` and runs on the Node.js runtime by default, which is incompatible. The fix is simple: rename `proxy.ts` back to `middleware.ts`. Libraries like `next-intl` already export Edge-compatible middleware, so it usually works without code changes.
+In Next.js 16, `proxy.ts` replaced `middleware.ts`, and `proxy.ts` runs on the Node.js runtime by default. That's the incompatible part here. If your existing logic can run as Edge-compatible middleware, keeping or switching back to `middleware.ts` is a practical workaround. But renaming the file alone is not enough if the logic depends on Node-only APIs. In that case, you need to rewrite that logic to be Edge-compatible or move it elsewhere.
 
 ### Binary `bun.lockb` May Cause Build Failures
 
@@ -235,6 +236,16 @@ The fix: switch to the text-based `bun.lock` format:
 ```bash
 bun install --save-text-lockfile
 ```
+
+### Worker Size Limits Are Based on Compressed Output
+
+Cloudflare's Worker size limits are based on the compressed upload size, not the original bundle size. When you build or deploy with OpenNext, Wrangler prints both numbers:
+
+```txt
+Total Upload: 13833.20 KiB / gzip: 2295.89 KiB
+```
+
+The number that matters for Cloudflare's limit is the gzip size. This is an easy detail to miss when you're evaluating whether a Next.js app will fit within the Free or Paid plan limits.
 
 ### Remove Vercel-Specific Packages
 
