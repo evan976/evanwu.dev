@@ -88,7 +88,7 @@ export function CopyButton({ value, className, ...props }: CopyButtonProps) {
       type="button"
       aria-label="Copy to clipboard"
       className={cn(
-        'cursor-copy p-2 active:scale-[0.96]',
+        'cursor-copy p-1.5 rounded-md text-neutral-400 hover:text-neutral-600 dark:text-neutral-500 dark:hover:text-neutral-300 transition-colors active:scale-[0.96]',
         className,
       )}
       onClick={onCopy}
