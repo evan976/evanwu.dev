@@ -62,8 +62,8 @@ export default async function Page() {
                 height={32}
               />
             </div>
-            <h2 className="mt-6 text-base font-semibold text-neutral-800 dark:text-neutral-100">
-              <div className="absolute -inset-x-4 -inset-y-6 z-0 scale-95 bg-neutral-50 opacity-0 transition group-hover:scale-100 group-hover:opacity-100 sm:-inset-x-6 sm:rounded-2xl dark:bg-neutral-800/50" />
+            <h2 className="mt-6 text-base font-semibold text-balance text-neutral-800 dark:text-neutral-100">
+              <div className="absolute -inset-x-4 -inset-y-6 z-0 scale-95 bg-neutral-50 opacity-0 transition-[transform,opacity] group-hover:scale-100 group-hover:opacity-100 sm:-inset-x-6 sm:rounded-2xl dark:bg-neutral-800/50" />
               <Link
                 href={project.url}
                 target="_blank"
@@ -76,7 +76,7 @@ export default async function Page() {
             <p className="relative z-10 mt-2 text-sm text-pretty text-neutral-600 dark:text-neutral-400 line-clamp-2">
               {project.description}
             </p>
-            <p className="relative z-10 mt-6 flex items-center text-sm font-medium text-neutral-400 transition group-hover:text-neutral-900 dark:text-neutral-200 dark:group-hover:text-neutral-100">
+            <p className="relative z-10 mt-6 flex items-center text-sm font-medium text-neutral-400 transition-colors group-hover:text-neutral-900 dark:text-neutral-200 dark:group-hover:text-neutral-100">
               <LinkIcon className="size-3.5" />
               <span className="ml-2">{new URL(project.url).hostname}</span>
             </p>

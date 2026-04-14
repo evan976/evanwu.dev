@@ -102,10 +102,15 @@ export default async function RootLayout({
   setRequestLocale(locale)
 
   return (
-    <html lang={locale} dir="ltr" suppressHydrationWarning>
+    <html
+      lang={locale}
+      dir="ltr"
+      suppressHydrationWarning
+      className="antialiased"
+    >
       <body
         className={cn(
-          'flex bg-neutral-50 dark:bg-black font-sans h-full overflow-x-clip antialiased',
+          'flex bg-neutral-50 dark:bg-black font-sans h-full overflow-x-clip',
           geist.variable,
           geistMono.variable,
         )}

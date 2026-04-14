@@ -121,10 +121,10 @@ export default async function Page({ params }: PageProps<'/[locale]'>) {
                     href={`/articles/${article.slug}`}
                     className="relative flex w-full flex-col items-start rounded-2xl text-left no-underline outline-offset-4 transition-colors focus-visible:ring-2 focus-visible:ring-neutral-900 dark:focus-visible:ring-neutral-200"
                   >
-                    <div className="absolute -inset-x-4 -inset-y-6 z-0 scale-95 bg-neutral-50 opacity-0 transition group-hover:scale-100 group-hover:opacity-100 sm:-inset-x-6 sm:rounded-xl dark:bg-neutral-800/50" />
+                    <div className="absolute -inset-x-4 -inset-y-6 z-0 scale-95 bg-neutral-50 opacity-0 transition-[transform,opacity] group-hover:scale-100 group-hover:opacity-100 sm:-inset-x-6 sm:rounded-xl dark:bg-neutral-800/50" />
                     <time
                       dateTime={article.publishedAt}
-                      className="relative z-10 order-first mb-3 flex items-center text-sm text-neutral-500 dark:text-neutral-400 pl-3.5"
+                      className="relative z-10 order-first mb-3 flex items-center text-sm tabular-nums text-neutral-500 dark:text-neutral-400 pl-3.5"
                     >
                       <span
                         aria-hidden="true"
@@ -134,12 +134,12 @@ export default async function Page({ params }: PageProps<'/[locale]'>) {
                       </span>
                       {formatter.relativeTime(new Date(article.publishedAt))}
                     </time>
-                    <h2 className="relative z-10 text-base font-semibold text-neutral-800 dark:text-neutral-100">
+                    <h2 className="relative z-10 text-base font-semibold text-balance text-neutral-800 dark:text-neutral-100">
                       {article.title}
                     </h2>
                     <p
                       title={article.description}
-                      className="relative z-10 mt-2 text-sm text-neutral-600 dark:text-neutral-400 line-clamp-2"
+                      className="relative z-10 mt-2 text-sm text-pretty text-neutral-600 dark:text-neutral-400 line-clamp-2"
                     >
                       {article.description}
                     </p>

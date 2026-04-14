@@ -107,7 +107,7 @@ export function TableOfContents() {
       className="fixed right-8 top-1/2 z-40 hidden -translate-y-1/2 xl:flex"
       aria-label="Table of contents"
     >
-      <AnimatePresence mode="wait">
+      <AnimatePresence initial={false} mode="wait">
         {isHovered ? (
           <motion.div
             key="card"

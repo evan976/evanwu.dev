@@ -43,7 +43,7 @@ export default async function Page() {
         <div className="space-y-20">
           <section className="md:border-l md:border-neutral-100 md:pl-6 md:dark:border-neutral-700/40">
             <div className="grid max-w-3xl grid-cols-1 items-baseline gap-y-8 md:grid-cols-4">
-              <h2 className="text-sm font-semibold text-neutral-800 dark:text-neutral-100">
+              <h2 className="text-sm font-semibold text-balance text-neutral-800 dark:text-neutral-100">
                 {t('workstation')}
               </h2>
               <div className="md:col-span-3">
@@ -94,7 +94,7 @@ export default async function Page() {
           </section>
           <section className="md:border-l md:border-neutral-100 md:pl-6 md:dark:border-neutral-700/40">
             <div className="grid max-w-3xl grid-cols-1 items-baseline gap-y-8 md:grid-cols-4">
-              <h2 className="text-sm font-semibold text-neutral-800 dark:text-neutral-100">
+              <h2 className="text-sm font-semibold text-balance text-neutral-800 dark:text-neutral-100">
                 {t('development')}
               </h2>
               <div className="md:col-span-3">
@@ -135,7 +135,7 @@ export default async function Page() {
           </section>
           <section className="md:border-l md:border-neutral-100 md:pl-6 md:dark:border-neutral-700/40">
             <div className="grid max-w-3xl grid-cols-1 items-baseline gap-y-8 md:grid-cols-4">
-              <h2 className="text-sm font-semibold text-neutral-800 dark:text-neutral-100">
+              <h2 className="text-sm font-semibold text-balance text-neutral-800 dark:text-neutral-100">
                 {t('design')}
               </h2>
               <div className="md:col-span-3">
