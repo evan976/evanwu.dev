@@ -14,7 +14,7 @@ export function SocialLink({
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="group -m-1 p-1"
+      className="group -m-2.5 p-2.5"
       aria-label={`Follow on ${name}`}
     >
       <Image
@@ -23,7 +23,7 @@ export function SocialLink({
         width={20}
         height={20}
         aria-hidden="true"
-        className="opacity-50 transition group-hover:opacity-70 dark:invert"
+        className="opacity-50 transition-opacity group-hover:opacity-70 dark:invert"
       />
     </Link>
   )

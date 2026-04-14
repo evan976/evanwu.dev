@@ -98,7 +98,7 @@ function Avatar({
         alt="Evan Wu"
         sizes={large ? '4rem' : '2.25rem'}
         className={cn(
-          'rounded-full bg-neutral-100 object-cover dark:bg-neutral-800',
+          'rounded-full bg-neutral-100 object-cover outline -outline-offset-1 outline-black/10 dark:bg-neutral-800 dark:outline-white/10',
           large ? 'size-16' : 'size-9',
         )}
       />
@@ -121,7 +121,7 @@ function NavItem({
       <Link
         href={href}
         className={cn(
-          'relative block px-3 whitespace-nowrap py-2.5 transition',
+          'relative block px-3 whitespace-nowrap py-2.5 transition-colors',
           isActive
             ? 'text-neutral-900 dark:text-neutral-200'
             : 'hover:text-neutral-900 dark:hover:text-neutral-200',
@@ -223,7 +223,11 @@ function MobileNavigation({
                 {t('navigation')}
               </Dialog.Description>
               <Dialog.Close asChild>
-                <button type="button" aria-label="Close navigation">
+                <button
+                  type="button"
+                  aria-label="Close navigation"
+                  className="-m-2 p-2"
+                >
                   <XIcon className="size-5 text-neutral-500 dark:text-neutral-400" />
                 </button>
               </Dialog.Close>

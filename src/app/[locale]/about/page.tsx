@@ -54,7 +54,7 @@ export default async function Page() {
                 width={800}
                 height={800}
                 sizes="(min-width: 1024px) 32rem, 20rem"
-                className="aspect-square rotate-3 rounded-2xl bg-neutral-100 object-cover dark:bg-neutral-800"
+                className="aspect-square rotate-3 rounded-2xl bg-neutral-100 object-cover outline -outline-offset-1 outline-black/10 dark:bg-neutral-800 dark:outline-white/10"
               />
             </div>
           </div>
@@ -65,25 +65,25 @@ export default async function Page() {
           </h1>
           <div className="mt-6 space-y-7 text-base text-pretty text-neutral-600 dark:text-neutral-400">
             <section>
-              <h3 className="text-sm font-semibold text-neutral-800 dark:text-neutral-200 mb-2">
+              <h3 className="text-sm font-semibold text-balance text-neutral-800 dark:text-neutral-200 mb-2">
                 {t('content.childhood_heading')}
               </h3>
               <p>{t('content.childhood')}</p>
             </section>
             <section>
-              <h3 className="text-sm font-semibold text-neutral-800 dark:text-neutral-200 mb-2">
+              <h3 className="text-sm font-semibold text-balance text-neutral-800 dark:text-neutral-200 mb-2">
                 {t('content.school_heading')}
               </h3>
               <p>{t('content.school')}</p>
             </section>
             <section>
-              <h3 className="text-sm font-semibold text-neutral-800 dark:text-neutral-200 mb-2">
+              <h3 className="text-sm font-semibold text-balance text-neutral-800 dark:text-neutral-200 mb-2">
                 {t('content.programming_heading')}
               </h3>
               <p>{t('content.programming')}</p>
             </section>
             <section>
-              <h3 className="text-sm font-semibold text-neutral-800 dark:text-neutral-200 mb-2">
+              <h3 className="text-sm font-semibold text-balance text-neutral-800 dark:text-neutral-200 mb-2">
                 {t('content.graduation_heading')}
               </h3>
               <p>{t('content.graduation')}</p>
@@ -97,11 +97,11 @@ export default async function Page() {
                 target="_blank"
                 rel="noopener noreferrer"
                 href="https://x.com/evan1297"
-                className="group flex items-center text-sm font-medium text-neutral-800 transition hover:text-neutral-950 dark:text-neutral-200 dark:hover:text-neutral-50"
+                className="group flex items-center text-sm font-medium text-neutral-800 transition-colors hover:text-neutral-950 dark:text-neutral-200 dark:hover:text-neutral-50"
               >
                 <XIcon
                   aria-hidden="true"
-                  className="size-6 flex-none fill-neutral-500 transition group-hover:fill-neutral-900 dark:group-hover:fill-neutral-100"
+                  className="size-6 flex-none fill-neutral-500 transition-[fill] group-hover:fill-neutral-900 dark:group-hover:fill-neutral-100"
                 />
                 <span className="ml-4">{t('follow_on_x')}</span>
               </Link>
@@ -111,11 +111,11 @@ export default async function Page() {
                 target="_blank"
                 rel="noopener noreferrer"
                 href="https://github.com/evan976"
-                className="group flex items-center text-sm font-medium text-neutral-800 transition hover:text-neutral-950 dark:text-neutral-200 dark:hover:text-neutral-50"
+                className="group flex items-center text-sm font-medium text-neutral-800 transition-colors hover:text-neutral-950 dark:text-neutral-200 dark:hover:text-neutral-50"
               >
                 <GithubIcon
                   aria-hidden="true"
-                  className="size-6 flex-none fill-neutral-500 transition group-hover:fill-neutral-900 dark:group-hover:fill-neutral-100"
+                  className="size-6 flex-none fill-neutral-500 transition-[fill] group-hover:fill-neutral-900 dark:group-hover:fill-neutral-100"
                 />
                 <span className="ml-4">{t('follow_on_github')}</span>
               </Link>
@@ -125,11 +125,11 @@ export default async function Page() {
                 target="_blank"
                 rel="noopener noreferrer"
                 href="https://www.linkedin.com/in/evan976"
-                className="group flex items-center text-sm font-medium text-neutral-800 transition hover:text-neutral-950 dark:text-neutral-200 dark:hover:text-neutral-50"
+                className="group flex items-center text-sm font-medium text-neutral-800 transition-colors hover:text-neutral-950 dark:text-neutral-200 dark:hover:text-neutral-50"
               >
                 <LinkedInIcon
                   aria-hidden="true"
-                  className="size-6 flex-none fill-neutral-500 transition group-hover:fill-neutral-900 dark:group-hover:fill-neutral-100"
+                  className="size-6 flex-none fill-neutral-500 transition-[fill] group-hover:fill-neutral-900 dark:group-hover:fill-neutral-100"
                 />
                 <span className="ml-4">{t('follow_on_linkedin')}</span>
               </Link>
@@ -137,12 +137,12 @@ export default async function Page() {
             <li className="mt-8 border-t border-neutral-100 pt-8 dark:border-neutral-700/40 flex flex-col gap-4">
               <Link
                 href="mailto:jihua.evan@icloud.com"
-                className="group flex items-center text-sm font-medium text-neutral-800 transition hover:text-neutral-950 dark:text-neutral-200 dark:hover:text-neutral-50"
+                className="group flex items-center text-sm font-medium text-neutral-800 transition-colors hover:text-neutral-950 dark:text-neutral-200 dark:hover:text-neutral-50"
               >
                 <svg
                   viewBox="0 0 24 24"
                   aria-hidden="true"
-                  className="size-6 flex-none fill-neutral-500 transition group-hover:fill-neutral-900 dark:group-hover:fill-neutral-100"
+                  className="size-6 flex-none fill-neutral-500 transition-[fill] group-hover:fill-neutral-900 dark:group-hover:fill-neutral-100"
                 >
                   <path
                     fillRule="evenodd"
@@ -153,7 +153,7 @@ export default async function Page() {
               </Link>
               <Link
                 href="https://cv.evanwu.dev"
-                className="group flex items-center text-sm font-medium text-neutral-800 transition hover:text-neutral-950 dark:text-neutral-200 dark:hover:text-neutral-50 ml-0.5"
+                className="group flex items-center text-sm font-medium text-neutral-800 transition-colors hover:text-neutral-950 dark:text-neutral-200 dark:hover:text-neutral-50 ml-0.5"
               >
                 <FileTextIcon
                   aria-hidden="true"

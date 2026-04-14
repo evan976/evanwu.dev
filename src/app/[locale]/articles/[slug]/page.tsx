@@ -9,8 +9,8 @@ import {
 } from 'next-intl/server'
 import { ArticleWidget } from '@/components/article-widget'
 import { ArrowLeftIcon } from '@/components/icons'
-import { TableOfContents } from '@/components/table-of-contents'
 import { CustomMDX } from '@/components/mdx'
+import { TableOfContents } from '@/components/table-of-contents'
 import { Link } from '@/i18n/navigation'
 import { buildArticleSummary } from '@/lib/article-content'
 import {
@@ -175,7 +175,7 @@ export default async function Page({
                   <Link
                     href="/articles"
                     aria-label={t('back_to_articles')}
-                    className="group mb-8 flex h-10 w-10 items-center justify-center rounded-full bg-white ring-1 shadow-md shadow-neutral-800/5 ring-neutral-900/5 transition lg:absolute lg:-left-5 lg:-mt-2 lg:mb-0 xl:-top-1.5 xl:left-0 xl:mt-0 dark:border dark:border-neutral-700/50 dark:bg-neutral-800 dark:ring-0 dark:ring-white/10 dark:hover:border-neutral-700 dark:hover:ring-white/20"
+                    className="group mb-8 flex h-10 w-10 items-center justify-center rounded-full bg-white ring-1 shadow-md shadow-neutral-800/5 ring-neutral-900/5 transition-shadow lg:absolute lg:-left-5 lg:-mt-2 lg:mb-0 xl:-top-1.5 xl:left-0 xl:mt-0 dark:border dark:border-neutral-700/50 dark:bg-neutral-800 dark:ring-0 dark:ring-white/10 dark:hover:border-neutral-700 dark:hover:ring-white/20"
                   >
                     <ArrowLeftIcon className="size-4" />
                   </Link>
@@ -184,7 +184,7 @@ export default async function Page({
                       <h1 className="mt-6 text-3xl font-bold text-balance text-neutral-800 sm:text-4xl dark:text-neutral-100">
                         {title}
                       </h1>
-                      <div className="order-first flex items-center gap-4 text-sm">
+                      <div className="order-first flex items-center gap-4 text-sm tabular-nums">
                         <time
                           suppressHydrationWarning
                           dateTime={publishedAt.toLocaleString()}
@@ -216,7 +216,7 @@ export default async function Page({
                       </div>
                     </header>
                     <section className="mt-8 rounded-2xl border border-neutral-200/80 bg-neutral-50 p-6 dark:border-neutral-800 dark:bg-neutral-900/70">
-                      <h2 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100">
+                      <h2 className="text-sm font-semibold text-balance text-neutral-900 dark:text-neutral-100">
                         {t('tldr_title')}
                       </h2>
                       <p className="mt-3 text-pretty text-sm/6 text-neutral-600 dark:text-neutral-300">

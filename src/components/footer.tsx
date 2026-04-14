@@ -19,23 +19,25 @@ export function Footer() {
                   target="_blank"
                   rel="noopener"
                   aria-label="RSS Feed"
+                  className="-m-2 p-2"
                 >
-                  <RssIcon className="size-4 text-neutral-500 dark:text-neutral-400 transition hover:text-neutral-900 dark:hover:text-neutral-200" />
+                  <RssIcon className="size-4 text-neutral-500 dark:text-neutral-400 transition-colors hover:text-neutral-900 dark:hover:text-neutral-200" />
                 </Link>
                 <a
                   href="/llms.txt"
                   target="_blank"
                   rel="noopener"
                   aria-label="LLMs.txt"
+                  className="-m-2 p-2"
                 >
-                  <BotIcon className="size-4 text-neutral-500 dark:text-neutral-400 transition hover:text-neutral-900 dark:hover:text-neutral-200" />
+                  <BotIcon className="size-4 text-neutral-500 dark:text-neutral-400 transition-colors hover:text-neutral-900 dark:hover:text-neutral-200" />
                 </a>
               </div>
               <div className="flex items-center gap-6">
                 <ChangeLanguage />
                 <ModeToggle />
                 <p
-                  className="text-sm text-neutral-500 dark:text-neutral-400"
+                  className="text-sm text-pretty text-neutral-500 dark:text-neutral-400"
                   suppressHydrationWarning
                 >
                   {t('copyright', { year: new Date().getFullYear() })}

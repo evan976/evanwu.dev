@@ -9,22 +9,28 @@ const variants: Variants = {
   visible: {
     opacity: 1,
     scale: 1,
+    filter: 'blur(0px)',
     transition: {
-      duration: 0.2,
+      type: 'spring',
+      duration: 0.3,
+      bounce: 0,
     },
   },
   hidden: {
     opacity: 0,
-    scale: 0.8,
+    scale: 0.25,
+    filter: 'blur(4px)',
     transition: {
-      duration: 0.1,
+      type: 'spring',
+      duration: 0.3,
+      bounce: 0,
     },
   },
 }
 
 function CopyButtonIcon({ isCopied }: { isCopied: boolean }) {
   return (
-    <AnimatePresence mode="wait">
+    <AnimatePresence initial={false} mode="wait">
       {isCopied ? (
         <motion.div
           animate="visible"
@@ -81,7 +87,10 @@ export function CopyButton({ value, className, ...props }: CopyButtonProps) {
     <button
       type="button"
       aria-label="Copy to clipboard"
-      className={cn('cursor-copy', className)}
+      className={cn(
+        'cursor-copy p-2 -m-1 transition-scale duration-200 active:scale-96',
+        className,
+      )}
       onClick={onCopy}
       {...props}
     >

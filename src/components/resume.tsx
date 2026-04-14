@@ -13,7 +13,7 @@ export function Resume() {
   const formatter = useFormatter()
   return (
     <div className="rounded-2xl border border-neutral-100 p-6 dark:border-neutral-700/40">
-      <h2 className="flex items-center text-sm font-semibold text-neutral-900 dark:text-neutral-100">
+      <h2 className="flex items-center text-sm font-semibold text-balance text-neutral-900 dark:text-neutral-100">
         <Briefcase className="size-5 flex-none text-neutral-400 dark:text-neutral-500" />
         <span className="ml-3">{t('title')}</span>
       </h2>
@@ -47,7 +47,7 @@ export function Resume() {
               <div className="sr-only">{t('date')}</div>
               <div
                 role="tooltip"
-                className="ml-auto text-xs text-neutral-500 dark:text-neutral-400"
+                className="ml-auto text-xs tabular-nums text-neutral-500 dark:text-neutral-400"
                 aria-label={`${format(new Date(role.start), 'MMMM yyyy')} until ${isToday(new Date(role.end)) ? 'Present' : format(new Date(role.end), 'MMMM yyyy')}`}
               >
                 <time
@@ -86,7 +86,7 @@ export function Resume() {
         className="group mt-6 w-full"
       >
         {t('more')}
-        <ArrowRight className="size-3.5 text-neutral-400 group-hover:translate-x-0.5 transition-all duration-200" />
+        <ArrowRight className="size-3.5 text-neutral-400 group-hover:translate-x-0.5 transition-transform duration-200" />
       </Button>
     </div>
   )

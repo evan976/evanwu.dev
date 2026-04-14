@@ -27,7 +27,7 @@ export function Button({
   ...props
 }: ButtonProps) {
   const baseClassName = cn(
-    'inline-flex items-center gap-2 h-9 justify-center rounded-md py-2 px-3 text-sm outline-offset-2 transition duration-200 active:transition-none',
+    'inline-flex items-center gap-2 h-9 justify-center rounded-md py-2 px-3 text-sm outline-offset-2 transition-[colors,scale] duration-200 active:scale-96',
     variantStyles[variant],
     className,
   )
