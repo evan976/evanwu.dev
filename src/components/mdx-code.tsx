@@ -28,7 +28,7 @@ export async function MDXCode({
           </span>
         </div>
       )}
-      <CopyButton value={source.code} className="absolute top-2 right-4" />
+      <CopyButton value={source.code} className="absolute top-1.5 right-2 z-10" />
       <div
         className="*:flex *:*:max-w-none *:*:shrink-0 *:*:grow *:overflow-auto *:p-4 *:text-sm/relaxed
           **:[.line]:isolate **:[.line]:not-last:min-h-lh [&_code]:font-mono"
