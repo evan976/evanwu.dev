@@ -74,7 +74,13 @@ jobs:
             --arg title "$TITLE" \
             --arg description "$DESCRIPTION" \
             '{slug: $slug, title: $title, description: $description}')
-          curl -sf -X POST "${{ secrets.SITE_URL }}/api/newsletter" \
+          RESPONSE=$(curl -sS -w "\n%{http_code}" -X POST "${{ secrets.SITE_URL }}/api/newsletter" \
             -H "Authorization: Bearer ${{ secrets.NEWSLETTER_SECRET }}" \
             -H "Content-Type: application/json" \
-            -d "$PAYLOAD"
+            -d "$PAYLOAD")
+          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+          BODY=$(echo "$RESPONSE" | sed '$d')
+          echo "HTTP $HTTP_CODE: $BODY"
+          if [ "$HTTP_CODE" -lt 200 ] || [ "$HTTP_CODE" -ge 300 ]; then
+            exit 1
+          fi
