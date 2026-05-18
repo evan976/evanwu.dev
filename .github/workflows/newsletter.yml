@@ -1,6 +1,11 @@
 name: Send newsletter for new articles
 
 on:
+  workflow_dispatch:
+    inputs:
+      slug:
+        description: 'Article slug (filename without .mdx)'
+        required: false
   push:
     branches: [main]
     paths:
@@ -17,14 +22,25 @@ jobs:
       - name: Detect new articles
         id: detect
         run: |
-          NEW_FILES=$(git diff --name-only --diff-filter=A HEAD~1 HEAD -- 'src/content/en/*.mdx')
-          if [ -z "$NEW_FILES" ]; then
-            echo "No new articles found"
-            echo "found=false" >> "$GITHUB_OUTPUT"
-            exit 0
+          INPUT_SLUG="${{ github.event.inputs.slug }}"
+
+          if [ -n "$INPUT_SLUG" ]; then
+            FILE="src/content/en/${INPUT_SLUG}.mdx"
+            if [ ! -f "$FILE" ]; then
+              echo "Article not found: $FILE"
+              echo "found=false" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+          else
+            NEW_FILES=$(git diff --name-only --diff-filter=A HEAD~1 HEAD -- 'src/content/en/*.mdx')
+            if [ -z "$NEW_FILES" ]; then
+              echo "No new articles found"
+              echo "found=false" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            FILE=$(echo "$NEW_FILES" | head -1)
           fi
 
-          FILE=$(echo "$NEW_FILES" | head -1)
           SLUG=$(basename "$FILE" .mdx)
           echo "slug=$SLUG" >> "$GITHUB_OUTPUT"
           echo "found=true" >> "$GITHUB_OUTPUT"
