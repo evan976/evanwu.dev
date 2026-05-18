@@ -1,0 +1,89 @@
+---
+title: 'Build Fast. Think First.'
+description: 'AI has made software development faster than ever — but the real bottleneck has shifted from "can you build it" to "do you know what to build."'
+publishedAt: '2026-05-18'
+image: '/articles/ai-thinking-before-coding.png'
+topics: 'AI, Software Development, Engineering, Career'
+---
+
+A few days ago I was building a new feature — a data list with search, pagination, and bulk actions. In the old days, I would've dug through the codebase for something similar, read the docs, hand-written the query logic and state management. Probably an hour or two of work. This time, I described what I needed in Cursor, and the AI spat out a complete implementation — type-safe, edge cases handled, loading and empty states included.
+
+In under thirty seconds.
+
+I stared at the code and felt a strange unease. Not because it was bad — it was actually quite good. The unease came from a thought I couldn't shake: **if I can get this code in 30 seconds, so can anyone. So what's my value here?**
+
+## Fast Output Isn't the Same as Clear Thinking
+
+The speed at which AI generates code is almost surreal now. v0 can build a page from a screenshot. Cursor can fill out an entire module from a comment. Claude can write tests and docs in one shot. These tools are fundamentally redefining what "writing code" even means. The barrier to building software has never been lower.
+
+But there's a trap here that's easy to fall into: **just because the code is written doesn't mean you've thought it through.**
+
+I've seen this play out too many times — AI generates a module that looks functional, you paste it in, it runs, the feature seems to work. Then requirements shift slightly, you open the file, and you realize you have no idea how it actually works. You didn't write it, so your mental model of it is essentially zero.
+
+It's like hiring someone to move your apartment. They packed everything into boxes and moved it all over — but when you open the boxes, you find the pot sitting on top of your books and your socks stuffed in with the soy sauce. Everything is there, but you've lost control of the space.
+
+And AI-generated code often has a particular kind of subtle wrongness:
+
+- It uses a pattern you're not familiar with, so three iterations later the file has become unmaintainable
+- It ignores your project's existing conventions — say your codebase standardizes on `dayjs` for date formatting, and the AI gives you `new Date().toLocaleDateString()`
+- It handles 90% of the cases, and the remaining 10% will be filed as bug reports next week
+- The error handling looks thorough, but it doesn't distinguish between recoverable and unrecoverable errors — so when something goes wrong in production, it cascades
+- It generates a component that's theoretically accessible, but is a terrible experience when you actually test it with a screen reader
+
+None of these are fatal on their own. Together, they become what we call technical debt. And AI-generated technical debt has a particularly insidious quality: **you don't know what you don't know.** Traditional tech debt is the result of conscious trade-offs. AI tech debt is the code you thought was fine.
+
+## Speed Only Matters If You Know Where You're Going
+
+Anthropic's founder handbook mentions something called "Agentic Technical Debt" — AI-generated code that runs, but where the developer has no coherent mental model of it. That landed for me.
+
+A couple months ago I was working on a migration — moving an old Cloudflare Pages project to Next.js. AI wrote nearly all the boilerplate: route configs, build scripts, environment variable wiring. Honestly, it saved me two or three days of work.
+
+But none of the hard parts were solved by AI:
+
+- How do you handle middleware that depends on Cloudflare-specific runtime APIs?
+- Does the build cache strategy need to change after the migration?
+- How do the old Workers routes map to the new App Router?
+
+These aren't questions about how fast you can type. They're questions about whether you **thought through the landmines before you started digging.**
+
+This is the shift happening in software development right now: the real value is moving from *execution* to *judgment*. Execution has become nearly free. Judgment just got more expensive.
+
+## AI Can Save You Time. It Can't Save You from Thinking.
+
+The more I've used AI to write code, the clearer it's become that some things it just can't do for you.
+
+**The first is understanding the actual problem.** AI can tell you how to build a modal — how to manage focus, how to handle the Escape key. What it won't tell you is whether you should use a modal at all. Has the user's attention already been interrupted too many times? Would inline expansion work better? Should the mobile interaction be different from desktop? Good engineers don't just execute requirements — they can smell the real problem before it's been written down.
+
+**The second is architectural decisions.** Server Component or Client Component? Where does data get fetched? How do you split state? How do you model your data? Where do the module boundaries go? The consequences of these decisions often don't surface until several iterations later — and AI doesn't have a concept of "several iterations later." It lives inside a single request. You live across the entire lifetime of a project.
+
+**The third is taste.** Taste sounds abstract, but it's actually very concrete. The design spec says 16px spacing, AI generates 16px spacing — but you know that value should be a token, because the same rhythm is used throughout the project. You know this code works but the abstraction is at the wrong level. You know this naming describes the current behavior but implies the wrong ownership. AI writes CSS. You design systems. AI knows the rules. You know the reasons behind the rules.
+
+What these things have in common: **they require you to think clearly, not type quickly.**
+
+## How I Actually Use AI Now
+
+After a lot of trial and error, I've settled into a few principles.
+
+**Think it through before opening AI.** Before I ask AI to write anything, I make myself work through a few questions first — in my head, or on scratch paper: What problem is this solving? What are the edge cases? How does it relate to existing code? If I were writing this by hand, what would the rough structure look like? Sometimes this takes five minutes. The effect is remarkable — when you come to AI with a clear picture, you stop being led by it and start leading it.
+
+**Treat AI like a senior intern.** I give it a clear spec — what to do, what not to do, what constraints apply. I don't expect it to figure out the architecture for me, but I trust it to execute things I've already thought through. Like a capable intern: you can hand off the work confidently, but you need to know how the work should be done before you assign it.
+
+**Don't merge code you can't explain.** This is probably the most important one. For every line of AI-generated code, I hold myself to being able to explain it: what it does, why it's written this way, whether there's a better approach. If I can't explain it, it doesn't belong in the codebase. It's not about distrusting AI — it's about being accountable to the project and to your future self.
+
+**Use AI to review, not to think.** I now frequently ask AI to do code review — not to write code, but to read code I've written and flag issues or suggestions. This direction works really well, because reviewing is about filling gaps in a mental model you already have, not building a house on an empty lot.
+
+## The Core Skill Is Defining the Problem
+
+There's a metaphor I keep coming back to: AI is like an infinitely patient construction crew. Tell them to build a house, and they'll build it. What it ends up looking like depends entirely on the blueprints you hand them.
+
+Before AI, drawing the blueprints and laying the bricks were done by the same person. Now the bricklaying is automated. **The blueprints have become the core skill** — the precision with which you define the problem sets the ceiling on the quality of what you get back.
+
+So back to the question that unsettled me at the start: if code can be generated in 30 seconds, what's my value?
+
+The answer is slowly coming into focus: **the value is in how long I spent thinking before those 30 seconds — and how much time I spend examining, understanding, and refining what came out of them.**
+
+Typing was never the core competency in software development. It's just that the act of typing used to consume so much of our energy that we mistook it for the work itself. Now that AI has made execution nearly free, we're forced to revisit an old question: **are you writing code, or are you solving problems?**
+
+If you're just writing code, AI can do it faster. But if you're solving problems — understanding users, making judgment calls, designing systems, navigating trade-offs — then AI isn't your replacement. It's the best tool you've ever had.
+
+The prerequisite, though, is that you think it through first.
