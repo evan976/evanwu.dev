@@ -29,17 +29,36 @@ jobs:
           echo "slug=$SLUG" >> "$GITHUB_OUTPUT"
           echo "found=true" >> "$GITHUB_OUTPUT"
 
-          TITLE=$(grep '^title:' "$FILE" | sed "s/^title: *['\"]\\(.*\\)['\"]$/\\1/")
-          DESCRIPTION=$(grep '^description:' "$FILE" | sed "s/^description: *['\"]\\(.*\\)['\"]$/\\1/")
-          echo "title=$TITLE" >> "$GITHUB_OUTPUT"
-          echo "description=$DESCRIPTION" >> "$GITHUB_OUTPUT"
+          FRONTMATTER=$(sed -n '/^---$/,/^---$/p' "$FILE" | sed '1d;$d')
+          TITLE=$(echo "$FRONTMATTER" | yq -r '.title')
+          DESCRIPTION=$(echo "$FRONTMATTER" | yq -r '.description')
+
+          {
+            echo "title<<EOF"
+            echo "$TITLE"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+          {
+            echo "description<<EOF"
+            echo "$DESCRIPTION"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
 
           echo "New article detected: $TITLE ($SLUG)"
 
       - name: Send newsletter
         if: steps.detect.outputs.found == 'true'
+        env:
+          SLUG: ${{ steps.detect.outputs.slug }}
+          TITLE: ${{ steps.detect.outputs.title }}
+          DESCRIPTION: ${{ steps.detect.outputs.description }}
         run: |
+          PAYLOAD=$(jq -n \
+            --arg slug "$SLUG" \
+            --arg title "$TITLE" \
+            --arg description "$DESCRIPTION" \
+            '{slug: $slug, title: $title, description: $description}')
           curl -sf -X POST "${{ secrets.SITE_URL }}/api/newsletter" \
             -H "Authorization: Bearer ${{ secrets.NEWSLETTER_SECRET }}" \
             -H "Content-Type: application/json" \
-            -d "{\"slug\": \"${{ steps.detect.outputs.slug }}\", \"title\": \"${{ steps.detect.outputs.title }}\", \"description\": \"${{ steps.detect.outputs.description }}\"}"
+            -d "$PAYLOAD"
