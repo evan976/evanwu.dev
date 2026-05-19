@@ -2,6 +2,7 @@
 title: 'Build Fast. Think First.'
 description: 'AI has made software development faster than ever — but the real bottleneck has shifted from "can you build it" to "do you know what to build."'
 publishedAt: '2026-05-18'
+updatedAt: '2026-05-19'
 image: '/articles/ai-thinking-before-coding.png'
 topics: 'AI, Software Development, Engineering, Career'
 ---
@@ -36,13 +37,13 @@ None of these are fatal on their own. Together, they become what we call technic
 
 Anthropic's founder handbook mentions something called "Agentic Technical Debt" — AI-generated code that runs, but where the developer has no coherent mental model of it. That landed for me.
 
-A couple months ago I was working on a migration — moving an old Cloudflare Pages project to Next.js. AI wrote nearly all the boilerplate: route configs, build scripts, environment variable wiring. Honestly, it saved me two or three days of work.
+A couple months ago I was working on a migration — moving my Next.js app from Vercel to Cloudflare Workers. AI wrote nearly all the boilerplate: `wrangler.jsonc`, OpenNext config, build scripts. Honestly, it saved me two or three days of work.
 
 But none of the hard parts were solved by AI:
 
-- How do you handle middleware that depends on Cloudflare-specific runtime APIs?
-- Does the build cache strategy need to change after the migration?
-- How do the old Workers routes map to the new App Router?
+- What do you do about Next.js 16 Node middleware (`proxy.ts`) when OpenNext does not support it on Cloudflare yet?
+- Which routes cannot read from the local filesystem at request time on Workers?
+- How should incremental cache and build output be configured with OpenNext?
 
 These aren't questions about how fast you can type. They're questions about whether you **thought through the landmines before you started digging.**
 
