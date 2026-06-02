@@ -132,7 +132,11 @@ export default async function Page({ params }: PageProps<'/[locale]'>) {
                       >
                         <span className="h-4 w-0.5 rounded-full bg-neutral-200 dark:bg-neutral-500" />
                       </span>
-                      {formatter.relativeTime(new Date(article.publishedAt))}
+                      {formatter.dateTime(new Date(article.publishedAt), {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric',
+                      })}
                     </time>
                     <h2 className="relative z-10 text-base font-semibold text-balance text-neutral-800 dark:text-neutral-100">
                       {article.title}
