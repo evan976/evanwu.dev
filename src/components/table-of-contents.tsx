@@ -10,7 +10,11 @@ interface TocEntry {
   level: 2 | 3
 }
 
-export function TableOfContents() {
+function getHeading(container: HTMLElement, id: string) {
+  return container.querySelector<HTMLElement>(`[id="${CSS.escape(id)}"]`)
+}
+
+export function TableOfContents({ containerId }: { containerId: string }) {
   const [mounted, setMounted] = React.useState(false)
   const [entries, setEntries] = React.useState<TocEntry[]>([])
   const [activeId, setActiveId] = React.useState('')
@@ -24,7 +28,10 @@ export function TableOfContents() {
     if (!mounted) return
 
     function collectHeadings() {
-      const headings = document.querySelectorAll('[data-type="heading"]')
+      const container = document.getElementById(containerId)
+      if (!container) return []
+
+      const headings = container.querySelectorAll('[data-type="heading"]')
       const tocEntries: TocEntry[] = []
 
       for (const el of headings) {
@@ -65,7 +72,7 @@ export function TableOfContents() {
     })
 
     return () => observer.disconnect()
-  }, [mounted])
+  }, [containerId, mounted])
 
   React.useEffect(() => {
     if (entries.length === 0) return
@@ -81,13 +88,16 @@ export function TableOfContents() {
       { rootMargin: '-20% 0px -80% 0px' },
     )
 
+    const container = document.getElementById(containerId)
+    if (!container) return
+
     for (const { id } of entries) {
-      const el = document.getElementById(id)
+      const el = getHeading(container, id)
       if (el) observer.observe(el)
     }
 
     return () => observer.disconnect()
-  }, [entries])
+  }, [containerId, entries])
 
   if (!mounted || entries.length === 0) return null
 
@@ -122,7 +132,8 @@ export function TableOfContents() {
                 key={entry.id}
                 type="button"
                 onClick={() => {
-                  const el = document.getElementById(entry.id)
+                  const container = document.getElementById(containerId)
+                  const el = container ? getHeading(container, entry.id) : null
                   if (el) el.scrollIntoView({ behavior: 'smooth' })
                 }}
                 className={cn(

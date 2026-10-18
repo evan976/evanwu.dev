@@ -1,12 +1,11 @@
 import { BotIcon, RssIcon } from 'lucide-react'
-import { useTranslations } from 'next-intl'
 import { ChangeLanguage } from '@/components/change-language'
 import { Container } from '@/components/container'
+import { Copyright } from '@/components/copyright'
 import { ModeToggle } from '@/components/mode-toggle'
 import { Link } from '@/i18n/navigation'
 
 export function Footer() {
-  const t = useTranslations('footer')
   return (
     <footer className="mt-16 sm:mt-24">
       <Container.Outer>
@@ -36,12 +35,7 @@ export function Footer() {
               <div className="flex items-center gap-6">
                 <ChangeLanguage />
                 <ModeToggle />
-                <p
-                  className="text-sm text-pretty text-neutral-500 dark:text-neutral-400"
-                  suppressHydrationWarning
-                >
-                  {t('copyright', { year: new Date().getFullYear() })}
-                </p>
+                <Copyright />
               </div>
             </div>
           </Container.Inner>

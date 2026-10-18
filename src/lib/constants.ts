@@ -8,7 +8,7 @@ export const resume = [
     title: 'frontend_developer',
     logo: logoHackQuest,
     start: '2024-05',
-    end: new Date(),
+    end: null,
   },
   {
     company: 'SeaMaid Tech',

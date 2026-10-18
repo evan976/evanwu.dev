@@ -1,7 +1,7 @@
 import 'server-only'
 import fs from 'node:fs/promises'
 import path from 'node:path'
-import { cache } from 'react'
+import { cacheLife, cacheTag } from 'next/cache'
 import readingTime from 'reading-time'
 
 type Metadata = {
@@ -49,13 +49,17 @@ async function readMDXFile(filePath: string) {
   return raw
 }
 
-export const getArticleBySlug = cache(async function getArticleBySlug(
+export async function getArticleBySlug(
   slug: string,
   locale: string,
 ): Promise<null | {
   metadata: Metadata
   content: string
 }> {
+  'use cache'
+  cacheLife('max')
+  cacheTag('articles', `article:${locale}:${slug}`)
+
   try {
     if (
       !(await fs
@@ -85,7 +89,7 @@ export const getArticleBySlug = cache(async function getArticleBySlug(
     console.error(error)
     return null
   }
-})
+}
 
 export async function getArticleSlugs(locale: string) {
   const dir = path.join(process.cwd(), 'src', 'content', locale)
@@ -102,7 +106,11 @@ export async function getArticleSlugs(locale: string) {
   }
 }
 
-export const getArticles = cache(async (locale: string) => {
+export async function getArticles(locale: string) {
+  'use cache'
+  cacheLife('max')
+  cacheTag('articles', `articles:${locale}`)
+
   const slugs = await getArticleSlugs(locale)
 
   const results = await Promise.all(
@@ -119,7 +127,7 @@ export const getArticles = cache(async (locale: string) => {
       (a, b) =>
         new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime(),
     )
-})
+}
 
 export async function getPreviousOrNextArticleSlug(
   slug: string,

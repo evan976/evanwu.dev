@@ -1,6 +1,6 @@
 'use client'
 
-import { format, isToday } from 'date-fns'
+import { format } from 'date-fns'
 import { ArrowRight, Briefcase } from 'lucide-react'
 import Image from 'next/image'
 import { useFormatter, useTranslations } from 'next-intl'
@@ -18,65 +18,70 @@ export function Resume() {
         <span className="ml-3">{t('title')}</span>
       </h2>
       <ul className="mt-6 space-y-4">
-        {resume.map((role, roleIndex) => (
-          <li key={roleIndex} className="flex gap-4">
-            <div className="relative mt-1 flex h-10 w-10 flex-none items-center justify-center rounded-full shadow-md shadow-neutral-800/5 ring-1 ring-neutral-900/5 dark:border dark:border-neutral-700/50 dark:bg-neutral-800 dark:ring-0">
-              <Image
-                src={role.logo}
-                alt={role.company}
-                className="size-7 rounded-full"
-                unoptimized
-              />
-            </div>
-            <div className="flex flex-auto flex-wrap gap-x-2">
-              <div className="sr-only">{t('company')}</div>
-              <div className="w-full flex-none text-sm font-medium text-neutral-900 dark:text-neutral-100">
-                <Link
-                  href={role.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:underline"
-                >
-                  {role.company}
-                </Link>
+        {resume.map((role, roleIndex) => {
+          const start = new Date(role.start)
+          const end = role.end ? new Date(role.end) : null
+          const endLabel = end
+            ? formatter.dateTime(end, {
+                month: 'short',
+                year: 'numeric',
+              })
+            : t('present')
+
+          return (
+            <li key={roleIndex} className="flex gap-4">
+              <div className="relative mt-1 flex h-10 w-10 flex-none items-center justify-center rounded-full shadow-md shadow-neutral-800/5 ring-1 ring-neutral-900/5 dark:border dark:border-neutral-700/50 dark:bg-neutral-800 dark:ring-0">
+                <Image
+                  src={role.logo}
+                  alt={role.company}
+                  className="size-7 rounded-full"
+                  unoptimized
+                />
               </div>
-              <div className="sr-only">{t('role')}</div>
-              <div className="text-xs text-neutral-500 dark:text-neutral-400">
-                {t(role.title)}
-              </div>
-              <div className="sr-only">{t('date')}</div>
-              <div
-                role="tooltip"
-                className="ml-auto text-xs tabular-nums text-neutral-500 dark:text-neutral-400"
-                aria-label={`${format(new Date(role.start), 'MMMM yyyy')} until ${isToday(new Date(role.end)) ? 'Present' : format(new Date(role.end), 'MMMM yyyy')}`}
-              >
-                <time
-                  suppressHydrationWarning
-                  dateTime={role.start.toLocaleString()}
+              <div className="flex flex-auto flex-wrap gap-x-2">
+                <div className="sr-only">{t('company')}</div>
+                <div className="w-full flex-none text-sm font-medium text-neutral-900 dark:text-neutral-100">
+                  <Link
+                    href={role.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:underline"
+                  >
+                    {role.company}
+                  </Link>
+                </div>
+                <div className="sr-only">{t('role')}</div>
+                <div className="text-xs text-neutral-500 dark:text-neutral-400">
+                  {t(role.title)}
+                </div>
+                <div className="sr-only">{t('date')}</div>
+                <div
+                  role="tooltip"
+                  className="ml-auto text-xs tabular-nums text-neutral-500 dark:text-neutral-400"
+                  aria-label={`${format(start, 'MMMM yyyy')} until ${
+                    end ? format(end, 'MMMM yyyy') : t('present')
+                  }`}
                 >
-                  {formatter.dateTime(new Date(role.start), {
-                    month: 'short',
-                    year: 'numeric',
-                  })}
-                </time>
-                <span aria-hidden="true" className="mx-1">
-                  -
-                </span>
-                <time
-                  suppressHydrationWarning
-                  dateTime={role.end.toLocaleString()}
-                >
-                  {isToday(new Date(role.end))
-                    ? t('present')
-                    : formatter.dateTime(new Date(role.end), {
-                        month: 'short',
-                        year: 'numeric',
-                      })}
-                </time>
+                  <time suppressHydrationWarning dateTime={role.start}>
+                    {formatter.dateTime(start, {
+                      month: 'short',
+                      year: 'numeric',
+                    })}
+                  </time>
+                  <span aria-hidden="true" className="mx-1">
+                    -
+                  </span>
+                  <time
+                    suppressHydrationWarning
+                    dateTime={role.end ?? undefined}
+                  >
+                    {endLabel}
+                  </time>
+                </div>
               </div>
-            </div>
-          </li>
-        ))}
+            </li>
+          )
+        })}
       </ul>
       <Button
         href="https://www.linkedin.com/in/evan976"
