@@ -22,6 +22,7 @@ export function SocialLink({
         alt={name}
         width={20}
         height={20}
+        unoptimized
         aria-hidden="true"
         className="opacity-50 transition-opacity group-hover:opacity-70 dark:invert"
       />

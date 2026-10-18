@@ -2,7 +2,7 @@ import '@/styles/globals.css'
 import type { Viewport } from 'next'
 import { notFound } from 'next/navigation'
 import { hasLocale, NextIntlClientProvider } from 'next-intl'
-import { getTranslations, setRequestLocale } from 'next-intl/server'
+import { getTranslations } from 'next-intl/server'
 import { ThemeProvider } from 'next-themes'
 import { DeferredAnalytics } from '@/components/deferred-analytics'
 import { Footer } from '@/components/footer'
@@ -83,11 +83,13 @@ export const viewport: Viewport = {
   ],
 }
 
-export const dynamicParams = false
-
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }))
 }
+
+export const unstable_paramMatching = {
+  locale: 'not-found',
+} as const
 
 export default async function RootLayout({
   children,
@@ -98,8 +100,6 @@ export default async function RootLayout({
   if (!hasLocale(routing.locales, locale)) {
     notFound()
   }
-
-  setRequestLocale(locale)
 
   return (
     <html

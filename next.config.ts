@@ -1,15 +1,16 @@
 import type { NextConfig } from 'next'
+import { initOpenNextCloudflareForDev } from '@opennextjs/cloudflare'
+import { PHASE_DEVELOPMENT_SERVER } from 'next/constants'
 import createNextIntlPlugin from 'next-intl/plugin'
 
 const nextConfig: NextConfig = {
   reactStrictMode: false,
   reactCompiler: true,
+  cacheComponents: true,
+  partialPrefetching: true,
   images: {
     loader: 'custom',
     loaderFile: './image-loader.ts',
-  },
-  typescript: {
-    ignoreBuildErrors: true,
   },
   outputFileTracingIncludes: {
     '/**/*': ['./src/content/*.mdx'],
@@ -51,8 +52,10 @@ const nextConfig: NextConfig = {
 
 const withNextIntl = createNextIntlPlugin()
 
-export default withNextIntl(nextConfig)
+export default function config(phase: string): NextConfig {
+  if (phase === PHASE_DEVELOPMENT_SERVER) {
+    initOpenNextCloudflareForDev()
+  }
 
-import { initOpenNextCloudflareForDev } from '@opennextjs/cloudflare'
-
-initOpenNextCloudflareForDev()
+  return withNextIntl(nextConfig)
+}

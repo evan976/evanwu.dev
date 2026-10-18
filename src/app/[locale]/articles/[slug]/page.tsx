@@ -1,12 +1,8 @@
-import * as React from 'react'
+import { Suspense } from 'react'
 import type { Metadata } from 'next'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
-import {
-  getFormatter,
-  getTranslations,
-  setRequestLocale,
-} from 'next-intl/server'
+import { getFormatter, getTranslations } from 'next-intl/server'
 import { ArticleWidget } from '@/components/article-widget'
 import { ArrowLeftIcon } from '@/components/icons'
 import { CustomMDX } from '@/components/mdx'
@@ -25,8 +21,6 @@ import {
 import { buildArticleSchemas } from '@/lib/schema'
 import { baseUrl } from '@/lib/site'
 
-export const dynamicParams = false
-
 export async function generateStaticParams({
   params,
 }: {
@@ -39,6 +33,10 @@ export async function generateStaticParams({
   const slugs = await getArticleSlugs(locale)
   return slugs.map((slug) => ({ slug }))
 }
+
+export const unstable_paramMatching = {
+  slug: 'not-found',
+} as const
 
 export async function generateMetadata({
   params,
@@ -102,9 +100,57 @@ export async function generateMetadata({
   }
 }
 
-export default async function Page({
+function ArticleSkeleton() {
+  return (
+    <div
+      aria-busy="true"
+      aria-label="Loading article"
+      className="sm:px-8 mt-16 lg:mt-32"
+      role="status"
+    >
+      <div className="mx-auto w-full max-w-7xl lg:px-8">
+        <div className="relative px-4 sm:px-8 lg:px-12">
+          <div className="mx-auto max-w-2xl lg:max-w-5xl">
+            <div className="xl:relative">
+              <div className="mx-auto max-w-2xl">
+                <div className="mb-8 size-10 rounded-full bg-neutral-100 lg:absolute lg:-left-5 lg:-mt-2 lg:mb-0 xl:-top-1.5 xl:left-0 xl:mt-0 dark:bg-neutral-800" />
+                <div className="mt-6 animate-pulse space-y-3">
+                  <div className="h-8 w-4/5 rounded bg-neutral-200 dark:bg-neutral-800" />
+                  <div className="h-4 w-1/2 rounded bg-neutral-200 dark:bg-neutral-800" />
+                </div>
+                <div className="mt-8 h-44 rounded-2xl border border-neutral-200/80 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-900/70" />
+                <div className="mt-8 aspect-[1200/630] w-full rounded-xl bg-neutral-100 dark:bg-neutral-800" />
+                <div className="mt-8 animate-pulse space-y-4">
+                  <div className="h-4 w-full rounded bg-neutral-200 dark:bg-neutral-800" />
+                  <div className="h-4 w-11/12 rounded bg-neutral-200 dark:bg-neutral-800" />
+                  <div className="h-4 w-5/6 rounded bg-neutral-200 dark:bg-neutral-800" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export default function Page({
   params,
 }: PageProps<'/[locale]/articles/[slug]'>) {
+  return (
+    <section>
+      <Suspense fallback={<ArticleSkeleton />}>
+        <ArticleContent params={params} />
+      </Suspense>
+    </section>
+  )
+}
+
+async function ArticleContent({
+  params,
+}: {
+  params: PageProps<'/[locale]/articles/[slug]'>['params']
+}) {
   const { slug, locale } = await params
 
   const [article, adjacent, t, formatter] = await Promise.all([
@@ -151,11 +197,10 @@ export default async function Page({
     locale,
   })
   const lastUpdated = updatedAt ?? publishedAt
-
-  setRequestLocale(locale)
+  const articleId = `article-${locale}-${slug}`
 
   return (
-    <section>
+    <>
       {articleSchemas.map((schema, index) => (
         <script
           key={index}
@@ -179,7 +224,7 @@ export default async function Page({
                   >
                     <ArrowLeftIcon className="size-4" />
                   </Link>
-                  <article>
+                  <article id={articleId}>
                     <header className="flex flex-col">
                       <h1 className="mt-6 text-3xl font-bold text-balance text-neutral-800 sm:text-4xl dark:text-neutral-100">
                         {title}
@@ -244,7 +289,7 @@ export default async function Page({
                       </div>
                     )}
                     <div className="mt-8 prose">
-                      <React.Suspense
+                      <Suspense
                         fallback={
                           <div className="space-y-4 animate-pulse">
                             <div className="h-4 bg-neutral-200 dark:bg-neutral-700 rounded w-3/4" />
@@ -254,7 +299,7 @@ export default async function Page({
                         }
                       >
                         <CustomMDX source={article.content} />
-                      </React.Suspense>
+                      </Suspense>
                     </div>
                   </article>
                 </div>
@@ -264,7 +309,7 @@ export default async function Page({
         </div>
       </div>
       <ArticleWidget previous={adjacent.previous} next={adjacent.next} />
-      <TableOfContents />
-    </section>
+      <TableOfContents containerId={articleId} />
+    </>
   )
 }

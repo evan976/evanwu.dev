@@ -1,20 +1,26 @@
+import { cacheLife, cacheTag } from 'next/cache'
 import RSS from 'rss'
 import { getArticles } from '@/lib/mdx'
 import { baseUrl } from '@/lib/site'
 
 export async function generateRSS(locale: string) {
+  'use cache'
+  cacheLife('max')
+  cacheTag('rss', `rss:${locale}`)
+
+  const articles = await getArticles(locale)
+  const latestArticleDate = articles[0]?.publishedAt
+
   const feedOptions = {
     title: "Evan's Blog | RSS Feed",
     description: "Welcome to Evan's Blog!",
     site_url: baseUrl,
     feed_url: `${baseUrl}/rss.xml`,
-    pubDate: new Date(),
-    copyright: `All rights reserved ${new Date().getFullYear()}`,
+    pubDate: latestArticleDate ? new Date(latestArticleDate) : undefined,
+    copyright: 'All rights reserved Evan Wu',
   }
 
   const feed = new RSS(feedOptions)
-
-  const articles = await getArticles(locale)
 
   articles.forEach((article) => {
     feed.item({

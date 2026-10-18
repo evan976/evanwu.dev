@@ -1,5 +1,19 @@
+import { cacheLife } from 'next/cache'
 import { codeToHtml } from 'shiki'
 import { CopyButton } from './copy-button'
+
+async function highlightCode(source: { lang: string; code: string }) {
+  'use cache'
+  cacheLife('max')
+
+  return codeToHtml(source.code, {
+    lang: source.lang,
+    themes: {
+      light: 'github-light',
+      dark: 'github-dark',
+    },
+  })
+}
 
 export async function MDXCode({
   source,
@@ -11,13 +25,7 @@ export async function MDXCode({
   }
   filename?: string
 }) {
-  const html = await codeToHtml(source.code, {
-    lang: source.lang,
-    themes: {
-      light: 'github-light',
-      dark: 'github-dark',
-    },
-  })
+  const html = await highlightCode(source)
 
   return (
     <div className="rounded-xl relative not-prose my-6 border overflow-hidden border-neutral-200 dark:border-white/10">

@@ -30,7 +30,6 @@ export default async function sitemap() {
       '/uses',
     ].map((route) => ({
       url: `${baseUrl}${getLocalizedPath(route, locale)}`,
-      lastModified: new Date().toISOString().split('T')[0],
     }))
 
     allRoutes.push(...routes, ...articles)
